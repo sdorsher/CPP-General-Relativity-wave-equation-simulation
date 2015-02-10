@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../tnt2/TNT2.h"
+#include "TNT2.h"
 #include "ReferenceElement.h"
 
 using namespace TNT;
@@ -16,9 +16,16 @@ int main()
  
   double alpha =0.0;
   double beta =0.0;
-  int n=5;
+  int n=elemOrder;
 
   Array1D<double> w(elemOrder+1);
+
+  //Test instantiation
+  std::cout << "test instantiation" << std::endl;
+  output1D(refelem.refNodeLocations);
+  std::cout << "-------------" << std::endl;
+  std::cout << "-------------" << std::endl;
+
   
   //Test JacobiGL
   
@@ -57,7 +64,14 @@ int main()
   Array1D<double> polynom(elemOrder+1);
 
 
-  refelem.jacobiP(x,alpha,beta,n,polynom);
+  polynom = refelem.jacobiP(x,alpha,beta,n);
   output1D(polynom);
+
+  std::cout << "-----------" << std::endl;
+  std::cout << "-----------" << std::endl;
+
+  std::cout << "test vandermonde1D" << std::endl;
+
+  output2D(refelem.vandermondeMatrix);
   
 }

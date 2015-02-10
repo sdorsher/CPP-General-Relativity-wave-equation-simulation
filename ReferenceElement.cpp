@@ -3,9 +3,11 @@
 
 using namespace TNT;
 
-ReferenceElement::ReferenceElement(int N)
+ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1)
 {
   order=N;
+  refNodeLocations=jacobiGL(0.0,0.0,N);
+  vandermonde1D();
 }
 					   //{
 
@@ -17,7 +19,7 @@ ReferenceElement::ReferenceElement(int N)
 
 void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha, 
 				double beta, int n, Array1D<double>& w)
-//x and w are unsorted, unlike the Fortran code
+//checks out for n=5,7,9
   
 {
   if((w.dim()!=n+1)||x.dim()!=n+1)
@@ -133,8 +135,8 @@ Array1D<double> ReferenceElement::jacobiGL(double alpha, double beta, double n)
 }
 
 
-void ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,  
-			       double beta, int n, Array1D<double>& polynom)
+Array1D<double> ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,  
+			       double beta, int n)
 //Evaluate Jacobi Polynomial of type (alpha,beta) at points x for order N
 //may be able to store memory by not storing pl
 // tested for alpha=beta=0, sizex=4 (n=0 through 3)
@@ -143,6 +145,7 @@ void ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,
 
 {
 
+  Array1D<double> polynom(x.dim());
   vector<Array1D<double>> pl;
   double lngammaab=lgamma(alpha+beta+1.0);
   double lngammaa =lgamma(alpha+1.0);
@@ -160,7 +163,7 @@ void ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,
   if (n==0)
     {
       polynom= gamma0arr;
-      return;
+      return polynom;
     }
   pl[0]=gamma0arr;
   
@@ -177,7 +180,7 @@ void ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,
   if (n==1)
     {
       polynom= gamma1arr;
-      return;
+      return polynom;
     }	    
   
   pl[1]=gamma1arr;
@@ -200,7 +203,16 @@ void ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,
     }//end for
   
   polynom= pl[n];
-  return;
+  return polynom;
 
 }
 
+void ReferenceElement::vandermonde1D()
+{
+  for(int j = 0; j<=order; j++)
+    {
+      insert_1D_into_2D(vandermondeMatrix,jacobiP(refNodeLocations,0.0,0.0,j),j,true);
+    }
+
+
+}
