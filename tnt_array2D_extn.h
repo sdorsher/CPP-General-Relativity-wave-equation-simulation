@@ -11,6 +11,24 @@ namespace TNT
 {
 
 
+  template<class T>
+    Array2D<T> transpose(const Array2D<T> &A)
+    {
+      int n=A.dim1();
+      int m=A.dim2();
+      if(n!=m) throw invalid_argument("In transpose, array must be square.");
+      Array2D<T> C(n,n);
+      for (int k=0; k<n; k++)
+	{
+	  for(int j=0; j<n; j++)
+	    {
+	      C[j][k]=A[k][j];
+	    }
+	}
+      return C;
+    }
+
+
   template <class T>
     Array2D<T> sqrt(const Array2D<T> &A)
     {
