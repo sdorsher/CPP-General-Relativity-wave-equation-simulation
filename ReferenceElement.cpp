@@ -3,11 +3,13 @@
 
 using namespace TNT;
 
-ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1)
+ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1)
 {
   order=N;
   refNodeLocations=jacobiGL(0.0,0.0,N);
   vandermonde1D();
+  gradVandermonde1D();
+  
 }
 					   //{
 
@@ -216,3 +218,32 @@ void ReferenceElement::vandermonde1D()
 
 
 }
+
+
+Array1D<double> ReferenceElement::gradJacobiP(double alpha, double beta,int N)
+//evaluated the derivative of the Jacobi polynomials of type alpha, beta >-1 at the nodes for order N 
+
+{
+  if ((alpha<-1)||(beta<-1)) throw invalid_argument("alpha or beta <-1 in gradJacobiP.");
+  if (N<0) throw invalid_argument("N<0 in gradJacobiP");
+  
+  Array1D<double> gradpoly(refNodeLocations.dim(),0.0);
+  if (N!=0)
+    {
+      gradpoly = sqrt(N*(N+alpha+beta+1))*jacobiP(refNodeLocations,alpha+1.0,beta+1.0,N-1);
+    }
+  return gradpoly;
+}
+
+void ReferenceElement::gradVandermonde1D()
+{
+ 
+  for(int i=0; i<=order;i++)
+    {
+      insert_1D_into_2D(dVdr,gradJacobiP(0.0,0.0,i),i,true);
+    }
+  return;
+
+}
+
+

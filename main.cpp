@@ -6,7 +6,7 @@ using namespace TNT;
 
 int main()
 {
-  int elemOrder = 5;
+  int elemOrder = 7;
   ReferenceElement refelem(elemOrder);
   
   Array1D<double> x(elemOrder+1);
@@ -73,5 +73,21 @@ int main()
   std::cout << "test vandermonde1D" << std::endl;
 
   output2D(refelem.vandermondeMatrix);
+
+  std::cout << "-----------" << std::endl;
+  std::cout << "-----------" << std::endl;
+
+  std::cout << "test gradJacobiP" <<std::endl;
+
+  output1D(refelem.gradJacobiP(alpha,beta,elemOrder));
+
+  std::cout << "-----------" << std::endl;
+  std::cout << "-----------" << std::endl;
+
+  std::cout << "test gradVandermonde1D" << std::endl;
+
+  output2D(refelem.dVdr);
+  
+
   
 }
