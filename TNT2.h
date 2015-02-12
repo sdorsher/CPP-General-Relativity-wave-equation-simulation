@@ -1,14 +1,14 @@
 #ifndef TNT2_H
 #define TNT2_H
 
-#include "tnt.h"
+#include "tnt/tnt.h"
 #include <typeinfo>
 #include <iostream>
 #include <stdexcept>
 #include "tnt_array2D_extn.h"
 #include "tnt_array1D_extn.h"
-#include "jama_eig.h"
-#include "jama_lu.h" //is this right? inverse, right?
+#include "jama/jama_eig.h"
+#include "jama/jama_lu.h" //is this right? inverse, right?
 
 
 using namespace std;

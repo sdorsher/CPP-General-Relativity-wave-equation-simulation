@@ -1,5 +1,5 @@
 #include <cmath>
-#include "tnt.h"
+#include "tnt/tnt.h"
 #include "TNT2.h"
 
 using namespace TNT;

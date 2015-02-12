@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-#include "tnt_array2d.h"
+#include "tnt/tnt_array2d.h"
 //include "../tnt/tnt_array2d_utils.h"
 
 

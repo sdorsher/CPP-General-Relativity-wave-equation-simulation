@@ -86,7 +86,7 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
 	    }
 	  else if(abs(i-j)==1)
 	    {
-	      tridiag[i][j]=jdiag2[min(i,j)];
+	      tridiag[i][j]=jdiag2[std::min(i,j)];
 	    }
 	}
     }
