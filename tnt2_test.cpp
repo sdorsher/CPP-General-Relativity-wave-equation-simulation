@@ -6,7 +6,16 @@ using namespace TNT;
 
 int main()
 {
-  Array2D<double> fours(4,4,4.0);
+  Array2D<double> impauliy(2,2,0.0);
+  impauliy[0][1]=-1.0;
+  impauliy[1][0]=1.0;
+
+  output2D(impauliy);
+
+  output2D(transpose(impauliy));
+
+
+  /*  Array2D<double> fours(4,4,4.0);
   Array1D<double> nines(3,9.0);
 
   std::cout << "two arrays" << std::endl;
@@ -42,7 +51,7 @@ int main()
   std::cout << "its eigenvectors as found by Jama" << std::endl;
   output2D(vecs);
   //getRealEigenvalues and getV sort from least to greatest just like lapack
-
+  */
 
   /*  output=doubvec+2.0;
 
