@@ -1,5 +1,5 @@
-ITNT = -I../../tnt_126
-IJAMA = -I../../jama125
+ITNT = -I../../
+IJAMA = -I../../
 
 dg1D : main.o ReferenceElement.o
 	g++ -lm -std=c++11 $(ITNT) $(IJAMA)  main.o ReferenceElement.o -o dg1D
