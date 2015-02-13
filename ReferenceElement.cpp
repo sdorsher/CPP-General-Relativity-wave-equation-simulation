@@ -3,12 +3,14 @@
 
 using namespace TNT;
 
-ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1)
+ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1),
+					  derivativeMatrix(N+1,N+1)
 {
   order=N;
   refNodeLocations=jacobiGL(0.0,0.0,N);
   vandermonde1D();
   gradVandermonde1D();
+  Dmatrix1D();
   
 }
 					   //{
@@ -247,3 +249,10 @@ void ReferenceElement::gradVandermonde1D()
 }
 
 
+void ReferenceElement::Dmatrix1D()
+{
+
+  JAMA::LU<double> solver(transpose(vandermondeMatrix));
+  derivativeMatrix=transpose(solver.solve(transpose(dVdr)));
+
+}
