@@ -18,20 +18,15 @@ class ReferenceElement
   void vandermonde1D();
   Array1D<double> gradJacobiP(double alpha, double beta,int N);//evaluated at nodes
   void gradVandermonde1D(); //evaluated at nodes for order of element
-
+  void Dmatrix1D();
 
 public:
   int order; //order of element
   Array1D<double> refNodeLocations; // node locations scaled to r
   Array2D<double> vandermondeMatrix; 
   Array2D<double> dVdr;
-  //Array2D derivativeMatrix;
+  Array2D<double> derivativeMatrix;
 
-//Evaluate Jacobi Polynomial of type (alpha,beta) at points x for order N
-  // void jglQuadraturePoints();
-   //void computedVdr();
-  //void computeDr();
-  // public:
   //Array2D getDr(); //get derivative matrix
 };
   
