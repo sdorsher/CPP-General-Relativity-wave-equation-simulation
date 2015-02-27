@@ -21,7 +21,7 @@ namespace TNT
   {
     if(A.dim2()!=B.dim1())
       {
-	throw invalid_argument("Mismatched matrix dimensions.");
+	throw std::invalid_argument("Mismatched matrix dimensions.");
       }
     TNT::Array1D<T> ans(A.dim1());
     
@@ -42,7 +42,7 @@ namespace TNT
     //should produce a row vector
     if(A.dim1()!=B.dim1())
       {
-	throw invalid_argument("Mismatched matrix dimensions.");
+	throw std::invalid_argument("Mismatched matrix dimensions.");
       }
     TNT::Array1D<T> ans(B.dim2());
     
@@ -63,7 +63,7 @@ namespace TNT
     {
       if(origin+inserted.dim()>original.dim())
 	{
-	  throw out_of_range("Inserted array dimensions plus origin exceed \n original array dimensions.");
+	  throw std::out_of_range("Inserted array dimensions plus origin exceed \n original array dimensions.");
 	}
       for(int j=origin; j<origin+inserted.dim(); j++)
 	{
@@ -79,7 +79,7 @@ namespace TNT
       if((origin1+inserted.dim1()>original.dim1())||
 	 (origin2+inserted.dim2()>original.dim2()))
 	{
-	  throw out_of_range("Inserted array dimensions plus origin exceed \n original array dimensions.");
+	  throw std::out_of_range("Inserted array dimensions plus origin exceed \n original array dimensions.");
 	}
       for(int i=origin1; i<origin1+inserted.dim1(); i++)
 	{
@@ -102,7 +102,7 @@ namespace TNT
 	   ||(index<0)
 	   ||(inserted.dim()!=original.dim1()))
 	    {
-	      throw out_of_range("Inserted array dimension not equal to external array dimension  or index out of range.");
+	      throw std::out_of_range("Inserted array dimension not equal to external array dimension  or index out of range.");
 	    }
 	
 	for(int i=0; i<inserted.dim(); i++)
@@ -115,7 +115,7 @@ namespace TNT
 	   ||(index<0)
 	   ||(inserted.dim()!=original.dim2()))
 	  {
-	    throw out_of_range("Inserted array dimension not equal to external array dimension or index out of range.");
+	    throw std::out_of_range("Inserted array dimension not equal to external array dimension or index out of range.");
 	  }
 	    for(int i=0; i<inserted.dim(); i++)
 	      {
