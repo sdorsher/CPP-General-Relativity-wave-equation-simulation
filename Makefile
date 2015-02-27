@@ -11,4 +11,3 @@ main.o: main.cpp ReferenceElement.h TNT2.h
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h TNT2.h
 	$(CXX) -lm -std=c++11 $(ITNT) $(IGEN) -c ReferenceElement.cpp
-
