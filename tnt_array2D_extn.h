@@ -16,7 +16,7 @@ namespace TNT
     {
       int n=A.dim1();
       int m=A.dim2();
-      if(n!=m) throw invalid_argument("In transpose, array must be square.");
+      if(n!=m) throw std::invalid_argument("In transpose, array must be square.");
       Array2D<T> C(n,n);
       for (int k=0; k<n; k++)
 	{
