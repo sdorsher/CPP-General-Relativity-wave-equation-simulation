@@ -28,7 +28,7 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
 {
   if((w.dim()!=n+1)||x.dim()!=n+1)
     {
-      throw invalid_argument("JacobiGQ: Array1D argument dimensions do not agree with argument order n.\n");
+      throw std::invalid_argument("JacobiGQ: Array1D argument dimensions do not agree with argument order n.\n");
     }
 
   Array1D<double> h1(n+1);
@@ -121,7 +121,7 @@ Array1D<double> ReferenceElement::jacobiGL(double alpha, double beta, double n)
   Array1D<double> x(n-1); //JacobiGQ input and output
 
   if(n<=0)
-    throw invalid_argument("JacobiGL called with n<=0. Aborting");
+    throw std::invalid_argument("JacobiGL called with n<=0. Aborting");
   
   if(n==1)
     {
@@ -227,7 +227,7 @@ Array1D<double> ReferenceElement::gradJacobiP(double alpha, double beta,int N)
 
 {
   if ((alpha<-1)||(beta<-1)) throw invalid_argument("alpha or beta <-1 in gradJacobiP.");
-  if (N<0) throw invalid_argument("N<0 in gradJacobiP");
+  if (N<0) throw std::invalid_argument("N<0 in gradJacobiP");
   
   Array1D<double> gradpoly(refNodeLocations.dim(),0.0);
   if (N!=0)
