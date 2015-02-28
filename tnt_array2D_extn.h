@@ -16,11 +16,10 @@ namespace TNT
     {
       int n=A.dim1();
       int m=A.dim2();
-      if(n!=m) throw std::invalid_argument("In transpose, array must be square.");
-      Array2D<T> C(n,n);
+      Array2D<T> C(m,n);
       for (int k=0; k<n; k++)
 	{
-	  for(int j=0; j<n; j++)
+	  for(int j=0; j<m; j++)
 	    {
 	      C[j][k]=A[k][j];
 	    }

@@ -7,9 +7,12 @@ ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatri
 					  derivativeMatrix(N+1,N+1)
 {
   order=N;
-  refNodeLocations=jacobiGL(0.0,0.0,N);
-  vandermonde1D();
+ refNodeLocations=jacobiGL(0.0,0.0,N);
+std::cout <<"vandermonde1D" <<std::endl; 
+ vandermonde1D();
+std::cout <<"gradVandermonde1D" <<std::endl;
   gradVandermonde1D();
+std::cout <<"Dmatrix1D" <<std::endl;
   Dmatrix1D();
   
 }
@@ -26,6 +29,8 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
 //checks out for n=5,7,9
   
 {
+std::cout << "jacobiGQ" <<std::endl;
+
   if((w.dim()!=n+1)||x.dim()!=n+1)
     {
       throw std::invalid_argument("JacobiGQ: Array1D argument dimensions do not agree with argument order n.\n");
@@ -41,7 +46,7 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
   Array2D<double> vect(n+1,n+1); //contains eigenvectors
   double lngammaab, lngammaa, lngammab;
 
-
+std::cout<<"allocated all this stuff successfully" <<std::endl;
   if (n==0)
     {
       x[0]=(alpha-beta)/(alpha+beta+2.0);
@@ -78,7 +83,7 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
 
   //tridiagonal matrix has jdiag1 along the diagonal and jdiag2 to either side, zeros elsewhere
 
-  Array2D<double> tridiag(n+1,n+1);
+  Array2D<double> tridiag(n+1,n+1,0.0);
 
   for(int i=0; i<=n; i++)
     {
@@ -114,6 +119,7 @@ void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha,
 
 Array1D<double> ReferenceElement::jacobiGL(double alpha, double beta, double n)
 {
+std::cout <<"jacobiGL" <<std::endl;
   //sets Jacobi-Gauss-Lebato quadrature points
 
   Array1D<double> quadpts(n+1,0.0);
@@ -252,7 +258,17 @@ void ReferenceElement::gradVandermonde1D()
 void ReferenceElement::Dmatrix1D()
 {
 
-  JAMA::LU<double> solver(transpose(vandermondeMatrix));
-  derivativeMatrix=transpose(solver.solve(transpose(dVdr)));
+  Array2D<double> VT = transpose(vandermondeMatrix);
+  std::cout << VT.dim1() << " ";  
+JAMA::LU<double> solver(VT);
+  Array2D<double> dVdrT = transpose(dVdr);
+  std::cout << dVdrT.dim1() << " ";
+  Array2D<double> DT = solver.solve(dVdrT);
+  std::cout << DT.dim1() << " ";
+  Array2D<double> derivativeMatrix = transpose(DT);
+  std::cout << derivativeMatrix.dim1() <<std::endl;
+
+//  JAMA::LU<double> solver(transpose(vandermondeMatrix);
+//  derivativeMatrix=transpose(solver.solve(transpose(dVdr)));
 
 }
