@@ -19,7 +19,7 @@ int main()
   double amplitude =1.0;
   double dt = 0.01;
   int maxorder = 99;
-  int minorder = 15;
+  int minorder = 6;
   vector<ReferenceElement> elems;
 
   ofstream fs;
@@ -28,9 +28,7 @@ int main()
   for(int order=minorder; order<=maxorder; order++)
     {
       ReferenceElement refelem(order);
-      std::cout << "just before instantiation" <<std::endl;
       elems.push_back(refelem);
-      std::cout << "just after instantiation" <<std::endl;
       Array1D<double> r = elems[order-minorder].refNodeLocations;
       Array1D<double> sinusoid(order+1);
       Array1D<double> cosinisoid(order+1);
@@ -40,12 +38,8 @@ int main()
 	  cosinisoid[i]= amplitude*2.0*pi*frequency
 	    *cos(2.0*pi*frequency*r[i]+phase);
 	}
-      	std::cout << "just prior to Dmatrix in main" <<std::endl;
 	Array2D<double> Dmatrix(order,order); 
 	Dmatrix = elems[order-minorder].derivativeMatrix;
-        std::cout << Dmatrix.dim1() << std::endl;
-       std::cout <<Dmatrix.dim2() <<std::endl; 
-       std::cout <<sinusoid.dim() <<std::endl;
       Array1D<double> Dsinusoid= matmult(Dmatrix,sinusoid);
       double maxerror=0.0;
       for(int i = 0; i<=order; i++)
