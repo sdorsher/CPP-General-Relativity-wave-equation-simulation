@@ -1,0 +1,7 @@
+set terminal postscript eps
+set output "sinDerivConv.eps"
+set logscale y
+set xlabel 'Element order'
+set ylabel 'Log(Max abs difference)'
+plot [0:100] "sinusoidDerivative.txt" using 1:2 title 'Max[abs[D(sin(wt))-wsin(wt)]]'
+
