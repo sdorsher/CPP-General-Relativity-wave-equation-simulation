@@ -164,6 +164,7 @@ Array1D<double> ReferenceElement::jacobiP(const Array1D<double>& x, double alpha
 
   Array1D<double> gamma0arr(x.dim(),gamma0);
 
+
   if (n==0)
     {
       polynom= gamma0arr;
@@ -188,9 +189,11 @@ Array1D<double> ReferenceElement::jacobiP(const Array1D<double>& x, double alpha
     }	    
   
   pl[1]=gamma1arr;
+  //seg fault after here
 
   double aold = 2.0/(2.0+alpha+beta)*sqrt((1.0+alpha)*(1.0+beta)
 					 /(3.0+alpha+beta));
+
   for(int i=0;i<=n-2;i++)
     {
       double idouble= double(i)+1.0;
@@ -226,7 +229,7 @@ Array1D<double> ReferenceElement::gradJacobiP(double alpha, double beta,int N)
 //evaluated the derivative of the Jacobi polynomials of type alpha, beta >-1 at the nodes for order N 
 
 {
-  if ((alpha<-1)||(beta<-1)) throw invalid_argument("alpha or beta <-1 in gradJacobiP.");
+  if ((alpha<-1)||(beta<-1)) throw std::invalid_argument("alpha or beta <-1 in gradJacobiP.");
   if (N<0) throw std::invalid_argument("N<0 in gradJacobiP");
   
   Array1D<double> gradpoly(refNodeLocations.dim(),0.0);

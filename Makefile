@@ -1,7 +1,9 @@
-#CXX = g++
-CXX = icpc
-IGEN = -I/home/sdorsher
-ITNT = -I/home/sdorsher/tnt
+CXX = g++
+#CXX = icpc
+IGEN = -I/Users/sdorsher/Documents/Diener
+ITNT = -I/Users/sdorsher/Documents/Diener/tnt
+#IGEN = -I/home/sdorsher
+#ITNT = -I/home/sdorsher/tnt
 
 dg1D : main.o ReferenceElement.o
 	$(CXX) -lm -std=c++11 $(ITNT) $(IGEN) main.o ReferenceElement.o -o dg1D
