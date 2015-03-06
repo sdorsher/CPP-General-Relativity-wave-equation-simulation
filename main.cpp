@@ -56,7 +56,7 @@ int main()
   n=3;
 
     //test JacobiP 
-    for(int i=0;i<=elemOrder+1;i++)
+    for(int i=0;i<elemOrder+1;i++)
     {
       x[i]=elemLeft+step*double(i);
     }
