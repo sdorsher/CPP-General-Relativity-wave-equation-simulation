@@ -10,6 +10,7 @@ class ReferenceElement
  public:
  ReferenceElement(int N);
 
+ private:
   void jacobiGQ(TNT::Array1D<double>& x, double alpha, double beta, int n, 
 		TNT::Array1D<double>& w);
   Array1D<double> jacobiGL(double alpha, double beta, double n);
@@ -20,13 +21,16 @@ class ReferenceElement
   void gradVandermonde1D(); //evaluated at nodes for order of element
   void Dmatrix1D();
 
-public:
+private:
   int order; //order of element
   Array1D<double> refNodeLocations; // node locations scaled to r
   Array2D<double> vandermondeMatrix; 
   Array2D<double> dVdr;
   Array2D<double> derivativeMatrix;
 
-  //Array2D getDr(); //get derivative matrix
+ public:
+  Array2D<double> getD(); //get derivative matrix
+  Array1D<double> getr(); //get node locations
+  int getOrder(); //get order
 };
   

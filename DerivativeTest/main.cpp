@@ -29,7 +29,7 @@ int main()
     {
       ReferenceElement refelem(order);
       elems.push_back(refelem);
-      Array1D<double> r = elems[order-minorder].refNodeLocations;
+      Array1D<double> r = elems[order-minorder].getr();
       Array1D<double> sinusoid(order+1);
       Array1D<double> cosinisoid(order+1);
       for(int i=0; i<=order; i++)
@@ -39,7 +39,7 @@ int main()
 	    *cos(2.0*pi*frequency*r[i]+phase);
 	}
 	Array2D<double> Dmatrix(order,order); 
-	Dmatrix = elems[order-minorder].derivativeMatrix;
+	Dmatrix = elems[order-minorder].getD();
       Array1D<double> Dsinusoid= matmult(Dmatrix,sinusoid);
       double maxerror=0.0;
       for(int i = 0; i<=order; i++)

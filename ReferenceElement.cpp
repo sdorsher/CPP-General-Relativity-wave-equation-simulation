@@ -7,8 +7,8 @@ ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatri
 					  derivativeMatrix(N+1,N+1)
 {
   order=N;
- refNodeLocations=jacobiGL(0.0,0.0,N);
- vandermonde1D();
+  refNodeLocations=jacobiGL(0.0,0.0,N);
+  vandermonde1D();
   gradVandermonde1D();
   Dmatrix1D();
   
@@ -264,4 +264,19 @@ JAMA::LU<double> solver(VT);
 //  JAMA::LU<double> solver(transpose(vandermondeMatrix);
 //  derivativeMatrix=transpose(solver.solve(transpose(dVdr)));
 
+}
+
+Array2D<double> ReferenceElement::getD()
+{
+  return derivativeMatrix;
+}
+
+Array1D<double> ReferenceElement::getr()
+{
+  return refNodeLocations;
+}
+
+int ReferenceElement::getOrder()
+{
+  return order;
 }
