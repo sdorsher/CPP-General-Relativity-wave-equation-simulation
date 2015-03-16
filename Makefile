@@ -6,11 +6,14 @@ ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf
 #ITNT = -I/home/sdorsher/tnt
 
 
-dg1D : main.o ReferenceElement.o
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o ReferenceElement.o -o dg1D
+dg1D : main.o GridFunction.o ReferenceElement.o
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o GridFunction.o ReferenceElement.o -o dg1D
 
-main.o: main.cpp ReferenceElement.h TNT2.h
+main.o: main.cpp GridFunction.h ReferenceElement.h TNT2.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h TNT2.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c ReferenceElement.cpp
+
+GridFunction.o: GridFunction.cpp GridFunction.h TNT2.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c GridFunction.cpp
