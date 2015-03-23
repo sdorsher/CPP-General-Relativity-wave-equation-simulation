@@ -1,5 +1,9 @@
+#ifndef _GRIDFUNCTION_H
+#define _GRIDFUNCTION_H
 #include "tnt/tnt.h"
 #include "TNT2.h"
+#include <fstream>
+
 
 using namespace std;
 
@@ -11,25 +15,24 @@ class GridFunction
   void set(int vcoord, int acoord,double value);
   void append(TNT::Array1D<double> array);
   double get(int vcoord, int acoord);
+  TNT::Array1D<double> get(int vcoord);
   int gridDim();
-  int functionDim();
-
-  //  void operator+(GridFunction, GridFunction);
-  //need addition operator for addition of RHS and boundary conditions
-
-
+  int pointsDim();
+  void save(string filename);
+  
   // private:
- public:
+ private:
   vector<TNT::Array1D<double>> data;
   int GFvectorDim;
   int GFarrayDim;
-  /* void initFromFile(string filename);
+
+  
+
+//  void initFromFile(string filename);
 
 
 
 
-
-  void save(string filename)
 
 
 //  GridFunction(GridFunction&&);
@@ -38,6 +41,9 @@ class GridFunction
 //  GridFunction(const GridFunction&);
 //  GridFunction& operator=(const GridFunction&);
   //need copy constructors for intermediate steps of time evolution
-  */
+ 
 };
 
+GridFunction operator+(GridFunction gf1,GridFunction gf2);
+
+#endif

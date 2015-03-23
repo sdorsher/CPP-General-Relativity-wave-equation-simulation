@@ -3,6 +3,11 @@
 using namespace std;
 GridFunction::GridFunction(int vecSize, int arraySize,bool initZeros):GFvectorDim(vecSize),GFarrayDim(arraySize)
 {
+  if((vecSize<0)||(arraySize<0))
+    {
+      throw invalid_argument("Negative grid function dimensions at GridFunction constructor.");
+    }
+
   for(int v=0; v<GFvectorDim; v++)
     {
       if(initZeros)
@@ -52,6 +57,11 @@ void GridFunction::set(int vcoord, int acoord,double value)
 
 void GridFunction::append(TNT::Array1D<double> array)
 {
+  if(array.dim()!=GFarrayDim)
+    {
+     throw invalid_argument("Incorrect array dimensions");
+    }
+
   data.push_back(array.copy());
   GFvectorDim++;
 }
@@ -70,8 +80,20 @@ double GridFunction::get(int vcoord, int acoord)
     {
       return data.at(vcoord)[acoord];
     }
+  
+  
+}
 
-
+TNT::Array1D<double> GridFunction::get(int vcoord)
+{
+  if((0>vcoord)||(vcoord>=GFvectorDim))
+    {
+      throw out_of_range("Grid coordinate out of range");
+    }
+  else
+    {
+      return data.at(vcoord);
+    }
 }
 
 int GridFunction::gridDim()
@@ -79,13 +101,44 @@ int GridFunction::gridDim()
   return GFvectorDim;
 }
 
-int GridFunction::functionDim()
+int GridFunction::pointsDim()
 {
   return GFarrayDim;
 }
 
-//void GridFunction::operator+(GridFunction gf1, GridFunction gf2)
 
-  
-  
+void GridFunction::save(string filename)
+{
 
+  ofstream fs;
+  fs.open(filename);
+  for(int i=0;i<GFvectorDim;i++)
+    {
+      for(int j=0;j<GFarrayDim;j++)
+        {
+          fs << data.at(i)[j] <<endl;
+        }
+    }
+  fs.close();
+}
+
+
+//-----------------------------------------
+// Not in class
+
+GridFunction operator+(GridFunction gf1,GridFunction gf2)
+{
+  if((gf1.gridDim()!=gf2.gridDim())||(gf1.pointsDim()!=gf2.pointsDim()))
+    {
+      throw invalid_argument("Grid function dimension mismatch in + operator");
+    }
+  else
+    {
+      GridFunction gfout(0,gf1.pointsDim(),false);
+      for(int i=0; i<gf1.gridDim(); i++)
+        {
+          gfout.append(gf1.get(i)+gf2.get(i));
+        }
+      return gfout;
+    }
+}
