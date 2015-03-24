@@ -95,3 +95,52 @@ GridFunction VectorGridFunction::get(int VGFvcoord)
 
 }
 
+void VectorGridFunction::append(GridFunction gf)
+{
+  VGFvectorDim++;
+  data.push_back(gf);
+}
+
+
+void VectorGridFunction::save(string filename)
+{
+  ofstream fs;
+  fs.open(filename);
+   
+  for(int j=0; j<GFvectorDim; j++)
+    {
+      for(int k = 0; k<GFarrayDim; k++)
+        {
+          for(int i=0; i<VGFvectorDim; i++)
+            {
+              fs << data.at(i).get(j,k) << " ";
+            }
+          fs << endl;
+        }
+      
+    }
+  fs.close();
+}
+
+              
+
+    
+
+
+//-----------------------------
+//not in class
+
+VectorGridFunction operator+(VectorGridFunction vgf1, VectorGridFunction vgf2)
+{
+  if(vgf1.vectorDim()!=vgf2.vectorDim())
+    {
+      throw invalid_argument("Vector dimension mismatch in + operation");
+    }
+    VectorGridFunction vgfsum(0,vgf1.gridDim(),vgf1.pointsDim(),false);
+    for(int i=0; i<vgf1.vectorDim(); i++)
+      {
+        vgfsum.append(vgf1.get(i)+vgf2.get(i));
+      }
+    return vgfsum;
+    
+}

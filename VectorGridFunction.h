@@ -1,6 +1,7 @@
 #include "tnt.h"
 #include "TNT2.h"
 #include "GridFunction.h"
+#include <fstream>
 
 class VectorGridFunction
 {
@@ -21,10 +22,13 @@ class VectorGridFunction
   int vectorDim();//the dimension of the external vector
   int gridDim();//the dimension of the vector within the GridFunction
   int pointsDim();//the dimension of the array within the GridFunction
-  //void save(vector<string> filenames); //vector of filenames to print to
-  //  void initFromFile(string filename);
+  void append(GridFunction gf);
+  void save(string filenames); //vector of filenames to print to
+//  void initFromFile(string filename);
+
+//NEED A VECTOR GET METHOD
 
 };
 
-//void operator+(VectorGridFunction, VectorGridFunction);
+VectorGridFunction operator+(VectorGridFunction, VectorGridFunction);
   //need addition operator for addition of RHS and boundary conditions

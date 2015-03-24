@@ -2,6 +2,7 @@
 #include "TNT2.h"
 #include "ReferenceElement.h"
 #include "GridFunction.h"
+#include "VectorGridFunction.h"
 
 using namespace TNT;
 
@@ -52,5 +53,29 @@ int main()
   output1D(gfnew.get(3));
 
   gfnew.save("testgf.txt");
+ 
+  cout << "------------------"<<endl;
+  cout << "------------------"<<endl;
+  cout << "begin vector grid function" <<endl;
+
+  VectorGridFunction vgf(3,8,2,true);
+  output1D(vgf.data.at(1).get(3));
   
+  cout << vgf.vectorDim() << "\t" << vgf.gridDim() << "\t" << vgf.pointsDim() <<endl;
+
+  vgf.set(0,gf);
+  vgf.set(1,0,twos);
+  vgf.set(2,0,0,3.0);
+  GridFunction gftest=vgf.get(2);
+  output1D(gftest.get(0));
+  output1D(vgf.get(0,3));
+  cout << vgf.get(1,0,0) <<endl;
+  //successfull
+
+  VectorGridFunction vgfnew = vgf+vgf;
+  output1D(vgfnew.get(0,3));
+
+  vgfnew.save("testvgf.txt");
+
+
 }
