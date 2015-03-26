@@ -24,10 +24,9 @@ class VectorGridFunction
   int pointsDim();//the dimension of the array within the GridFunction
   void append(GridFunction gf);
   void save(string filenames); //vector of filenames to print to
-//  void initFromFile(string filename);
-
-//NEED A VECTOR GET METHOD
-
+  //  void initFromFile(string filename);
+  vector<double> getVector(int GFvcoord, int GFacoord);
+  
 };
 
 VectorGridFunction operator+(VectorGridFunction, VectorGridFunction);

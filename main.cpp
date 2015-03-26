@@ -77,5 +77,10 @@ int main()
 
   vgfnew.save("testvgf.txt");
 
+  vector<double> outputvec = vgfnew.getVector(0,0);
+  for(int i=0; i<8; i++)
+    {
+      cout << outputvec[i] <<endl;
+    }
 
 }

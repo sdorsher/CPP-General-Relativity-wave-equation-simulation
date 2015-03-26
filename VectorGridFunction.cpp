@@ -123,7 +123,21 @@ void VectorGridFunction::save(string filename)
 }
 
               
+vector<double> VectorGridFunction::getVector(int GFvcoord, int GFacoord)
+{
+  if((GFvcoord<0)||(GFvcoord>=GFvectorDim)||(GFacoord<0)||(GFacoord>GFarrayDim))
+    {
+      throw invalid_argument("Get indices out of range.");
+    }
+  
+  vector<double> outputvec;
+  for(int i=0; i<VGFvectorDim; i++)
+    {
+      outputvec.push_back(get(i,GFvcoord,GFacoord));
+    }
+  return outputvec;
 
+}
     
 
 
