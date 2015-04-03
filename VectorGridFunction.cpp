@@ -1,5 +1,7 @@
 #include "VectorGridFunction.h"
 
+
+
 VectorGridFunction::VectorGridFunction(int outerVecSize, int innerVecSize, int arraySize, bool initZero):VGFvectorDim(outerVecSize),GFvectorDim(innerVecSize),GFarrayDim(arraySize)
 {
   if(outerVecSize<0)
@@ -157,4 +159,39 @@ VectorGridFunction operator+(VectorGridFunction vgf1, VectorGridFunction vgf2)
       }
     return vgfsum;
     
+}
+
+
+//looper function
+//all functions need to inherrit from function class 
+//(or this needs to be a template function)
+
+
+
+void loop(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, FUNCTYPE func)
+{
+  //func should be function not class
+
+  if (uh.vectorDim()!=RHS.vectorDim())
+    {
+      throw invalid_argument("uh and RHS dimensions do not agree in loop.");
+    }
+
+
+  for(int k=0; k<RHS.vectorDim(); k++)
+    {
+      for(int i =0; i<RHS.gridDim(); i++)
+        {
+          (func)(grid, uh, RHS, k, i);
+          //is this a general enough functional form?
+        }
+    }
+}
+
+void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int k, int i)
+{
+  for(int j=0; j<RHS.pointsDim(); j++)
+    {
+      RHS.set(k,i,j,grid.get(i,j)*k);
+    }
 }

@@ -83,4 +83,18 @@ int main()
       cout << outputvec[i] <<endl;
     }
 
+  void (*pf)(GridFunction&, VectorGridFunction&, VectorGridFunction&, int, int);
+  pf=&testfunc;
+  Array1D<double> ones(2,1.0);
+  GridFunction gfones(0,2,false);
+  for (int i=0; i<5; i++)
+    {
+      gfones.append(ones);
+    }
+  VectorGridFunction uh(3,5,2,true);
+  VectorGridFunction RHS(3,5,2,true);
+  loop(gfones,uh,RHS,pf);
+  RHS.save("RHStest.txt");
+  
+
 }

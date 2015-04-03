@@ -3,6 +3,7 @@
 #include "GridFunction.h"
 #include <fstream>
 
+
 class VectorGridFunction
 {
  public:
@@ -31,3 +32,10 @@ class VectorGridFunction
 
 VectorGridFunction operator+(VectorGridFunction, VectorGridFunction);
   //need addition operator for addition of RHS and boundary conditions
+
+using FUNCTYPE = void(GridFunction&, VectorGridFunction&, VectorGridFunction&, int k, int i);
+
+
+void loop(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, FUNCTYPE func);
+
+void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int k, int i);

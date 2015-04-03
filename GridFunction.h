@@ -4,7 +4,6 @@
 #include "TNT2.h"
 #include <fstream>
 
-
 using namespace std;
 
 class GridFunction
@@ -45,5 +44,6 @@ class GridFunction
 };
 
 GridFunction operator+(GridFunction gf1,GridFunction gf2);
+
 
 #endif
