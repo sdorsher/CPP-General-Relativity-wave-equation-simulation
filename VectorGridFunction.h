@@ -36,6 +36,6 @@ VectorGridFunction operator+(VectorGridFunction, VectorGridFunction);
 using FUNCTYPE = void(GridFunction&, VectorGridFunction&, VectorGridFunction&, int k, int i);
 
 
-void loop(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, FUNCTYPE func);
+void loop(GridFunction& grid, VectorGridFunction& input, VectorGridFunction& output, FUNCTYPE func);
 
 void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int k, int i);

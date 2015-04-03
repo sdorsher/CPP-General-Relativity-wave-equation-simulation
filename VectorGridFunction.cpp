@@ -168,30 +168,30 @@ VectorGridFunction operator+(VectorGridFunction vgf1, VectorGridFunction vgf2)
 
 
 
-void loop(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, FUNCTYPE func)
+void loop(GridFunction& grid, VectorGridFunction& input, VectorGridFunction& output, FUNCTYPE func)
 {
   //func should be function not class
 
-  if (uh.vectorDim()!=RHS.vectorDim())
+  if (input.vectorDim()!=output.vectorDim())
     {
       throw invalid_argument("uh and RHS dimensions do not agree in loop.");
     }
 
 
-  for(int k=0; k<RHS.vectorDim(); k++)
+  for(int vecindex=0; vecindex<output.vectorDim(); vecindex++)
     {
-      for(int i =0; i<RHS.gridDim(); i++)
+      for(int gridindex =0; gridindex<output.gridDim(); gridindex++)
         {
-          (func)(grid, uh, RHS, k, i);
+          (func)(grid, input, output, vecindex, gridindex);
           //is this a general enough functional form?
         }
     }
 }
 
-void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int k, int i)
+void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int vecindex, int gridindex)
 {
-  for(int j=0; j<RHS.pointsDim(); j++)
+  for(int arrayindex=0; arrayindex<RHS.pointsDim(); arrayindex++)
     {
-      RHS.set(k,i,j,grid.get(i,j)*k);
+      RHS.set(vecindex,gridindex,arrayindex,grid.get(gridindex,arrayindex)*vecindex);
     }
 }
