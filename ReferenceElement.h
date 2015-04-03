@@ -1,3 +1,5 @@
+#ifndef REFERENCE_ELEMENT_H
+#define REFERENCE_ELEMENT_H
 #include <cmath>
 #include "tnt/tnt.h"
 #include "TNT2.h"
@@ -34,3 +36,4 @@ private:
   int getOrder(); //get order
 };
   
+#endif

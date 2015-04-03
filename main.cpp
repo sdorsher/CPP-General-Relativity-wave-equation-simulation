@@ -3,6 +3,7 @@
 #include "ReferenceElement.h"
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
+#include "Grid.h"
 
 using namespace TNT;
 
@@ -95,6 +96,16 @@ int main()
   VectorGridFunction RHS(3,5,2,true);
   loop(gfones,uh,RHS,pf);
   RHS.save("RHStest.txt");
+
+  cout << "-------------"<<endl;
+  cout << "begin grid test"<<endl;
   
+  Grid gr("elemBoundaries.txt",20,13);
+  for(int elem=0; elem<=gr.NumElem; elem++)
+    {
+      cout << gr.elementBoundaries[elem] << endl;
+    }
+
+  gr.nodeLocations.save("physicalNodes.txt");
 
 }

@@ -59,7 +59,8 @@ void GridFunction::append(TNT::Array1D<double> array)
 {
   if(array.dim()!=GFarrayDim)
     {
-     throw invalid_argument("Incorrect array dimensions");
+      cout << GFarrayDim << endl;
+     throw invalid_argument("Incorrect array dimensions in GridFunction::append");
     }
 
   data.push_back(array.copy());
