@@ -1,6 +1,6 @@
 #include "Grid.h"
 
-Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemorder},NumElem{numelements},nodeLocations{0,elemorder+1,false}
+Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}
 {
   ifstream fs;
   fs.open(fileElemBoundaries);
@@ -28,7 +28,22 @@ Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemo
       physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)
         *refelem.getr()
         +((elementBoundaries[elem+1]+elementBoundaries[elem])/2.0);
-      nodeLocations.append(physicalPosition);
+      nodeLocs.append(physicalPosition);
     }
 
+}
+
+int Grid::numberElements()
+{
+  return NumElem;
+}
+
+GridFunction Grid::gridNodeLocations()
+{
+  return nodeLocs;
+}
+
+vector<double> Grid::gridBoundaries()
+{
+  return elementBoundaries;
 }

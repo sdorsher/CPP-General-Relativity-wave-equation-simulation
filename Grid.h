@@ -10,10 +10,10 @@
 class Grid
 {
 
- public:
+ private:
   int NumElem;
   vector<double> elementBoundaries; //2N (should be N+1)?
-  GridFunction nodeLocations; //NxNp
+  GridFunction nodeLocs; //NxNp
   int order;
   
   //vector<int> elementOrders; //N
@@ -23,8 +23,9 @@ class Grid
   //initializes elementBoundaries from file,
   //obtains node locations from reference element and puts them in array
 
-  int getN();//return number of elements, calculated from input file
-  GridFunction getNodeLocations();  
+  int numberElements();//return number of elements, calculated from input file
+  GridFunction gridNodeLocations();  
+  vector<double> gridBoundaries();
 };
 
 

@@ -101,11 +101,14 @@ int main()
   cout << "begin grid test"<<endl;
   
   Grid gr("elemBoundaries.txt",20,13);
-  for(int elem=0; elem<=gr.NumElem; elem++)
+  vector<double> elemBounds = gr.gridBoundaries();
+  for(int elem=0; elem<=gr.numberElements(); elem++)
     {
-      cout << gr.elementBoundaries[elem] << endl;
+      cout << elemBounds[elem] << endl;
     }
 
-  gr.nodeLocations.save("physicalNodes.txt");
+  gr.gridNodeLocations().save("physicalNodes.txt");
+  //Grid works
 
+  
 }
