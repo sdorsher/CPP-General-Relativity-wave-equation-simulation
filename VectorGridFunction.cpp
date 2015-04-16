@@ -67,6 +67,18 @@ void VectorGridFunction::set(int VGFcoord,int GFcoord,TNT::Array1D<double> arr)
 
 }
 
+void VectorGridFunction::setVector(int GFcoord, int GFacoord, vector<double> vec)
+{
+  if((GFcoord<0)||(GFacoord<0)||(GFacoord!=GFarrayDim))
+    {
+      throw invalid_argument("Coordinates in setVector out of range.");
+    }
+  for(int i=0; i<VGFvectorDim; i++)
+    {
+      data.at(i).set(GFcoord,GFacoord,vec[i]);
+    }
+}
+
 
 double VectorGridFunction::get(int VGFvcoord, int GFvcoord, int GFacoord)
 {
@@ -162,36 +174,16 @@ VectorGridFunction operator+(VectorGridFunction vgf1, VectorGridFunction vgf2)
 }
 
 
-//looper function
-//all functions need to inherrit from function class 
-//(or this needs to be a template function)
-
-
-
-void loop(GridFunction& grid, VectorGridFunction& input, VectorGridFunction& output, FUNCTYPE func)
+VectorGridFunction operator*(double A, VectorGridFunction vgf)
+//for easy multiplication in rk4 routine
 {
-  //func should be function not class
-
-  if (input.vectorDim()!=output.vectorDim())
+  VectorGridFunction vgfprod(0,vgf.gridDim(),vgf.pointsDim(),false);
+  for(int i=0; i<vgf.vectorDim(); i++)
     {
-      throw invalid_argument("uh and RHS dimensions do not agree in loop.");
+      vgfprod.append(A*vgf.get(i));
     }
-
-
-  for(int vecindex=0; vecindex<output.vectorDim(); vecindex++)
-    {
-      for(int gridindex =0; gridindex<output.gridDim(); gridindex++)
-        {
-          (func)(grid, input, output, vecindex, gridindex);
-          //is this a general enough functional form?
-        }
-    }
+  return vgfprod;
 }
 
-void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int vecindex, int gridindex)
-{
-  for(int arrayindex=0; arrayindex<RHS.pointsDim(); arrayindex++)
-    {
-      RHS.set(vecindex,gridindex,arrayindex,grid.get(gridindex,arrayindex)*vecindex);
-    }
-}
+  
+

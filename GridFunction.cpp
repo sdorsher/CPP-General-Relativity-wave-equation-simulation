@@ -144,3 +144,12 @@ GridFunction operator+(GridFunction gf1,GridFunction gf2)
     }
 }
 
+GridFunction operator*(double A, GridFunction gf)
+{
+  GridFunction gfout(0,gf.pointsDim(),false);
+  for(int i=0; i<gf.gridDim(); i++)
+    {
+      gfout.append(A*gf.get(i));
+    }
+  return gfout;
+}

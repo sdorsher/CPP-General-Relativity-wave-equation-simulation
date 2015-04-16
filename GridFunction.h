@@ -44,6 +44,7 @@ class GridFunction
 };
 
 GridFunction operator+(GridFunction gf1,GridFunction gf2);
+GridFunction operator*(double A,GridFunction gf2);
 
 
 #endif

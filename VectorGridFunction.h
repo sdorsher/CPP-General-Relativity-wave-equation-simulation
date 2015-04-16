@@ -1,3 +1,6 @@
+#ifndef VECTORGRIDFUNCTION_H
+#define VECTORGRIDFUNCTION_H
+
 #include "tnt.h"
 #include "TNT2.h"
 #include "GridFunction.h"
@@ -20,6 +23,7 @@ class VectorGridFunction
   void set(int VGFvcoord, int GFvcoord, int GFacoord,double value);
   void set(int VGFcoord,GridFunction value);
   void set(int VGFcoord,int GFcoord,TNT::Array1D<double> arr);
+  void setVector(int GFcoord, int GFacoord, vector<double> vec);
   int vectorDim();//the dimension of the external vector
   int gridDim();//the dimension of the vector within the GridFunction
   int pointsDim();//the dimension of the array within the GridFunction
@@ -33,9 +37,7 @@ class VectorGridFunction
 VectorGridFunction operator+(VectorGridFunction, VectorGridFunction);
   //need addition operator for addition of RHS and boundary conditions
 
-using FUNCTYPE = void(GridFunction&, VectorGridFunction&, VectorGridFunction&, int k, int i);
+VectorGridFunction operator*(double, VectorGridFunction);
+//for easy multiplication in rk4 routine
 
-
-void loop(GridFunction& grid, VectorGridFunction& input, VectorGridFunction& output, FUNCTYPE func);
-
-void testfunc(GridFunction& grid, VectorGridFunction& uh, VectorGridFunction& RHS, int k, int i);
+#endif

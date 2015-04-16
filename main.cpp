@@ -1,114 +1,57 @@
-#include <iostream>
+#include "tnt.h"
 #include "TNT2.h"
+#include "Grid.h"
 #include "ReferenceElement.h"
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
-#include "Grid.h"
+#include "Evolution.h"
+#include <fstream>
 
-using namespace TNT;
+double analyticsoln(double);
 
 int main()
 {
-  int elemOrder = 5;
-  ReferenceElement refelem(elemOrder);
+  int PDEnum = 1; //number of independent PDEs. 
+  int Np=3; //order of element
+  int NumElems = 1;
+  string fileElemBoundaries= "oneElem.txt";
+  //vector<string> uhfilename
+  string uhfilename="fourthorderODE.txt";
 
-  std::cout << "element order is " << refelem.getOrder() << std::endl;
-  std::cout<< "reference node locations" <<std::endl;
-  output1D(refelem.getr());
-  std::cout << "-------------" << std::endl;
-  std::cout << "-------------" << std::endl;
-  std::cout << "derivative matrix" <<std::endl;
-  output2D(refelem.getD());
+  //initialization of grid and calculation of reference element
+  Grid thegrid(fileElemBoundaries, Np, NumElems);
+
+  //declaration of calculation variables and 
+  //initialization to either zero or value read from file
+  VectorGridFunction uh(PDEnum,NumElems,Np,true); 
+  //solution to PDE, possibly a vector 
+  VectorGridFunction RHSvgf(PDEnum,NumElems,Np,true); //right hand side of PDE
   
-  Array1D<double> threes(3,3.0);
-  Array1D<double> twos(2,2.0);
-  GridFunction gf(8,2,true);
-  output1D(gf.get(3));
-  gf.set(3,twos);
-  output1D(gf.get(3));
-  gf.set(3,0,3.0);
-  output1D(gf.get(3));  
-  //  gf.set(3,threes);
-  //  gf.set(8,twos);
-  //gf.set(8,0,3.0);
-  //gf.set(3,3,3.0);
+  GridFunction nodes = thegrid.gridNodeLocations();
 
-  gf.append(twos);
-  output1D(gf.get(7));
-  output1D(gf.get(8));
+  //initial conditions
+  //uh.initFromFile(scalarfilename);
 
-  cout << gf.get(3,0) << endl;
-  //  gf.get(9,0);
-  //gf.get(3,3);
-
-  cout << gf.gridDim() << "\t" << gf.pointsDim() << endl;
-
-  output1D(gf.get(8));
-
-  cout << "-------------------" << endl;
-  GridFunction gf2(0,2,false);
-  gf2.append(twos);
-  output1D(gf2.get(0));
-  cout << "------------------"<<endl;
-  GridFunction gfnew = gf+gf;
-  output1D(gfnew.get(3));
-
-  gfnew.save("testgf.txt");
- 
-  cout << "------------------"<<endl;
-  cout << "------------------"<<endl;
-  cout << "begin vector grid function" <<endl;
-
-  VectorGridFunction vgf(3,8,2,true);
-  output1D(vgf.data.at(1).get(3));
+  //print out at select time steps
   
-  cout << vgf.vectorDim() << "\t" << vgf.gridDim() << "\t" << vgf.pointsDim() <<endl;
+  ofstream fs;
+  fs.open(uhfilename);
 
-  vgf.set(0,gf);
-  vgf.set(1,0,twos);
-  vgf.set(2,0,0,3.0);
-  GridFunction gftest=vgf.get(2);
-  output1D(gftest.get(0));
-  output1D(vgf.get(0,3));
-  cout << vgf.get(1,0,0) <<endl;
-  //successfull
+  double t0=0.0;
+  double deltat=0.01;
+  double tmax=10.0;
+  for(double t=t0;t<tmax;t+=deltat){
+    fs << t << " " << uh.get(0,0,0) <<" " << analyticsoln(t) <<endl;
+    rk4lowStorage(nodes,uh,RHSvgf,t,deltat);
 
-  VectorGridFunction vgfnew = vgf+vgf;
-  output1D(vgfnew.get(0,3));
+    //need to do something about numerical fluxes
+    //    if(outputcondition) uh.save(uhfilename);
+  }
+  fs.close();
 
-  vgfnew.save("testvgf.txt");
+}
 
-  vector<double> outputvec = vgfnew.getVector(0,0);
-  for(int i=0; i<8; i++)
-    {
-      cout << outputvec[i] <<endl;
-    }
-
-  void (*pf)(GridFunction&, VectorGridFunction&, VectorGridFunction&, int, int);
-  pf=&testfunc;
-  Array1D<double> ones(2,1.0);
-  GridFunction gfones(0,2,false);
-  for (int i=0; i<5; i++)
-    {
-      gfones.append(ones);
-    }
-  VectorGridFunction uh(3,5,2,true);
-  VectorGridFunction RHS(3,5,2,true);
-  loop(gfones,uh,RHS,pf);
-  RHS.save("RHStest.txt");
-
-  cout << "-------------"<<endl;
-  cout << "begin grid test"<<endl;
-  
-  Grid gr("elemBoundaries.txt",20,13);
-  vector<double> elemBounds = gr.gridBoundaries();
-  for(int elem=0; elem<=gr.numberElements(); elem++)
-    {
-      cout << elemBounds[elem] << endl;
-    }
-
-  gr.gridNodeLocations().save("physicalNodes.txt");
-  //Grid works
-
-  
+double analyticsoln(double t)
+{
+  return 0.2*pow(t,5.0);
 }
