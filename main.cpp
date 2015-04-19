@@ -9,7 +9,7 @@
 
 double analyticsoln(double);
 void initialconditions(VectorGridFunction& uh);
-double Linferror(double nominal,double theoretical);
+void Linferror(double nominal,double theoretical, double&);
 
 int main()
 {
@@ -43,22 +43,22 @@ int main()
   double t0=0.0;
   double tmax=10.0;
   double deltatinit=1.0;
-  for(int i=0; i<7; i++)
+  for(int i=0; i<14; i++)
     {
       cout << i<< endl;
       initialconditions(uh);
-      double deltat=deltatinit*pow(0.1,i);
-  
+      double deltat=deltatinit*pow(0.5,i);
+      double maxerror=0.0;
       for(double t=t0;t<tmax;t+=deltat){
+        double nominal=uh.get(0,0,0);
+        double theoretical=analyticsoln(t);
+        Linferror(nominal,theoretical,maxerror);
         rk4lowStorage(nodes,uh,RHSvgf,t,deltat);
         
         //need to do something about numerical fluxes
         //    if(outputcondition) uh.save(uhfilename);
       }
-      double nominal=uh.get(0,0,0);
-      double theoretical=analyticsoln(tmax);
-      fs << deltat << " " <<nominal << " " <<theoretical << " " 
-         << Linferror(nominal, theoretical) << endl;
+      fs << deltat <<" "<< maxerror << " " <<maxerror*pow(deltat,-4.0)<<endl;
     }
   fs.close();
 
@@ -96,7 +96,9 @@ void initialconditions(VectorGridFunction& uh) {
 
 }
 
-double Linferror(double nominal,double theoretical)
+void Linferror(double nominal,double theoretical,double& maxerror)
  {
-   return fabs(nominal-theoretical);
+   
+   double newerror= fabs(nominal-theoretical);
+   maxerror = newerror>maxerror ? newerror : maxerror;
  }
