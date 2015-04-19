@@ -43,18 +43,39 @@ void rk4lowStorage(GridFunction& nodes, VectorGridFunction& uh,
 
 }
 
-void RHS(GridFunction& nodes, VectorGridFunction& uh, 
+// test fourth order polynomial ODE, should be exact in RK4. it was.
+/*void RHS(GridFunction& nodes, VectorGridFunction& uh, 
              VectorGridFunction& RHSvgf, double t)
 {
-
   for(int vecindex=0;vecindex<RHSvgf.vectorDim(); vecindex++){
+    
     for(int gridindex=0; gridindex<RHSvgf.gridDim(); gridindex++)
       {
         for(int pointsindex=0;pointsindex<RHSvgf.pointsDim(); pointsindex++){
           RHSvgf.set(vecindex,gridindex,pointsindex,pow(t,4.0));
+          
         }
       }
   }
+  }*/
 
+ //test harmonic oscillator in time with RK4
+void RHS(GridFunction& nodes, VectorGridFunction& uh, 
+         VectorGridFunction& RHSvgf, double t)
+{
+  if(RHSvgf.vectorDim()>2)
+    {
+      throw invalid_argument("Simple harmonic oscillator ODE should have only two separable components.");
+    }
 
+  //du=omega*v
+  //dv=-omega*u
+
+  double omega=1.0;
+  RHSvgf.set(0,omega*uh.get(1));
+  RHSvgf.set(1,-omega*uh.get(0));
+  // 0 and 1 are vectorindices, and uh.get(1) is a GridFunction.
+
+   
 }
+
