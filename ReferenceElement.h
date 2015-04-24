@@ -22,6 +22,7 @@ class ReferenceElement
   Array1D<double> gradJacobiP(double alpha, double beta,int N);//evaluated at nodes
   void gradVandermonde1D(); //evaluated at nodes for order of element
   void Dmatrix1D();
+  void lift1D();
 
 private:
   int order; //order of element
@@ -29,11 +30,13 @@ private:
   Array2D<double> vandermondeMatrix; 
   Array2D<double> dVdr;
   Array2D<double> derivativeMatrix;
+  Array2D<double> lift;
 
  public:
   Array2D<double> getD(); //get derivative matrix
   Array1D<double> getr(); //get node locations
   int getOrder(); //get order
+  Array2D<double> getLift(); //get lift matrix
 };
   
 #endif
