@@ -16,7 +16,7 @@ int main()
   int PDEnum = 2; //number of independent PDEs. 
   int Np=10; //order of element
   int NumElems = 5;
-  string fileElemBoundaries= "fiveElems.txt";
+  string fileElemBoundaries= "elemBoundaries.txt";
   //vector<string> uhfilename
   // string uhfilename="fourthorderODE.txt";
   string uhfilename="waveequation.txt";
