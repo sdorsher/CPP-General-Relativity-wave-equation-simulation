@@ -54,28 +54,6 @@ int main()
   //Evolution.cpp, in RHS.
 
 
-  /*  double t0=0.0;
-  double tmax=10.0;
-  double deltatinit=1.0;
-  for(int i=0; i<14; i++)
-    {
-      cout << i<< endl;
-      initialconditions(uh);
-      double deltat=deltatinit*pow(0.5,i);
-      double maxerror=0.0;
-      for(double t=t0;t<tmax;t+=deltat){
-        double nominal=uh.get(0,0,0);
-        double theoretical=analyticsoln(t);
-        Linferror(nominal,theoretical,maxerror);
-        rk4lowStorage(thegrid,uh,RHSvgf,t,deltat);
-        
-        //need to do something about numerical fluxes
-        //    if(outputcondition) uh.save(uhfilename);
-      }
-      fs << deltat <<" "<< maxerror << " " <<maxerror*pow(deltat,-4.0)<<endl;
-    }
-  */
-  fs.close();
   
 }
 
@@ -86,6 +64,30 @@ double analyticsoln(double t)
 return 0.2*pow(t,5.0);
 }
 */
+void initialconditions(VectorGridFunction& uh, Grid grd){
+   double sigma = 0.1;
+   double amplitude = 1.0;
+   double position = 5.0;
+   GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
+   nodes=grd.gridNodeLocations();
+   for(int i=0; i<uh.gridDim(); i++)
+     {
+       for(int j=0; j<uh.pointsDim(); j++)
+         {
+           double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
+                                      /2.0/pow(sigma,2.0));
+           uh.set(0,i,j,gauss);
+           uh.set(1,i,j,0.0);
+         }
+     }
+}
+
+void Linferror(double nominal,double theoretical,double& maxerror)
+ {
+   
+   double newerror= fabs(nominal-theoretical);
+   maxerror = newerror>maxerror ? newerror : maxerror;
+ }
 
  //analytic solution to du=-omega^2 u with initial conditions of A=2.0
  //and omega = 1.0
@@ -113,27 +115,3 @@ return 0.2*pow(t,5.0);
   }*/
 
 
-void initialconditions(VectorGridFunction& uh, Grid grd){
-   double sigma = 0.1;
-   double amplitude = 1.0;
-   double position = 5.0;
-   GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
-   nodes=grd.gridNodeLocations();
-   for(int i=0; i<uh.gridDim(); i++)
-     {
-       for(int j=0; j<uh.pointsDim(); j++)
-         {
-           double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
-                                      /2.0/pow(sigma,2.0));
-           uh.set(0,i,j,gauss);
-           uh.set(1,i,j,0.0);
-         }
-     }
-}
-
-void Linferror(double nominal,double theoretical,double& maxerror)
- {
-   
-   double newerror= fabs(nominal-theoretical);
-   maxerror = newerror>maxerror ? newerror : maxerror;
- }

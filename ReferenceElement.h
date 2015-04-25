@@ -40,6 +40,6 @@ private:
   Array2D<double> getLift(); //get lift matrix
 };
 
-extern ReferenceElement refElem;
+extern ReferenceElement refelem;
   
 #endif
