@@ -1,6 +1,6 @@
 #include "Grid.h"
 
-Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}
+Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false},drdx{NULL}
 {
   ifstream fs;
   fs.open(fileElemBoundaries);
@@ -21,15 +21,10 @@ Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemo
   //when we generalize this, use map to store order, element pairs
   //so they do not need to be recalculated with each element of the same
   //order
-  Array1D<double> physicalPosition(elemorder+1);
-  for(int elem=0; elem<numelements; elem++)
-    {
-      //convert to single for loop instead of using operators on array1Ds?
-      physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)
-        *refelem.getr()
-        +((elementBoundaries[elem+1]+elementBoundaries[elem])/2.0);
-      nodeLocs.append(physicalPosition);
-    }
+  
+
+  calcjacobian();
+  
 
 }
 
@@ -46,4 +41,18 @@ GridFunction Grid::gridNodeLocations()
 vector<double> Grid::gridBoundaries()
 {
   return elementBoundaries;
+}
+
+void Grid::calcjacobian()
+{
+  for(int elem=0; elem<NumElem; elem++)
+    {
+
+      drdx.push_back((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0);
+    }
+}
+
+vector<double> Grid::jacobian()
+{
+  return drdx;
 }

@@ -3,6 +3,7 @@
 #include <cmath>
 #include "tnt/tnt.h"
 #include "TNT2.h"
+#include "globals.h"
 
 using namespace TNT;
 
@@ -38,5 +39,7 @@ private:
   int getOrder(); //get order
   Array2D<double> getLift(); //get lift matrix
 };
+
+extern ReferenceElement refElem;
   
 #endif

@@ -14,9 +14,11 @@ class Grid
   int NumElem;
   vector<double> elementBoundaries; //2N (should be N+1)?
   GridFunction nodeLocs; //NxNp
+  //vector<Array2D> rescaledDmatrix;
   int order;
-  
+  vector<double> drdx; //jacobian
   //vector<int> elementOrders; //N
+  void calcjacobian();
 
  public:
   Grid(string fileElemBoundaries, int elemorder, int numelems);
@@ -26,6 +28,9 @@ class Grid
   int numberElements();//return number of elements, calculated from input file
   GridFunction gridNodeLocations();  
   vector<double> gridBoundaries();
+  Array2D<double> getRescaledDmatrix();
+  vector<double> jacobian();
+
 };
 
 

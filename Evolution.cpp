@@ -1,6 +1,6 @@
 #include "Evolution.h"
 
-void rk4lowStorage(GridFunction& nodes, VectorGridFunction& uh, 
+void rk4lowStorage(Grid thegrid, VectorGridFunction& uh, 
                    VectorGridFunction& RHSvgf, 
                    double t, double deltat)
 {
@@ -30,21 +30,158 @@ void rk4lowStorage(GridFunction& nodes, VectorGridFunction& uh,
 
   
   //step 1
-  RHS(nodes, uh, RHSvgf, t);
+  RHS(thegrid, uh, RHSvgf, t);
   k=deltat*RHSvgf;
   uh=uh+rk4b[0]*k;
 
   //step2
   for(int i=2; i<=5; i++){
-    RHS(nodes, uh, RHSvgf, t+rk4c[i-1]*deltat);
+    RHS(thegrid, uh, RHSvgf, t+rk4c[i-1]*deltat);
     k=rk4a[i-1]*k+deltat*RHSvgf;
     uh=uh+rk4b[i-1]*k;
   }
 
 }
 
+//---------------------
+
+void RHS(Grid thegrid, VectorGridFunction& uh, 
+         VectorGridFunction& RHSvgf, double t)
+{
+  if(RHSvgf.vectorDim()>2)
+    {
+      throw invalid_argument("Wave equation PDE should only have two separable components.");
+    }
+
+  //wave equation specific values
+
+  //drho/dt - -c^2dPi/dx =0
+  //dpi/dt - drho/dx =0
+
+  // PI=[[0 -c^2],[-1 0]]
+  //LAMBDA=S^-1 PI S=[[-c 0],[0 c]]
+  // S=[v1 v2] so that eigenvalues are diagonal
+  // eigenvalues are +-c
+  // S=[[c -c],[1 1]]
+  // 
+
+  double speed = 1.0;
+  //Array2D<double> s(2,2);
+  Array2D<double> sinv(2,2);
+  Array2D<double> lambda(2,2,0.0);
+  // Array2D<double> A(2,2);
+
+  
+  /*
+  s[0][0]=speed;
+  s[0][1]=-speed;
+  s[1][0]=1.0;
+  s[1][1]=1.0;
+  */
+  sinv[0][0]=0.5/speed;
+  sinv[0][1]=0.5;
+  sinv[1][0]=-0.5/speed;
+  sinv[1][1]=0.5;
+
+  lambda[0][0]=-speed;
+  lambda[1][1]=speed;
+  
+  vector<double> jacobian=thegrid.jacobian();
+
+
+  //numerical flux
+  
+  //index
+  vector<int> ind{0,RHSvgf.pointsDim()};
+
+  for(int elemnum=0; elemnum<uh.gridDim(); elemnum++)
+    {
+  
+      //interior,exterior for two variables of wave equation
+      Array1D<double> uint1(2,0.0);
+      Array1D<double> uint0(2,0.0);
+      Array1D<double> uext1(2,0.0);
+      Array1D<double> uext0(2,0.0);
+  
+      for(int i=0; i<2; i++)
+        {
+          uint0[i] = uh.get(0,elemnum,ind[i]);
+          uint1[i]= uh.get(1,elemnum,ind[i]);
+        }
+      
+      Array1D<double> nx(2,1.0);
+      nx[0]=-1.0;
+      
+      if(elemnum>1)
+        {
+          uext0[0]=uh.get(0,elemnum-1,RHSvgf.pointsDim());
+          uext1[0]=uh.get(1,elemnum-1,RHSvgf.pointsDim());
+        }else //inverted reflection
+        {
+          uext0[0]=0.0;
+          uext1[0]=0.0;
+        }
+
+      if(elemnum<RHSvgf.pointsDim()-1)
+        {
+          uext0[1]=uh.get(0,elemnum+1,0);
+          uext1[1]=uh.get(0,elemnum+1,0);
+        }
+      else //inverted reflection
+        {
+          uext0[1]=0.0;
+          uext1[1]=0.0;
+        }
+  
+      Array1D<double> nflux0(2,0.0);
+      Array1D<double> nflux1(2,0.0);
+      Array1D<double> du0(2,0.0);
+      Array1D<double> du1(2,0.0);
+      
+      for(int i=0; i<2; i++){
+        Array2D<double> lambdaminus(2,2,0.0);
+        Array2D<double> lambdaplus(2,2,0.0);
+        for (int j=0; j<2; j++)
+          {
+            if (nx[i]*lambda[i][j] <= 0.0) { //might need to re-reverse this
+              lambdaminus[j][j]=nx[i]*lambda[i][j];
+            }else{
+              lambdaplus[j][j]=nx[i]*lambda[i][j];
+            }
+          }
+        nflux0=matmult(lambdaplus,matmult(sinv,uint0));
+        nflux1=matmult(lambdaplus,matmult(sinv,uint1));
+      }
+      for(int i=0; i<2; i++) //A*u at boundaries
+        {
+          du0[i]=nx[i]*pow(speed,2.0)*uint1[1];
+          du1[i]=nx[i]*uint0[1];
+        }
+
+    
+    
+      //rhs including numerical flux
+      
+      double rx = jacobian[elemnum];
+  
+      double omega=1.0;
+      RHSvgf.set(0,elemnum,pow(speed,2.0)
+                 *matmult(rx*refelem.getD(),uh.get(1,elemnum))
+                 +matmult(refelem.getLift(),rx*du0));
+
+      RHSvgf.set(1,elemnum,
+                 matmult(rx*refelem.getD(),uh.get(0,elemnum))
+                 +matmult(refelem.getLift(),rx*du1));
+      // 0 and 1 are vectorindices, and uh.get(1,elemnum) is an Array1D
+    }
+   
+}
+
+
+
+//tests use old function definition of RK4 routine
 // test fourth order polynomial ODE, should be exact in RK4. it was.
-/*void RHS(GridFunction& nodes, VectorGridFunction& uh, 
+/*void RHS(Grid thegrid, VectorGridFunction& uh, 
              VectorGridFunction& RHSvgf, double t)
 {
   for(int vecindex=0;vecindex<RHSvgf.vectorDim(); vecindex++){
@@ -58,9 +195,8 @@ void rk4lowStorage(GridFunction& nodes, VectorGridFunction& uh,
       }
   }
   }*/
-
  //test harmonic oscillator in time with RK4
-void RHS(GridFunction& nodes, VectorGridFunction& uh, 
+ /*void RHS(GridFunction& nodes, VectorGridFunction& uh, 
          VectorGridFunction& RHSvgf, double t)
 {
   if(RHSvgf.vectorDim()>2)
@@ -77,5 +213,5 @@ void RHS(GridFunction& nodes, VectorGridFunction& uh,
   // 0 and 1 are vectorindices, and uh.get(1) is a GridFunction.
 
    
-}
+  }*/
 
