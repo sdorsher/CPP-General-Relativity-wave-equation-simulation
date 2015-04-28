@@ -27,7 +27,7 @@ void GridFunction::set(int vcoord, TNT::Array1D<double> arraydata)
 {
   if((0>vcoord)||(vcoord>=GFvectorDim))
     {
-      throw out_of_range("Grid coordinate out of range");
+      throw out_of_range("Grid coordinate out of range in set(int,Array1D)");
     }
   else if (arraydata.dim()!=GFarrayDim)
     {
@@ -43,11 +43,11 @@ void GridFunction::set(int vcoord, int acoord,double value)
 {
   if((0>vcoord)||(vcoord>=GFvectorDim))
     {
-      throw out_of_range("Grid coordinate out of range");
+      throw out_of_range("Grid coordinate out of range in set(int,int,double");
     }
   else if((0>acoord)||(acoord>=GFarrayDim))
     {
-      throw out_of_range("Grid function coordinate out of range");
+      throw out_of_range("Grid function coordinate out of range in set(int, int, double)");
     }
   else
     {
@@ -71,11 +71,11 @@ double GridFunction::get(int vcoord, int acoord)
 {
   if((0>vcoord)||(vcoord>=GFvectorDim))
     {
-      throw out_of_range("Grid coordinate out of range");
+      throw out_of_range("Grid coordinate out of range in get(int,int)");
     }
   else if((0>acoord)||(acoord>=GFarrayDim))
     {
-      throw out_of_range("Grid function coordinate out of range");
+      throw out_of_range("Grid function coordinate out of range in get(int,int)");
     }
   else
     {
@@ -89,7 +89,7 @@ TNT::Array1D<double> GridFunction::get(int vcoord)
 {
   if((0>vcoord)||(vcoord>=GFvectorDim))
     {
-      throw out_of_range("Grid coordinate out of range");
+      throw out_of_range("Grid coordinate out of range in get(int)");
     }
   else
     {

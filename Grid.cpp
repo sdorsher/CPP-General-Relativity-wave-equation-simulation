@@ -1,6 +1,6 @@
 #include "Grid.h"
 
-Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false},drdx{NULL}
+Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{elemord},NumElem{numelements},nodeLocs{0,elemord+1,false},drdx{NULL}
 {
   ifstream fs;
   fs.open(fileElemBoundaries);
@@ -17,11 +17,19 @@ Grid::Grid(string fileElemBoundaries, int elemorder,int numelements):order{elemo
       throw invalid_argument("Element boundaries too long or too short for number of elements given.");
     }
 
-  ReferenceElement refelem(elemorder);
+  ReferenceElement refelem(elemord);
   //when we generalize this, use map to store order, element pairs
   //so they do not need to be recalculated with each element of the same
   //order
   
+  Array1D<double> physicalPosition(elemord+1);
+  for(int elem=0; elem<numelements; elem++)
+    {
+      physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)
+        *refelem.getr()
+        +((elementBoundaries[elem+1]+elementBoundaries[elem])/2.0);
+      nodeLocs.append(physicalPosition);
+    }
 
   calcjacobian();
   

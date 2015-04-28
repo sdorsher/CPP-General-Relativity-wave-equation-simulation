@@ -1,3 +1,3 @@
 #include "globals.h"
 
-int ELEMORDER=20;
+int ELEMORDER=11;

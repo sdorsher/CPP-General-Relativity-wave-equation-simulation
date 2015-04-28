@@ -5,6 +5,8 @@
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
 #include "Evolution.h"
+#include "globals.h"
+#include <cmath>
 #include <fstream>
 
 double analyticsoln(double);
@@ -13,29 +15,33 @@ void Linferror(double nominal,double theoretical, double&);
 
 int main()
 {
-  int PDEnum = 2; //number of independent PDEs. 
-  int Np=10; //order of element
-  int NumElems = 5;
+  int PDEnum = 3; //number of independent PDEs. 
+  int NumElems=10;
   string fileElemBoundaries= "elemBoundaries.txt";
   //vector<string> uhfilename
   // string uhfilename="fourthorderODE.txt";
   string uhfilename="waveequation.txt";
   
   //initialization of grid and calculation of reference element
-  Grid thegrid(fileElemBoundaries, Np, NumElems);
+  Grid thegrid(fileElemBoundaries, ELEMORDER, NumElems);
 
   //declaration of calculation variables and 
   //initialization to either zero or value read from file
-  VectorGridFunction uh(PDEnum,NumElems,Np,true); 
+  VectorGridFunction uh(PDEnum,NumElems,ELEMORDER+1,true); 
   //solution to PDE, possibly a vector 
-  VectorGridFunction RHSvgf(PDEnum,NumElems,Np,true); //right hand side of PDE
+  VectorGridFunction RHSvgf(PDEnum,NumElems,ELEMORDER+1,true); //right hand side of PDE
  
+
+
   GridFunction nodes = thegrid.gridNodeLocations();
 
   //initial conditions
   //uh.initFromFile(scalarfilename);
 
+  //get problem in initial conditions
   initialconditions(uh,thegrid);
+
+
 
   //print out at select time steps
   
@@ -43,12 +49,30 @@ int main()
   fs.open(uhfilename);
 
   double t0=0.0;
-  double tmax=10.0;
-  double deltat=0.01;
+  double tmax=0.003;
+  double deltat=0.002;
+  
+  double outputinterval=0.5;
+  double outputtolerance =0.0001;
+
   for(double t=t0; t<tmax; t+=deltat)
     {
+      
+      if(fabs(fmod(t,outputinterval))<outputtolerance){
+        fs<<endl <<endl;
+        fs<< " #time = " << t << endl;
+        for (int i=0; i<uh.gridDim(); i++)
+          {
+            for(int j=0; j<uh.pointsDim(); j++)
+              {
+                fs << thegrid.gridNodeLocations().get(i,j) << " " << uh.get(0,i,j) << endl;
+              }
+          }
+      }
+   
       rk4lowStorage(thegrid,uh,RHSvgf,t,deltat);
     }
+
   
   //initial conditions, numerical fluxes, boundary conditions handled inside 
   //Evolution.cpp, in RHS.
@@ -70,14 +94,17 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
    double position = 5.0;
    GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
    nodes=grd.gridNodeLocations();
+
    for(int i=0; i<uh.gridDim(); i++)
      {
        for(int j=0; j<uh.pointsDim(); j++)
          {
            double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
                                       /2.0/pow(sigma,2.0));
+           double dgauss =-(nodes.get(i,j)-position)/pow(sigma,2.0)*gauss;
            uh.set(0,i,j,gauss);
            uh.set(1,i,j,0.0);
+           uh.set(2,i,j,dgauss);
          }
      }
 }

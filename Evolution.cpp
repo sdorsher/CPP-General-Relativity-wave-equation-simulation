@@ -27,12 +27,13 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
   VectorGridFunction k(RHSvgf.vectorDim(),RHSvgf.gridDim(),RHSvgf.pointsDim(),false);
 
   //step 0
-
   
   //step 1
   RHS(thegrid, uh, RHSvgf, t);
   k=deltat*RHSvgf;
   uh=uh+rk4b[0]*k;
+
+
 
   //step2
   for(int i=2; i<=5; i++){
@@ -48,17 +49,19 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
 void RHS(Grid thegrid, VectorGridFunction& uh, 
          VectorGridFunction& RHSvgf, double t)
 {
-  if(RHSvgf.vectorDim()>2)
+  if(RHSvgf.vectorDim()>3)
     {
-      throw invalid_argument("Wave equation PDE should only have two separable components.");
+      throw invalid_argument("Wave equation PDE should only have three separable components.");
     }
+
+  // uh=(psi,rho,pi)
 
   //wave equation specific values
 
   //drho/dt - -c^2dPi/dx =0
   //dpi/dt - drho/dx =0
 
-  // PI=[[0 -c^2],[-1 0]]
+  // A=[[0 -c^2],[-1 0]]
   //LAMBDA=S^-1 PI S=[[-c 0],[0 c]]
   // S=[v1 v2] so that eigenvalues are diagonal
   // eigenvalues are +-c
@@ -66,18 +69,18 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
   // 
 
   double speed = 1.0;
-  //Array2D<double> s(2,2);
+  Array2D<double> s(2,2);
   Array2D<double> sinv(2,2);
   Array2D<double> lambda(2,2,0.0);
   // Array2D<double> A(2,2);
 
   
-  /*
+  
   s[0][0]=speed;
   s[0][1]=-speed;
   s[1][0]=1.0;
   s[1][1]=1.0;
-  */
+  
   sinv[0][0]=0.5/speed;
   sinv[0][1]=0.5;
   sinv[1][0]=-0.5/speed;
@@ -88,44 +91,41 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
   
   vector<double> jacobian=thegrid.jacobian();
 
-
   //numerical flux
   
   //index
-  vector<int> ind{0,RHSvgf.pointsDim()};
+  vector<int> ind{0,RHSvgf.pointsDim()-1};
 
   for(int elemnum=0; elemnum<uh.gridDim(); elemnum++)
     {
   
-      //interior,exterior for two variables of wave equation
+      //interior,exterior for three variables of wave equation
       Array1D<double> uint1(2,0.0);
       Array1D<double> uint0(2,0.0);
       Array1D<double> uext1(2,0.0);
       Array1D<double> uext0(2,0.0);
-  
       for(int i=0; i<2; i++)
         {
-          uint0[i] = uh.get(0,elemnum,ind[i]);
-          uint1[i]= uh.get(1,elemnum,ind[i]);
+          uint0[i] = uh.get(1,elemnum,ind[i]);
+          uint1[i]= uh.get(2,elemnum,ind[i]);
         }
-      
       Array1D<double> nx(2,1.0);
       nx[0]=-1.0;
       
       if(elemnum>1)
         {
-          uext0[0]=uh.get(0,elemnum-1,RHSvgf.pointsDim());
-          uext1[0]=uh.get(1,elemnum-1,RHSvgf.pointsDim());
+          uext0[0]=uh.get(1,elemnum-1,RHSvgf.pointsDim()-1);
+          uext1[0]=uh.get(2,elemnum-1,RHSvgf.pointsDim()-1);
         }else //inverted reflection
         {
           uext0[0]=0.0;
           uext1[0]=0.0;
         }
 
-      if(elemnum<RHSvgf.pointsDim()-1)
+      if(elemnum<RHSvgf.gridDim()-1)
         {
-          uext0[1]=uh.get(0,elemnum+1,0);
-          uext1[1]=uh.get(0,elemnum+1,0);
+          uext0[1]=uh.get(1,elemnum+1,0);
+          uext1[1]=uh.get(2,elemnum+1,0);
         }
       else //inverted reflection
         {
@@ -151,26 +151,32 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
           }
         nflux0=matmult(lambdaplus,matmult(sinv,uint0));
         nflux1=matmult(lambdaplus,matmult(sinv,uint1));
+        nflux0+=matmult(lambdaminus,matmult(sinv,uext0));
+        nflux1+=matmult(lambdaminus,matmult(sinv,uext0));
+
+        nflux0=matmult(s,nflux0);
+        nflux1=matmult(s,nflux1);
       }
       for(int i=0; i<2; i++) //A*u at boundaries
         {
-          du0[i]=nx[i]*pow(speed,2.0)*uint1[1];
-          du1[i]=nx[i]*uint0[1];
+          du0[i]=-nx[i]*pow(speed,2.0)*uint1[i]-nflux0[i];
+          du1[i]=-nx[i]*uint0[i]-nflux1[i];
         }
 
-    
+      cout << elemnum << " " << du0[0] << " " << du0[1] << " " << du1[0] << " " << du1[1] <<endl;
     
       //rhs including numerical flux
       
       double rx = jacobian[elemnum];
   
       double omega=1.0;
-      RHSvgf.set(0,elemnum,pow(speed,2.0)
-                 *matmult(rx*refelem.getD(),uh.get(1,elemnum))
+      RHSvgf.set(0,elemnum,uh.get(1,elemnum));
+      RHSvgf.set(1,elemnum,pow(speed,2.0)
+                 *matmult(rx*refelem.getD(),uh.get(2,elemnum))
                  +matmult(refelem.getLift(),rx*du0));
 
-      RHSvgf.set(1,elemnum,
-                 matmult(rx*refelem.getD(),uh.get(0,elemnum))
+      RHSvgf.set(2,elemnum,
+                 matmult(rx*refelem.getD(),uh.get(1,elemnum))
                  +matmult(refelem.getLift(),rx*du1));
       // 0 and 1 are vectorindices, and uh.get(1,elemnum) is an Array1D
     }

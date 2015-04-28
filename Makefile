@@ -6,7 +6,7 @@ ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf
 #ITNT = -I/home/sdorsher/tnt
 
 
-dg1D : main.o GridFunction.o ReferenceElement.o VectorGridFunction.o Grid.o Evolution.o
+dg1D : main.o GridFunction.o ReferenceElement.o VectorGridFunction.o Grid.o Evolution.o globals.o
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o GridFunction.o ReferenceElement.o VectorGridFunction.o Grid.o Evolution.o globals.o -o dg1D
 
 main.o: main.cpp GridFunction.h ReferenceElement.h VectorGridFunction.h TNT2.h
