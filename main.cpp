@@ -49,10 +49,10 @@ int main()
   fs.open(uhfilename);
 
   double t0=0.0;
-  double tmax=0.003;
+  double tmax=10.0;
   double deltat=0.002;
   
-  double outputinterval=0.5;
+  double outputinterval=0.2;
   double outputtolerance =0.0001;
 
   for(double t=t0; t<tmax; t+=deltat)

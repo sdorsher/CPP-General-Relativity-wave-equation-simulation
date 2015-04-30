@@ -163,7 +163,7 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
           du1[i]=-nx[i]*uint0[i]-nflux1[i];
         }
 
-      cout << elemnum << " " << du0[0] << " " << du0[1] << " " << du1[0] << " " << du1[1] <<endl;
+      //      cout << elemnum << " " << du0[0] << " " << du0[1] << " " << du1[0] << " " << du1[1] <<endl;
     
       //rhs including numerical flux
       
