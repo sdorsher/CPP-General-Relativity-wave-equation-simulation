@@ -55,7 +55,7 @@ void Grid::calcjacobian()
 {
   for(int elem=0; elem<NumElem; elem++)
     {
-      double rx= (elementBoundaries[elem+1]-elementBoundaries[elem])/2.0;
+      double rx= 2.0/(elementBoundaries[elem+1]-elementBoundaries[elem]);
       //cout << elem << " " <<rx << endl;
       drdx.push_back(rx);
     }

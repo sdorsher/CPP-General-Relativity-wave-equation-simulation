@@ -29,7 +29,7 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
   //step 0
   
   //step 1
-  RHS(thegrid, uh, RHSvgf, t);
+  RHS(thegrid, uh, RHSvgf, t,true);
   k=deltat*RHSvgf;
   uh=uh+rk4b[0]*k;
 
@@ -37,7 +37,7 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
 
   //step2
   for(int i=2; i<=5; i++){
-    RHS(thegrid, uh, RHSvgf, t+rk4c[i-1]*deltat);
+    RHS(thegrid, uh, RHSvgf, t+rk4c[i-1]*deltat,false);
     k=rk4a[i-1]*k+deltat*RHSvgf;
     uh=uh+rk4b[i-1]*k;
   }
@@ -47,12 +47,15 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
 //---------------------
 
 void RHS(Grid thegrid, VectorGridFunction& uh, 
-         VectorGridFunction& RHSvgf, double t)
+         VectorGridFunction& RHSvgf, double t,bool output)
 {
   if(RHSvgf.vectorDim()>3)
     {
       throw invalid_argument("Wave equation PDE should only have three separable components.");
     }
+
+  GridFunction nodes(thegrid.gridNodeLocations().gridDim(),thegrid.gridNodeLocations().pointsDim(),false);
+  nodes=thegrid.gridNodeLocations();
 
   // uh=(psi,rho,pi)
 
@@ -68,7 +71,9 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
   // S=[[c -c],[1 1]]
   // 
 
-  double speed = 1.0;
+
+  
+
   Array2D<double> s(2,2);
   Array2D<double> sinv(2,2);
   Array2D<double> lambd(2,2);
@@ -131,8 +136,8 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
         }        
       else 
         {
-          uext0[0]=0.0;
-          uext1[0]=0.0;
+          uext0[0]=uh.get(1,RHSvgf.gridDim()-1,RHSvgf.pointsDim()-1);//0.0;
+          uext1[0]=uh.get(2,RHSvgf.gridDim()-1,RHSvgf.pointsDim()-1);//0.0;
         }
 
       if(elemnum<RHSvgf.gridDim()-1)
@@ -142,8 +147,8 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
         }
       else 
         {
-          uext0[1]=0.0;
-          uext1[1]=0.0;
+          uext0[1]=uh.get(1,0,0);//0.0;
+          uext1[1]=uh.get(2,0,0);//0.0;
         }
       if(elemnum==0){
         //  cout << "LHS0 uext=" << uext0[0] << " uint=" << uint0[0] <<endl;
@@ -232,6 +237,24 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
 
       double omega=1.0;
       RHSvgf.set(0,elemnum,uh.get(1,elemnum));
+      if(output)
+        {
+          //          std::ofstream fs;
+          // fs.open("rhsoutput.txt", ios::app);
+  
+          Array1D<double> RHS1(RHSvgf.pointsDim());
+          RHS1=pow(speed,2.0)
+            *matmult(rx*refelem.getD(),uh.get(2,elemnum));
+          Array1D<double> RHS2(RHSvgf.pointsDim());
+          RHS2=matmult(rx*refelem.getD(),uh.get(1,elemnum));
+          for(int k=0; k<RHS1.dim(); k++)
+            {
+              //     cout << nodes.get(elemnum,k) << " "<< RHS1[k] << " " << RHS2[k] << endl;
+              // fs << nodes.get(elemnum,k) << " " << RHS1[k] << " " << RHS2[k] << endl;
+            }
+          //fs.close();
+
+        }
       RHSvgf.set(1,elemnum,pow(speed,2.0)
                  *matmult(rx*refelem.getD(),uh.get(2,elemnum))
                  +matmult(refelem.getLift(),rx*du0));
@@ -239,9 +262,11 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
       RHSvgf.set(2,elemnum,
                  matmult(rx*refelem.getD(),uh.get(1,elemnum))
                  +matmult(refelem.getLift(),rx*du1));
+
+      
+
       // 0 and 1 are vectorindices, and uh.get(1,elemnum) is an Array1D
     }
-   
 }
 
 

@@ -7,12 +7,13 @@
 #include "GridFunction.h"
 #include "Grid.h"
 #include "ReferenceElement.h"
+#include <fstream>
 
 
 void rk4lowStorage(Grid thegrid, VectorGridFunction& uh, 
                    VectorGridFunction& RHSvgf, 
                    double t, double deltat);
 void RHS(Grid thegrid, VectorGridFunction& uh, 
-         VectorGridFunction& RHSvgf, double t);
+         VectorGridFunction& RHSvgf, double t,bool output);
 
 #endif

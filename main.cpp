@@ -100,18 +100,25 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
    GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
    nodes=grd.gridNodeLocations();
 
+   // std::ofstream fs;
+   //fs.open("initialconditions.txt");
+   
+
    for(int i=0; i<uh.gridDim(); i++)
      {
        for(int j=0; j<uh.pointsDim(); j++)
          {
            double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
-                                      /2.0/pow(sigma,2.0))/sigma/sqrt(2.0*PI);
+                                      /2.0/pow(sigma,2.0));
            double dgauss =-(nodes.get(i,j)-position)/pow(sigma,2.0)*gauss;
            uh.set(0,i,j,gauss);
-           uh.set(1,i,j,0.0);
+           uh.set(1,i,j,-speed*dgauss);
            uh.set(2,i,j,dgauss);
+           // fs << nodes.get(i,j) << " " << gauss << " " << speed*dgauss << " " << -dgauss << endl;
          }
      }
+   //   fs.close();
+
 }
 
 void Linferror(double nominal,double theoretical,double& maxerror)

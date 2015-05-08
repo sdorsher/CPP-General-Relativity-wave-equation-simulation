@@ -3,5 +3,6 @@
 
 extern int ELEMORDER;
 extern double PI;
+extern double speed;
 
 #endif
