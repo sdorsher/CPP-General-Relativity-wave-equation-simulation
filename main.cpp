@@ -52,13 +52,13 @@ int main()
   double tmax=10.0;
   double deltat=0.002;
   
-  double outputinterval=0.2;
-  double outputtolerance =0.0001;
+  double outputinterval=1.0;
+  double output=deltat/2.0;
 
   for(double t=t0; t<tmax; t+=deltat)
     {
       
-      if(fabs(fmod(t,outputinterval))<outputtolerance){
+      if(output>0.0){
         fs<<endl <<endl;
         fs<< " #time = " << t << endl;
         for (int i=0; i<uh.gridDim(); i++)
@@ -67,10 +67,15 @@ int main()
               {
                 fs << thegrid.gridNodeLocations().get(i,j) << " " << uh.get(0,i,j) << endl;
               }
+       
           }
+       
+        output-=outputinterval; 
+
       }
    
       rk4lowStorage(thegrid,uh,RHSvgf,t,deltat);
+      output+=deltat;
     }
 
   
@@ -89,9 +94,9 @@ return 0.2*pow(t,5.0);
 }
 */
 void initialconditions(VectorGridFunction& uh, Grid grd){
-   double sigma = 0.1;
+   double sigma = 1.0;
    double amplitude = 1.0;
-   double position = 5.0;
+   double position = 5.1;
    GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
    nodes=grd.gridNodeLocations();
 
@@ -100,7 +105,7 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
        for(int j=0; j<uh.pointsDim(); j++)
          {
            double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
-                                      /2.0/pow(sigma,2.0));
+                                      /2.0/pow(sigma,2.0))/sigma/sqrt(2.0*PI);
            double dgauss =-(nodes.get(i,j)-position)/pow(sigma,2.0)*gauss;
            uh.set(0,i,j,gauss);
            uh.set(1,i,j,0.0);

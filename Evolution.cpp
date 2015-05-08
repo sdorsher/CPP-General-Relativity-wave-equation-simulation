@@ -71,10 +71,15 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
   double speed = 1.0;
   Array2D<double> s(2,2);
   Array2D<double> sinv(2,2);
-  Array2D<double> lambda(2,2,0.0);
-  // Array2D<double> A(2,2);
+  Array2D<double> lambd(2,2);
+   Array2D<double> A(2,2);
 
   
+   A[0][0]=0.0;
+   A[0][1]=-speed*speed;
+   A[1][0]=-1.0;
+   A[1][1]=0.0;
+
   
   s[0][0]=speed;
   s[0][1]=-speed;
@@ -86,9 +91,16 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
   sinv[1][0]=-0.5/speed;
   sinv[1][1]=0.5;
 
-  lambda[0][0]=-speed;
-  lambda[1][1]=speed;
-  
+  lambd[0][0]=-speed;
+  lambd[1][0]=-speed;
+  lambd[0][1]=speed;
+  lambd[1][1]=speed;
+  //lambda is eigenvalues of characteristic matrix at element boundaries
+
+  //   output2D(lambd);
+
+  //  output2D(matmult(sinv,matmult(A,s)));
+
   vector<double> jacobian=thegrid.jacobian();
 
   //numerical flux
@@ -112,11 +124,12 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
       Array1D<double> nx(2,1.0);
       nx[0]=-1.0;
       
-      if(elemnum>1)
+      if(elemnum>0)
         {
           uext0[0]=uh.get(1,elemnum-1,RHSvgf.pointsDim()-1);
           uext1[0]=uh.get(2,elemnum-1,RHSvgf.pointsDim()-1);
-        }else //inverted reflection
+        }        
+      else 
         {
           uext0[0]=0.0;
           uext1[0]=0.0;
@@ -127,48 +140,96 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
           uext0[1]=uh.get(1,elemnum+1,0);
           uext1[1]=uh.get(2,elemnum+1,0);
         }
-      else //inverted reflection
+      else 
         {
           uext0[1]=0.0;
           uext1[1]=0.0;
         }
-  
-      Array1D<double> nflux0(2,0.0);
-      Array1D<double> nflux1(2,0.0);
+      if(elemnum==0){
+        //  cout << "LHS0 uext=" << uext0[0] << " uint=" << uint0[0] <<endl;
+        // cout << "RHS0 uext=" <<uext0[1] << " uint=" << uint0[1] << endl;
+        // cout << "LHS1 uext=" << uext1[0] << " uint=" << uint1[0] <<endl;
+        // cout << "RHS1 uext=" <<uext1[1] << " uint=" << uint1[1] << endl;
+      }
+      Array1D<double> nfluxL(2,0.0);
+      Array1D<double> nfluxR(2,0.0);
       Array1D<double> du0(2,0.0);
       Array1D<double> du1(2,0.0);
-      
+      Array1D<double> uintL(2);
+      Array1D<double> uintR(2);
+      Array1D<double> uextL(2);
+      Array1D<double> uextR(2);
+      uintL[0]=uint0[0];
+      uintL[1]=uint1[0];
+      uintR[0]=uint0[1];
+      uintR[1]=uint1[1];
+      uextL[0]=uext0[0];
+      uextL[1]=uext1[0];
+      uextR[0]=uext0[1];
+      uextR[1]=uext1[1];
+
       for(int i=0; i<2; i++){
-        Array2D<double> lambdaminus(2,2,0.0);
-        Array2D<double> lambdaplus(2,2,0.0);
+        Array2D<double> lambdminus(2,2,0.0);
+        Array2D<double> lambdplus(2,2,0.0);
+
         for (int j=0; j<2; j++)
           {
-            if (nx[i]*lambda[i][j] <= 0.0) { //might need to re-reverse this
-              lambdaminus[j][j]=nx[i]*lambda[i][j];
+            if (nx[i]*lambd[i][j] <= 0.0) { //might need to re-reverse this
+              lambdminus[j][j]=nx[i]*lambd[i][j];
             }else{
-              lambdaplus[j][j]=nx[i]*lambda[i][j];
+              lambdplus[j][j]=nx[i]*lambd[i][j];
             }
           }
-        nflux0=matmult(lambdaplus,matmult(sinv,uint0));
-        nflux1=matmult(lambdaplus,matmult(sinv,uint1));
-        nflux0+=matmult(lambdaminus,matmult(sinv,uext0));
-        nflux1+=matmult(lambdaminus,matmult(sinv,uext0));
+        if((elemnum==5)&&(i==0))
+          {
+            //output2D(lambdplus);
+            //output2D(lambdminus);
+            //            output1D(uintL);//okay
+            //output1D(uintR);//okay
 
-        nflux0=matmult(s,nflux0);
-        nflux1=matmult(s,nflux1);
+          }
+
+        if(i==0)
+          {
+            nfluxL=matmult(lambdplus,matmult(sinv,uintL));
+            nfluxL+=matmult(lambdminus,matmult(sinv,uextL));
+            nfluxL=matmult(s,nfluxL);
+             if(elemnum==5)
+              {
+                //         output1D(nfluxL);
+              }
+
+          }else{
+          nfluxR=matmult(lambdplus,matmult(sinv,uintR));
+          nfluxR+=matmult(lambdminus,matmult(sinv,uextR));
+          nfluxR=matmult(s,nfluxR);
+        }
       }
+      Array1D<double> nflux1(2);
+      Array1D<double> nflux0(2);
+      nflux0[0]=nfluxL[0];
+      nflux0[1]=nfluxR[0];
+      nflux1[0]=nfluxL[1];
+      nflux1[1]=nfluxR[1];
       for(int i=0; i<2; i++) //A*u at boundaries
-        {
+        {//correct. don't arbitratrily change the sign of this
           du0[i]=-nx[i]*pow(speed,2.0)*uint1[i]-nflux0[i];
           du1[i]=-nx[i]*uint0[i]-nflux1[i];
         }
-
-      //      cout << elemnum << " " << du0[0] << " " << du0[1] << " " << du1[0] << " " << du1[1] <<endl;
-    
+      if(elemnum==5)
+        {
+          // cout << "du " << du0[0] << " " << du0[1] << " " << du1[0] << " " << du1[1] <<endl;
+        }
       //rhs including numerical flux
       
       double rx = jacobian[elemnum];
   
+      if(elemnum==0)
+        {
+          //          cout << uh.get(2,elemnum,0) <<" "<<uh.get(2,elemnum,uh.pointsDim()-1)<< endl;
+          //        cout << rx << endl;
+        }
+
       double omega=1.0;
       RHSvgf.set(0,elemnum,uh.get(1,elemnum));
       RHSvgf.set(1,elemnum,pow(speed,2.0)

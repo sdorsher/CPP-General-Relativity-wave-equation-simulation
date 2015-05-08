@@ -1,6 +1,6 @@
 #include "Grid.h"
 
-Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{elemord},NumElem{numelements},nodeLocs{0,elemord+1,false},drdx{NULL}
+Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{elemord},NumElem{numelements},nodeLocs{0,elemord+1,false}
 {
   ifstream fs;
   fs.open(fileElemBoundaries);
@@ -55,8 +55,9 @@ void Grid::calcjacobian()
 {
   for(int elem=0; elem<NumElem; elem++)
     {
-
-      drdx.push_back((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0);
+      double rx= (elementBoundaries[elem+1]-elementBoundaries[elem])/2.0;
+      //cout << elem << " " <<rx << endl;
+      drdx.push_back(rx);
     }
 }
 

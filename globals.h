@@ -2,5 +2,6 @@
 #define GLOBALS_H
 
 extern int ELEMORDER;
+extern double PI;
 
 #endif
