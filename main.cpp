@@ -55,9 +55,10 @@ int main()
 
   double t0=0.0;
   double tmax=20.0;
-  // double deltat=0.002;
+  //double deltat=0.001;
   
-  int nt=ceil(tmax/dt0);
+  double courantfac=0.5;
+  int nt=ceil(tmax/courantfac/dt0);
   double deltat=tmax/nt;
 
   cout << dt0 << " " << deltat << endl;
@@ -80,7 +81,7 @@ int main()
               }
             
           }
-        if(outputcount==20)
+        if(outputcount==NumElems)
           {
             ofstream fs2;
             fs2.open("diffGaus.txt");
