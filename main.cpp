@@ -55,11 +55,11 @@ int main()
 
   double t0=0.0;
   double tmax=20.0;
-  //double deltat=0.001;
+  double deltat=0.001;
   
   double courantfac=0.5;
   int nt=ceil(tmax/courantfac/dt0);
-  double deltat=tmax/nt;
+  //double deltat=tmax/nt;
 
   cout << dt0 << " " << deltat << endl;
 
@@ -116,7 +116,33 @@ double analyticsoln(double t)
 return 0.2*pow(t,5.0);
 }
 */
+
 void initialconditions(VectorGridFunction& uh, Grid grd){
+  double amp=1.0;
+  double wavelength=20.0;
+  double phase=0.0;
+  double omega=2.0*PI/wavelength;
+
+  GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
+  nodes=grd.gridNodeLocations();
+
+  for(int i=0; i<uh.gridDim(); i++)
+    {
+      for (int j=0; j<uh.pointsDim(); j++)
+        {
+          double psi=amp*sin(omega*nodes.get(i,j)+phase);
+          double rho=omega*cos(omega*nodes.get(i,j)+phase);
+          double pivar=-speed*rho;
+          uh.set(0,i,j,psi);
+          uh.set(1,i,j,pivar);
+          uh.set(2,i,j,rho);
+        }
+    }
+}
+
+
+
+ /*void initialconditions(VectorGridFunction& uh, Grid grd){
    double sigma = 1.0;
    double amplitude = 1.0;
    double position = 10.1;
@@ -143,7 +169,7 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
      }
    //   fs.close();
 
-}
+   }*/
 
 void Linferror(double nominal,double theoretical,double& maxerror)
  {
