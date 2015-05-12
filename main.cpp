@@ -12,11 +12,12 @@
 double analyticsoln(double);
 void initialconditions(VectorGridFunction& uh, Grid grd);
 void Linferror(double nominal,double theoretical, double&);
+double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhend);
 
 int main()
 {
   int PDEnum = 3; //number of independent PDEs. 
-  int NumElems=20;
+  int NumElems=10;
   string fileElemBoundaries= "elemBoundaries.txt";
   //vector<string> uhfilename
   // string uhfilename="fourthorderODE.txt";
@@ -43,7 +44,9 @@ int main()
   initialconditions(uh,thegrid);
   uh0=uh;
   
-
+  //  double integral= LTwoerror(thegrid,uh0,uh);
+  //cout << integral << endl;
+  
   //print out at select time steps
   
   double dt0=nodes.get(0,1)-nodes.get(0,0);
@@ -57,7 +60,7 @@ int main()
   double tmax=20.0;
   double deltat=0.001;
   
-  double courantfac=0.5;
+  double courantfac=1.0;
   int nt=ceil(tmax/courantfac/dt0);
   //double deltat=tmax/nt;
 
@@ -81,8 +84,9 @@ int main()
               }
             
           }
-        if(outputcount==NumElems)
+        if(outputcount==20)
           {
+            cout << t << endl;
             ofstream fs2;
             fs2.open("diffGaus.txt");
             for(int i=0; i<uh.gridDim(); i++)
@@ -105,7 +109,15 @@ int main()
   //initial conditions, numerical fluxes, boundary conditions handled inside 
   //Evolution.cpp, in RHS.
 
+  ofstream fsconvergence;
+  fsconvergence.open("convergence.txt",ios::app);
+  
 
+  double L2=LTwoerror(thegrid,uh0,uh);
+  cout << "Order, deltat, num elems, L2 norm" << endl;
+  cout<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
+  fsconvergence<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
+  fsconvergence.close();
   
 }
 
@@ -203,4 +215,26 @@ void Linferror(double nominal,double theoretical,double& maxerror)
   
   }*/
 
+double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhend)
+{
+  double L2;
+  L2=0.0;
+  Array1D<double> weights;
+  weights=refelem.getw();
+  vector<double> rx;
+  rx=thegrid.jacobian();
+  GridFunction nodes(uh0.gridDim(), uh0.pointsDim(),false);
+  nodes=thegrid.gridNodeLocations();
+  for(int i =0; i<uh0.gridDim(); i++)
+    {
+      for(int j=0; j<uh0.pointsDim(); j++)
+        {
+     
+          //          cout << nodes.get(i,j) << " " << weights[j] << " " << rx[i] << endl;
+          L2+=weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i];
+        }
+      L2=sqrt(L2);
+    }
+  return L2;
+}
 

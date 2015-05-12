@@ -5,10 +5,11 @@ using namespace TNT;
 
 ReferenceElement refelem(ELEMORDER);
 
-ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1),derivativeMatrix(N+1,N+1),lift(N+1,2,0.0)
+ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1),derivativeMatrix(N+1,N+1),lift(N+1,2,0.0),refNodeWeights(N+1)
 {
   order=N;
   refNodeLocations=jacobiGL(0.0,0.0,N);
+  refNodeWeights=gaussWeights(0.0,0.0,N);
   vandermonde1D();
   gradVandermonde1D();
   Dmatrix1D();
@@ -128,17 +129,37 @@ Array1D<double> ReferenceElement::jacobiGL(double alpha, double beta, double n)
     {
       quadpts[0]=-1.0;
       quadpts[1]=1.0;
-      return quadpts;
+
     }else
     {
       jacobiGQ(x, alpha+1.0, beta+1.0, n-2, w);
       insert_1D(quadpts,x,1);
       quadpts[0]=-1.0;
       quadpts[n]=1.0;
-      return quadpts;
+
     }
+
+
+  return quadpts;
 }
 
+
+Array1D<double> ReferenceElement::gaussWeights(double alpha, double beta, int n)
+{
+  Array1D<double> jacP(n+1);
+  Array1D<double> x(n+1);
+  x=refNodeLocations.copy();
+  Array1D<double> w(n+1);
+  
+  jacP=jacobiP(x,alpha,beta,n);
+  
+  for(int i=0; i<x.dim(); i++)
+    {
+      w[i]=(2.0*n+1.)/(n*(n+1.))/pow(jacP[i],2.0);
+    }
+
+  return w;
+}
 
 Array1D<double> ReferenceElement::jacobiP(const Array1D<double>& x, double alpha,  
 			       double beta, int n)
@@ -287,6 +308,13 @@ Array1D<double> ReferenceElement::getr()
 {
   return refNodeLocations;
 }
+
+Array1D<double> ReferenceElement::getw()
+{
+
+  return refNodeWeights;
+}
+
 
 int ReferenceElement::getOrder()
 {

@@ -1,6 +1,7 @@
 #include "Grid.h"
 
-Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{elemord},NumElem{numelements},nodeLocs{0,elemord+1,false}
+
+Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{ELEMORDER},NumElem{numelements},nodeLocs{0,ELEMORDER+1,false}
 {
   ifstream fs;
   fs.open(fileElemBoundaries);
@@ -17,7 +18,7 @@ Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{elemord
       throw invalid_argument("Element boundaries too long or too short for number of elements given.");
     }
 
-  ReferenceElement refelem(elemord);
+  //  ReferenceElement refelem(elemord);
   //when we generalize this, use map to store order, element pairs
   //so they do not need to be recalculated with each element of the same
   //order
