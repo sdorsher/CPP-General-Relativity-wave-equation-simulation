@@ -60,7 +60,7 @@ int main()
   double tmax=20.0;
   double deltat=0.001;
   
-  double courantfac=1.0;
+  double courantfac=0.25;
   int nt=ceil(tmax/courantfac/dt0);
   //double deltat=tmax/nt;
 
@@ -137,7 +137,7 @@ return 0.2*pow(t,5.0);
 }
 */
 
-void initialconditions(VectorGridFunction& uh, Grid grd){
+ /* void initialconditions(VectorGridFunction& uh, Grid grd){
   double amp=1.0;
   double wavelength=20.0;
   double phase=0.0;
@@ -159,10 +159,10 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
         }
     }
 }
+ 
+ */
 
-
-
- /*void initialconditions(VectorGridFunction& uh, Grid grd){
+ void initialconditions(VectorGridFunction& uh, Grid grd){
    double sigma = 1.0;
    double amplitude = 1.0;
    double position = 10.1;
@@ -184,14 +184,14 @@ void initialconditions(VectorGridFunction& uh, Grid grd){
            uh.set(1,i,j,0.0);
            //uh.set(1,i,j,-speed*dgauss);
            uh.set(2,i,j,dgauss);
-           // fs << nodes.get(i,j) << " " << gauss << " " << speed*dgauss << " " << -dgauss << endl;
+           //fs << nodes.get(i,j) << " " << gauss << " " << speed*dgauss << " " << -dgauss << endl;
          }
      }
    //   fs.close();
 
-   }*/
+}
 
-void Linferror(double nominal,double theoretical,double& maxerror)
+/*void Linferror(double nominal,double theoretical,double& maxerror)
  {
    
    double newerror= fabs(nominal-theoretical);
@@ -241,11 +241,12 @@ double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhen
           //          cout << nodes.get(i,j) << " " << weights[j] << " " << rx[i] << endl;
           double added= weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i];
           L2+=added;
-          cout << L2 <<" "<< added << endl; 
+          //cout << L2 <<" "<< added << endl; 
             //<< weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i] <<endl;
         }
-      L2=sqrt(L2);
+
     }
+  L2=sqrt(L2); 
   return L2;
 }
 
