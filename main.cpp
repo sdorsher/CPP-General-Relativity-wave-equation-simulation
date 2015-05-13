@@ -96,7 +96,24 @@ int main()
 
                     fs2 << thegrid.gridNodeLocations().get(i,j) << " " << uh.get(0,i,j) - uh0.get(0,i,j) <<endl;
                   }}
-            fs2.close();}
+            fs2.close();
+
+            ofstream fsconvergence;
+            fsconvergence.open("convergence.txt",ios::app);
+            
+
+            double L2;
+            L2=LTwoerror(thegrid,uh0,uh);
+            cout << "Order, deltat, num elems, L2 norm" << endl;
+            cout<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
+            fsconvergence<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
+            fsconvergence.close();
+
+
+
+}
+
+
         output-=outputinterval; 
         outputcount++;
       }
@@ -109,15 +126,6 @@ int main()
   //initial conditions, numerical fluxes, boundary conditions handled inside 
   //Evolution.cpp, in RHS.
 
-  ofstream fsconvergence;
-  fsconvergence.open("convergence.txt",ios::app);
-  
-
-  double L2=LTwoerror(thegrid,uh0,uh);
-  cout << "Order, deltat, num elems, L2 norm" << endl;
-  cout<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
-  fsconvergence<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
-  fsconvergence.close();
   
 }
 
@@ -231,7 +239,10 @@ double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhen
         {
      
           //          cout << nodes.get(i,j) << " " << weights[j] << " " << rx[i] << endl;
-          L2+=weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i];
+          double added= weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i];
+          L2+=added;
+          cout << L2 <<" "<< added << endl; 
+            //<< weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i] <<endl;
         }
       L2=sqrt(L2);
     }
