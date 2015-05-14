@@ -1,8 +1,35 @@
 #include "Grid.h"
 
 
-Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{ELEMORDER},NumElem{numelements},nodeLocs{0,ELEMORDER+1,false}
+Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
 {
+  
+  
+  for(int i=0; i<=numelements; i++)
+    {
+      elementBoundaries.push_back(lowerlim+i*(upperlim-lowerlim)/float(numelements));
+    }
+  
+  Array1D<double> physicalPosition(elemorder+1);
+  for(int elem=0; elem<numelements; elem++)
+    {
+      physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)
+        *refelem.getr()
+        +((elementBoundaries[elem+1]+elementBoundaries[elem])/2.0);
+      nodeLocs.append(physicalPosition);
+    }
+
+  calcjacobian();
+  
+
+}
+
+
+
+Grid::Grid(string fileElemBoundaries,int elemorder, int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
+{
+  
+
   ifstream fs;
   fs.open(fileElemBoundaries);
   double data;
@@ -23,7 +50,7 @@ Grid::Grid(string fileElemBoundaries, int elemord,int numelements):order{ELEMORD
   //so they do not need to be recalculated with each element of the same
   //order
   
-  Array1D<double> physicalPosition(elemord+1);
+  Array1D<double> physicalPosition(elemorder+1);
   for(int elem=0; elem<numelements; elem++)
     {
       physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)

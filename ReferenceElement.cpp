@@ -3,7 +3,7 @@
 
 using namespace TNT;
 
-ReferenceElement refelem(ELEMORDER);
+//ReferenceElement refelem(ELEMORDER);
 
 ReferenceElement::ReferenceElement(int N):refNodeLocations(N+1),vandermondeMatrix(N+1,N+1),dVdr(N+1,N+1),derivativeMatrix(N+1,N+1),lift(N+1,2,0.0),refNodeWeights(N+1)
 {

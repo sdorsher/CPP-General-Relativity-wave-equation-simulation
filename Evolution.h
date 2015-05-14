@@ -6,8 +6,8 @@
 #include "VectorGridFunction.h"
 #include "GridFunction.h"
 #include "Grid.h"
-#include "ReferenceElement.h"
 #include <fstream>
+#include "ConfigParams.h"
 
 
 void rk4lowStorage(Grid thegrid, VectorGridFunction& uh, 

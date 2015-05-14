@@ -45,6 +45,6 @@ private:
   
 };
 
-extern ReferenceElement refelem;
+//extern ReferenceElement refelem;
   
 #endif

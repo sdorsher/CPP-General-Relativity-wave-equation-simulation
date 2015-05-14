@@ -8,6 +8,8 @@
 #include "globals.h"
 #include <cmath>
 #include <fstream>
+#include "ConfigParams.h"
+
 
 double analyticsoln(double);
 void initialconditions(VectorGridFunction& uh, Grid grd);
@@ -18,20 +20,22 @@ int main()
 {
   int PDEnum = 3; //number of independent PDEs. 
   int NumElems=10;
+  int elemorder =20;
   string fileElemBoundaries= "elemBoundaries.txt";
   //vector<string> uhfilename
   // string uhfilename="fourthorderODE.txt";
   string uhfilename="waveequation.txt";
-  
-  //initialization of grid and calculation of reference element
-  Grid thegrid(fileElemBoundaries, ELEMORDER, NumElems);
+   //initialization of grid and calculation of reference element
+  //Grid thegrid(fileElemBoundaries, elemorder, NumElems);
+  Grid thegrid(elemorder,NumElems,0.0, 20.0);
+ 
 
   //declaration of calculation variables and 
   //initialization to either zero or value read from file
-  VectorGridFunction uh(PDEnum,NumElems,ELEMORDER+1,true); 
-  VectorGridFunction uh0(PDEnum,NumElems,ELEMORDER+1,true);
+  VectorGridFunction uh(PDEnum,NumElems,elemorder+1,true); 
+  VectorGridFunction uh0(PDEnum,NumElems,elemorder+1,true);
   //solution to PDE, possibly a vector 
-  VectorGridFunction RHSvgf(PDEnum,NumElems,ELEMORDER+1,true); //right hand side of PDE
+  VectorGridFunction RHSvgf(PDEnum,NumElems,elemorder+1,true); //right hand side of PDE
  
 
 
@@ -105,8 +109,8 @@ int main()
             double L2;
             L2=LTwoerror(thegrid,uh0,uh);
             cout << "Order, deltat, num elems, L2 norm" << endl;
-            cout<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
-            fsconvergence<<ELEMORDER << " " << deltat << " " << NumElems << " " << L2 << endl;
+            cout<<elemorder << " " << deltat << " " << NumElems << " " << L2 << endl;
+            fsconvergence<<elemorder << " " << deltat << " " << NumElems << " " << L2 << endl;
             fsconvergence.close();
 
 
@@ -152,7 +156,7 @@ return 0.2*pow(t,5.0);
         {
           double psi=amp*sin(omega*nodes.get(i,j)+phase);
           double rho=omega*cos(omega*nodes.get(i,j)+phase);
-          double pivar=-speed*rho;
+          double pivar=-params.speed*rho;
           uh.set(0,i,j,psi);
           uh.set(1,i,j,pivar);
           uh.set(2,i,j,rho);
@@ -182,9 +186,9 @@ return 0.2*pow(t,5.0);
            double dgauss =-(nodes.get(i,j)-position)/pow(sigma,2.0)*gauss;
            uh.set(0,i,j,gauss);
            uh.set(1,i,j,0.0);
-           //uh.set(1,i,j,-speed*dgauss);
+           //uh.set(1,i,j,-params.speed*dgauss);
            uh.set(2,i,j,dgauss);
-           //fs << nodes.get(i,j) << " " << gauss << " " << speed*dgauss << " " << -dgauss << endl;
+           //fs << nodes.get(i,j) << " " << gauss << " " << params.speed*dgauss << " " << -dgauss << endl;
          }
      }
    //   fs.close();
@@ -228,7 +232,7 @@ double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhen
   double L2;
   L2=0.0;
   Array1D<double> weights;
-  weights=refelem.getw();
+  weights=thegrid.refelem.getw();
   vector<double> rx;
   rx=thegrid.jacobian();
   GridFunction nodes(uh0.gridDim(), uh0.pointsDim(),false);

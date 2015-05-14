@@ -81,25 +81,25 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
 
   
    A[0][0]=0.0;
-   A[0][1]=-speed*speed;
+   A[0][1]=-params.speed*params.speed;
    A[1][0]=-1.0;
    A[1][1]=0.0;
 
   
-  s[0][0]=speed;
-  s[0][1]=-speed;
+  s[0][0]=params.speed;
+  s[0][1]=-params.speed;
   s[1][0]=1.0;
   s[1][1]=1.0;
   
-  sinv[0][0]=0.5/speed;
+  sinv[0][0]=0.5/params.speed;
   sinv[0][1]=0.5;
-  sinv[1][0]=-0.5/speed;
+  sinv[1][0]=-0.5/params.speed;
   sinv[1][1]=0.5;
 
-  lambd[0][0]=-speed;
-  lambd[1][0]=-speed;
-  lambd[0][1]=speed;
-  lambd[1][1]=speed;
+  lambd[0][0]=-params.speed;
+  lambd[1][0]=-params.speed;
+  lambd[0][1]=params.speed;
+  lambd[1][1]=params.speed;
   //lambda is eigenvalues of characteristic matrix at element boundaries
 
   //   output2D(lambd);
@@ -218,7 +218,7 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
       nflux1[1]=nfluxR[1];
       for(int i=0; i<2; i++) //A*u at boundaries
         {//correct. don't arbitratrily change the sign of this
-          du0[i]=-nx[i]*pow(speed,2.0)*uint1[i]-nflux0[i];
+          du0[i]=-nx[i]*pow(params.speed,2.0)*uint1[i]-nflux0[i];
           du1[i]=-nx[i]*uint0[i]-nflux1[i];
         }
       if(elemnum==5)
@@ -243,10 +243,10 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
           // fs.open("rhsoutput.txt", ios::app);
   
           Array1D<double> RHS1(RHSvgf.pointsDim());
-          RHS1=pow(speed,2.0)
-            *matmult(rx*refelem.getD(),uh.get(2,elemnum));
+          RHS1=pow(params.speed,2.0)
+            *matmult(rx*thegrid.refelem.getD(),uh.get(2,elemnum));
           Array1D<double> RHS2(RHSvgf.pointsDim());
-          RHS2=matmult(rx*refelem.getD(),uh.get(1,elemnum));
+          RHS2=matmult(rx*thegrid.refelem.getD(),uh.get(1,elemnum));
           for(int k=0; k<RHS1.dim(); k++)
             {
               //     cout << nodes.get(elemnum,k) << " "<< RHS1[k] << " " << RHS2[k] << endl;
@@ -255,13 +255,13 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
           //fs.close();
 
         }
-      RHSvgf.set(1,elemnum,pow(speed,2.0)
-                 *matmult(rx*refelem.getD(),uh.get(2,elemnum))
-                 +matmult(refelem.getLift(),rx*du0));
+      RHSvgf.set(1,elemnum,pow(params.speed,2.0)
+                 *matmult(rx*thegrid.refelem.getD(),uh.get(2,elemnum))
+                 +matmult(thegrid.refelem.getLift(),rx*du0));
 
       RHSvgf.set(2,elemnum,
-                 matmult(rx*refelem.getD(),uh.get(1,elemnum))
-                 +matmult(refelem.getLift(),rx*du1));
+                 matmult(rx*thegrid.refelem.getD(),uh.get(1,elemnum))
+                 +matmult(thegrid.refelem.getLift(),rx*du1));
 
       
 
