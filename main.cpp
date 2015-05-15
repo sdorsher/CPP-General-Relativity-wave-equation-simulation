@@ -12,40 +12,53 @@
 
 
 double analyticsoln(double);
-void initialconditions(VectorGridFunction& uh, Grid grd);
+void initialGaussian(VectorGridFunction& uh, Grid grd);
+void initialSinusoid(VectorGridFunction& uh, Grid grd);
 void Linferror(double nominal,double theoretical, double&);
 double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhend);
 
 int main()
 {
-  int PDEnum = 3; //number of independent PDEs. 
-  int NumElems=10;
-  int elemorder =20;
-  string fileElemBoundaries= "elemBoundaries.txt";
+    string fileElemBoundaries= "elemBoundaries.txt";
   //vector<string> uhfilename
   // string uhfilename="fourthorderODE.txt";
-  string uhfilename="waveequation.txt";
+  //string uhfilename="waveequation.txt";
    //initialization of grid and calculation of reference element
-  //Grid thegrid(fileElemBoundaries, elemorder, NumElems);
-  Grid thegrid(elemorder,NumElems,0.0, 20.0);
+  //if(params.grid.readfromfile)
+  //{
+  //  Grid thegrid(fileElemBoundaries, params.grid.elemorder, params.grid.numelems);
+  //}else
+  //{
+  Grid thegrid(params.grid.elemorder,params.grid.numelems,params.grid.lowerlim, params.grid.upperlim);
+      //}
  
 
   //declaration of calculation variables and 
   //initialization to either zero or value read from file
-  VectorGridFunction uh(PDEnum,NumElems,elemorder+1,true); 
-  VectorGridFunction uh0(PDEnum,NumElems,elemorder+1,true);
+  VectorGridFunction uh(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true); 
+  VectorGridFunction uh0(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true);
   //solution to PDE, possibly a vector 
-  VectorGridFunction RHSvgf(PDEnum,NumElems,elemorder+1,true); //right hand side of PDE
+  VectorGridFunction RHSvgf(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true); //right hand side of PDE
  
 
 
+
   GridFunction nodes = thegrid.gridNodeLocations();
+
+
 
   //initial conditions
   //uh.initFromFile(scalarfilename);
 
   //get problem in initial conditions
-  initialconditions(uh,thegrid);
+
+  if(params.waveeq.issinusoid)
+    {
+      initialSinusoid(uh,thegrid);
+    }else if(params.waveeq.isgaussian)
+    {
+      initialGaussian(uh,thegrid);
+    }
   uh0=uh;
   
   //  double integral= LTwoerror(thegrid,uh0,uh);
@@ -58,23 +71,31 @@ int main()
 
 
   ofstream fs;
-  fs.open(uhfilename);
+  fs.open(params.file.pdesolution);
 
-  double t0=0.0;
-  double tmax=20.0;
-  double deltat=0.001;
+  //  double t0=0.0;
+  //double tmax=20.0;
+  //double deltat=0.001;
   
-  double courantfac=0.25;
-  int nt=ceil(tmax/courantfac/dt0);
-  //double deltat=tmax/nt;
+  //  double courantfac=0.25;
+  int nt=ceil(params.time.tmax/params.time.courantfac/dt0);
 
+  double deltat;
+  if(params.time.usefixedtimestep)
+    {
+      deltat=params.time.dt;
+    }
+  else
+    {
+      deltat=params.time.tmax/nt;
+    }
   cout << dt0 << " " << deltat << endl;
 
-  double outputinterval=1.0;
+  //double outputinterval=1.0;
   double output=deltat/2.0;
   int outputcount =0;
 
-  for(double t=t0; t<tmax+deltat; t+=deltat)
+  for(double t=params.time.t0; t<params.time.tmax+deltat; t+=deltat)
     {
       
       if(output>0.0){
@@ -88,11 +109,11 @@ int main()
               }
             
           }
-        if(outputcount==20)
+        if(outputcount==params.time.comparisoncount)
           {
             cout << t << endl;
             ofstream fs2;
-            fs2.open("diffGaus.txt");
+            fs2.open(params.file.oneperioderror);
             for(int i=0; i<uh.gridDim(); i++)
               {
                 for (int j=0; j<uh.pointsDim(); j++)
@@ -103,14 +124,14 @@ int main()
             fs2.close();
 
             ofstream fsconvergence;
-            fsconvergence.open("convergence.txt",ios::app);
+            fsconvergence.open(params.file.L2error,ios::app);
             
 
             double L2;
             L2=LTwoerror(thegrid,uh0,uh);
             cout << "Order, deltat, num elems, L2 norm" << endl;
-            cout<<elemorder << " " << deltat << " " << NumElems << " " << L2 << endl;
-            fsconvergence<<elemorder << " " << deltat << " " << NumElems << " " << L2 << endl;
+            cout<<params.grid.elemorder << " " << deltat << " " << params.grid.numelems << " " << L2 << endl;
+            fsconvergence<<params.grid.elemorder << " " << deltat << " " << params.grid.numelems << " " << L2 << endl;
             fsconvergence.close();
 
 
@@ -118,7 +139,7 @@ int main()
 }
 
 
-        output-=outputinterval; 
+        output-=params.time.outputinterval; 
         outputcount++;
       }
    
@@ -141,11 +162,8 @@ return 0.2*pow(t,5.0);
 }
 */
 
- /* void initialconditions(VectorGridFunction& uh, Grid grd){
-  double amp=1.0;
-  double wavelength=20.0;
-  double phase=0.0;
-  double omega=2.0*PI/wavelength;
+ void initialSinusoid(VectorGridFunction& uh, Grid grd){
+    double omega=2.0*PI/params.sine.wavelength;
 
   GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
   nodes=grd.gridNodeLocations();
@@ -154,9 +172,9 @@ return 0.2*pow(t,5.0);
     {
       for (int j=0; j<uh.pointsDim(); j++)
         {
-          double psi=amp*sin(omega*nodes.get(i,j)+phase);
-          double rho=omega*cos(omega*nodes.get(i,j)+phase);
-          double pivar=-params.speed*rho;
+          double psi=params.sine.amp*sin(omega*nodes.get(i,j)+params.sine.phase);
+          double rho=omega*params.sine.amp*cos(omega*nodes.get(i,j)+params.sine.phase);
+          double pivar=-params.waveeq.speed*rho;
           uh.set(0,i,j,psi);
           uh.set(1,i,j,pivar);
           uh.set(2,i,j,rho);
@@ -164,31 +182,33 @@ return 0.2*pow(t,5.0);
     }
 }
  
- */
 
- void initialconditions(VectorGridFunction& uh, Grid grd){
-   double sigma = 1.0;
-   double amplitude = 1.0;
-   double position = 10.1;
+
+ void initialGaussian(VectorGridFunction& uh, Grid grd){
+   // double sigma = 1.0;
+   //double amplitude = 1.0;
+   //double position = 10.1;
    GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
    nodes=grd.gridNodeLocations();
 
    // std::ofstream fs;
-   //fs.open("initialconditions.txt");
+   //fs.open(params.file.initialconditions);
    
-
    for(int i=0; i<uh.gridDim(); i++)
      {
        for(int j=0; j<uh.pointsDim(); j++)
          {
-           double gauss=amplitude*exp(-pow((nodes.get(i,j)-position),2.0)
-                                      /2.0/pow(sigma,2.0));
-           double dgauss =-(nodes.get(i,j)-position)/pow(sigma,2.0)*gauss;
-           uh.set(0,i,j,gauss);
+           double gaussian=params.gauss.amp*exp(-pow((nodes.get(i,j)
+                                                      -params.gauss.mu),2.0)
+                                      /2.0/pow(params.gauss.sigma,2.0));
+           double dgauss =-(nodes.get(i,j)-params.gauss.mu)
+             /pow(params.gauss.sigma,2.0)*gaussian;
+           uh.set(0,i,j,gaussian);
            uh.set(1,i,j,0.0);
-           //uh.set(1,i,j,-params.speed*dgauss);
+           //uh.set(1,i,j,-params.waveeq.speed*dgauss);
            uh.set(2,i,j,dgauss);
-           //fs << nodes.get(i,j) << " " << gauss << " " << params.speed*dgauss << " " << -dgauss << endl;
+           //fs << nodes.get(i,j) << " " << gaussian << " " 
+           //<< params.waveeq.speed*dgauss << " " << -dgauss << endl;
          }
      }
    //   fs.close();
