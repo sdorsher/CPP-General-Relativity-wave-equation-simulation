@@ -19,8 +19,7 @@ class Grid
   //vector<int> elementOrders; //N
   void calcjacobian();
   //map<int,ReferenceElement> allRefelems;
-
-
+  
 
  public:
 
