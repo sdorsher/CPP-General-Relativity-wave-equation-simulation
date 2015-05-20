@@ -6,22 +6,25 @@
 
 using namespace std;
 
+
+template <class T>
 class GridFunction
 {
  public:
-  GridFunction(int vecSize, int arraySize,bool initZeros);
-  void set(int vcoord, TNT::Array1D<double>);
-  void set(int vcoord, int acoord,double value);
-  void append(TNT::Array1D<double> array);
-  double get(int vcoord, int acoord);
-  TNT::Array1D<double> get(int vcoord);
+  GridFunction(int vecSize, int arraySize,T initvalue);
+  GridFunction(int vecSize, int arraySize);
+  void set(int vcoord, TNT::Array1D<T>);
+  void set(int vcoord, int acoord,T value);
+  void append(TNT::Array1D<T> array);
+  T get(int vcoord, int acoord);
+  TNT::Array1D<T> get(int vcoord);
   int gridDim();
   int pointsDim();
   void save(string filename);
   
   // private:
  private:
-  vector<TNT::Array1D<double>> data;
+  vector<TNT::Array1D<T>> data;
   int GFvectorDim;
   int GFarrayDim;
 
@@ -43,8 +46,11 @@ class GridFunction
  
 };
 
-GridFunction operator+(GridFunction gf1,GridFunction gf2);
-GridFunction operator*(double A,GridFunction gf2);
+template <typename T>
+GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2);
+template <typename T>
+GridFunction<T> operator*(T A,GridFunction<T> gf2);
 
+#include "GridFunction.tpp"
 
 #endif
