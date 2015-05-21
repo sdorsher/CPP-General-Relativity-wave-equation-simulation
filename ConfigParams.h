@@ -1,4 +1,3 @@
-
 #ifndef CONFIGPARAMS_H
 #define CONFIGPARAMS_H
 
@@ -49,13 +48,13 @@ struct TimeParams{
 
 struct FileParams
 {
-
   string pdesolution;
   string oneperioderror;
   string L2error;
   string initialconditions;
 };
 
+//main structure to be used as global variable
 struct ConfigParams {
   WaveEqParams waveeq;
   SinusoidParams sine;
@@ -67,13 +66,10 @@ struct ConfigParams {
   ConfigParams(const std::string& configFileName);
 
   template <typename T>
-  T getConfigFromFile( const std::string& configFileName, const std::string& structkey, const std::string& key);
+  T getConfigFromFile( const std::string& configFileName, 
+                       const std::string& structkey, const std::string& key);
 };
 
-
-
 extern const ConfigParams params;
-
-
 
 #endif

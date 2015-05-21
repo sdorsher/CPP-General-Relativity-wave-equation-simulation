@@ -1,7 +1,7 @@
 #include "Evolution.h"
 
-void rk4lowStorage(Grid thegrid, VectorGridFunction& uh, 
-                   VectorGridFunction& RHSvgf, 
+void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
+                   VectorGridFunction<double>& RHSvgf, 
                    double t, double deltat)
 {
 
@@ -24,7 +24,7 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
 
   int nsteps=5;
   
-  VectorGridFunction k(RHSvgf.vectorDim(),RHSvgf.gridDim(),RHSvgf.pointsDim(),false);
+  VectorGridFunction<double> k(RHSvgf.vectorDim(),RHSvgf.gridDim(),RHSvgf.pointsDim());
 
   //step 0
   
@@ -48,15 +48,16 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction& uh,
 
 //---------------------
 
-void RHS(Grid thegrid, VectorGridFunction& uh, 
-         VectorGridFunction& RHSvgf, double t,bool output)
+void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
+         VectorGridFunction<double>& RHSvgf, double t,bool output)
 {
   if(RHSvgf.vectorDim()>3)
     {
       throw invalid_argument("Wave equation PDE should only have three separable components.");
     }
 
-  GridFunction nodes(thegrid.gridNodeLocations().gridDim(),thegrid.gridNodeLocations().pointsDim(),false);
+  GridFunction<double> nodes(thegrid.gridNodeLocations().gridDim(),
+                             thegrid.gridNodeLocations().pointsDim());
   nodes=thegrid.gridNodeLocations();
 
   // uh=(psi,rho,pi)

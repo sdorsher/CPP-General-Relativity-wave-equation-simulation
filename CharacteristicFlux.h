@@ -15,6 +15,7 @@ class CharacteristicFlux
   int Adimension;
   int Ddimension;
   Array2D<double> trimA();
+
  public:
   CharacteristicFlux(Array2D<double> Amatrix);
   Array2D<double> getA();
@@ -22,6 +23,4 @@ class CharacteristicFlux
   Array2D<double> getSinv();
   Array2D<double> getLambda();
   Array2D<double> getAtrimmed();
-
-
 };

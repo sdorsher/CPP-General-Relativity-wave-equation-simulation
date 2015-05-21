@@ -1,32 +1,45 @@
 #include "Grid.h"
 
+Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):
+  order{elemorder},
+  NumElem{numelements},
+  nodeLocs{0,elemorder+1}, 
+  Amatrices{numelements,elemorder+1},
+  refelem{elemorder}
 
-Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
 {
-  
-  
-  for(int i=0; i<=numelements; i++)
-    {
-      elementBoundaries.push_back(lowerlim+i*(upperlim-lowerlim)/float(numelements));
-    }
+  for(int i=0; i<=numelements; i++){
+    elementBoundaries.push_back(lowerlim + i*(upperlim-lowerlim)/float(numelements));
+  }
   
   Array1D<double> physicalPosition(elemorder+1);
-  for(int elem=0; elem<numelements; elem++)
-    {
-      physicalPosition=((elementBoundaries[elem+1]-elementBoundaries[elem])/2.0)
-        *refelem.getr()
-        +((elementBoundaries[elem+1]+elementBoundaries[elem])/2.0);
-      nodeLocs.append(physicalPosition);
-    }
+  for(int elem=0; elem<numelements; elem++){
+    physicalPosition = ((elementBoundaries[elem+1] - elementBoundaries[elem]) / 2.0)
+      *refelem.getr()
+      +((elementBoundaries[elem+1] + elementBoundaries[elem]) / 2.0);
+    nodeLocs.append(physicalPosition);
+  }
 
   calcjacobian();
+  Amatrices=setupAmatrix(nodeLocs);
+  for (int i=0; i<nodeLocs.gridDim(); i++){
+    CharacteristicFlux left(Amatrices.get(i,0));
+    CharacteristicFlux right(Amatrices.get(i,nodeLocs.pointsDim()-1));
+    AleftBoundaries.push_back(left);
+    ArightBoundaries.push_back(right);
+  }
+  
+
+  //need some kind of A matrix as a function of position or function
+  //build A matrix Gridfunction
+  //build CharacteristicFlux vector-- make that a function of position (how)
   
 
 }
 
 
 
-Grid::Grid(string fileElemBoundaries,int elemorder, int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
+/*Grid::Grid(string fileElemBoundaries,int elemorder, int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
 {
   
 
@@ -63,13 +76,13 @@ Grid::Grid(string fileElemBoundaries,int elemorder, int numelements):order{elemo
   
 
 }
-
+*/
 int Grid::numberElements()
 {
   return NumElem;
 }
 
-GridFunction Grid::gridNodeLocations()
+GridFunction<double> Grid::gridNodeLocations()
 {
   return nodeLocs;
 }

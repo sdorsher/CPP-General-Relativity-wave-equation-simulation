@@ -12,38 +12,38 @@
 
 
 double analyticsoln(double);
-void initialGaussian(VectorGridFunction& uh, Grid grd);
-void initialSinusoid(VectorGridFunction& uh, Grid grd);
+void initialGaussian(VectorGridFunction<double>& uh, Grid grd);
+void initialSinusoid(VectorGridFunction<double>& uh, Grid grd);
 void Linferror(double nominal,double theoretical, double&);
-double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhend);
+double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, 
+                 VectorGridFunction<double>& uhend);
 
 int main()
 {
-    string fileElemBoundaries= "elemBoundaries.txt";
-  //vector<string> uhfilename
-  // string uhfilename="fourthorderODE.txt";
-  //string uhfilename="waveequation.txt";
-   //initialization of grid and calculation of reference element
-  //if(params.grid.readfromfile)
-  //{
-  //  Grid thegrid(fileElemBoundaries, params.grid.elemorder, params.grid.numelems);
-  //}else
-  //{
+  //string filename="elemBoundaries.txt";
+
   Grid thegrid(params.grid.elemorder,params.grid.numelems,params.grid.lowerlim, params.grid.upperlim);
-      //}
- 
 
   //declaration of calculation variables and 
   //initialization to either zero or value read from file
-  VectorGridFunction uh(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true); 
-  VectorGridFunction uh0(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true);
+  VectorGridFunction<double> uh(params.waveeq.pdenum,
+                                params.grid.numelems,
+                                params.grid.elemorder+1,
+                                0.0); 
+  VectorGridFunction<double> uh0(params.waveeq.pdenum,
+                                 params.grid.numelems,
+                                 params.grid.elemorder+1,
+                                 0.0);
   //solution to PDE, possibly a vector 
-  VectorGridFunction RHSvgf(params.waveeq.pdenum,params.grid.numelems,params.grid.elemorder+1,true); //right hand side of PDE
+  VectorGridFunction<double> RHSvgf(params.waveeq.pdenum,
+                                    params.grid.numelems,
+                                    params.grid.elemorder+1,
+                                    0.0); //right hand side of PDE
  
 
 
 
-  GridFunction nodes = thegrid.gridNodeLocations();
+  GridFunction<double> nodes = thegrid.gridNodeLocations();
 
 
 
@@ -162,10 +162,10 @@ return 0.2*pow(t,5.0);
 }
 */
 
- void initialSinusoid(VectorGridFunction& uh, Grid grd){
+void initialSinusoid(VectorGridFunction<double>& uh, Grid grd){
     double omega=2.0*PI/params.sine.wavelength;
 
-  GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
+    GridFunction<double> nodes(uh.gridDim(),uh.pointsDim(),false);
   nodes=grd.gridNodeLocations();
 
   for(int i=0; i<uh.gridDim(); i++)
@@ -184,11 +184,11 @@ return 0.2*pow(t,5.0);
  
 
 
- void initialGaussian(VectorGridFunction& uh, Grid grd){
+void initialGaussian(VectorGridFunction<double>& uh, Grid grd){
    // double sigma = 1.0;
    //double amplitude = 1.0;
    //double position = 10.1;
-   GridFunction nodes(uh.gridDim(),uh.pointsDim(),false);
+  GridFunction<double> nodes(uh.gridDim(),uh.pointsDim(),false);
    nodes=grd.gridNodeLocations();
 
    // std::ofstream fs;
@@ -247,7 +247,7 @@ return 0.2*pow(t,5.0);
   
   }*/
 
-double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhend)
+double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, VectorGridFunction<double>& uhend)
 {
   double L2;
   L2=0.0;
@@ -255,7 +255,7 @@ double LTwoerror(Grid thegrid, VectorGridFunction& uh0, VectorGridFunction& uhen
   weights=thegrid.refelem.getw();
   vector<double> rx;
   rx=thegrid.jacobian();
-  GridFunction nodes(uh0.gridDim(), uh0.pointsDim(),false);
+  GridFunction<double> nodes(uh0.gridDim(), uh0.pointsDim(),false);
   nodes=thegrid.gridNodeLocations();
   for(int i =0; i<uh0.gridDim(); i++)
     {

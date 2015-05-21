@@ -9,12 +9,11 @@
 #include <fstream>
 #include "ConfigParams.h"
 
-
-
-void rk4lowStorage(Grid thegrid, VectorGridFunction& uh, 
-                   VectorGridFunction& RHSvgf, 
+void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
+                   VectorGridFunction<double>& RHSvgf, 
                    double t, double deltat);
-void RHS(Grid thegrid, VectorGridFunction& uh, 
-         VectorGridFunction& RHSvgf, double t,bool output);
+
+void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
+         VectorGridFunction<double>& RHSvgf, double t,bool output);
 
 #endif

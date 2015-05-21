@@ -12,7 +12,6 @@ class ReferenceElement
 
  public:
  ReferenceElement(int N);
- 
 
  private:
   void jacobiGQ(TNT::Array1D<double>& x, double alpha, double beta, int n, 
@@ -34,7 +33,7 @@ private:
   Array2D<double> vandermondeMatrix; 
   Array2D<double> dVdr;
   Array2D<double> derivativeMatrix;
-  Array2D<double> lift;
+  Array2D<double> lift; //used in numerical flux calculation, scaled by jacobian
 
  public:
   Array2D<double> getD(); //get derivative matrix
@@ -45,6 +44,4 @@ private:
   
 };
 
-//extern ReferenceElement refelem;
-  
 #endif
