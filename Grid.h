@@ -1,7 +1,6 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include "tnt.h"
 #include "TNT2.h"
 #include "ReferenceElement.h"
 #include "GridFunction.h"

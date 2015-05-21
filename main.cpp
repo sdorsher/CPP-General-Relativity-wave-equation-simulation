@@ -1,4 +1,3 @@
-#include "tnt.h"
 #include "TNT2.h"
 #include "Grid.h"
 #include "ReferenceElement.h"
@@ -105,7 +104,7 @@ int main()
           {
             for(int j=0; j<uh.pointsDim(); j++)
               {
-                fs << thegrid.gridNodeLocations().get(i,j) << " " << uh.get(0,i,j) << endl;
+                fs << thegrid.gridNodeLocations().get(i,j) << " " << uh.get(0,i,j) << " " << uh.get(1,i,j) << endl;
               }
             
           }
