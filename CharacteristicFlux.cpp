@@ -92,3 +92,14 @@ Array2D<double> CharacteristicFlux::getAtrimmed()
 {
   return Atrimmed;
 }
+
+  
+int CharacteristicFlux::getAdim()
+{
+  return Adimension;
+}
+
+int CharacteristicFlux::getDdim()
+{
+  return Ddimension;
+}

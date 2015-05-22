@@ -141,7 +141,7 @@ int main()
         output-=params.time.outputinterval; 
         outputcount++;
       }
-   
+
       rk4lowStorage(thegrid,uh,RHSvgf,t,deltat);
       output+=deltat;
     }
@@ -252,8 +252,8 @@ double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, VectorGridFuncti
   L2=0.0;
   Array1D<double> weights;
   weights=thegrid.refelem.getw();
-  vector<double> rx;
-  rx=thegrid.jacobian();
+  // vector<double> rx;
+  //rx=thegrid.jacobian();
   GridFunction<double> nodes(uh0.gridDim(), uh0.pointsDim(),false);
   nodes=thegrid.gridNodeLocations();
   for(int i =0; i<uh0.gridDim(); i++)
@@ -262,7 +262,9 @@ double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, VectorGridFuncti
         {
      
           //          cout << nodes.get(i,j) << " " << weights[j] << " " << rx[i] << endl;
-          double added= weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i];
+          double added= weights[j]*pow(uh0.get(0,i,j)
+                                       -uhend.get(0,i,j),2.0)
+            /thegrid.jacobian(i);
           L2+=added;
           //cout << L2 <<" "<< added << endl; 
             //<< weights[j]*pow(uh0.get(0,i,j)-uhend.get(0,i,j),2.0)/rx[i] <<endl;

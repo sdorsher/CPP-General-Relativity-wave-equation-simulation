@@ -32,7 +32,8 @@ class VectorGridFunction
   void save(string filenames); //vector of filenames to print to
   //  void initFromFile(string filename);
   vector<T> getVector(int GFvcoord, int GFacoord);
-  Array1D<T> getVectorAsArray1D(int GFvcoord, int GFacoord);  
+  Array1D<T> getVectorAsArray1D(int GFvcoord, int GFacoord,int vmin, int vmax);
+  Array2D<T> getVectorNodeArray2D(int GFcoord,int startvec, int stopvec);
 };
 
 template <typename T>

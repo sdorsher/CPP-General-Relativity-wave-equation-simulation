@@ -176,6 +176,54 @@ vector<T> VectorGridFunction<T>::getVector(int GFvcoord, int GFacoord)
 }
     
 
+template <class T>
+Array1D<T> VectorGridFunction<T>::getVectorAsArray1D(int GFvcoord, int GFacoord,int vmin, int vmax)
+
+{
+  if((GFvcoord<0)||(GFvcoord>=GFvectorDim)||(GFacoord<0)||(GFacoord>GFarrayDim))
+    {
+      throw invalid_argument("Get indices out of range.");
+    }
+  
+  if((vmax>VGFvectorDim)||(vmin<0))
+    {
+      throw invalid_argument("Get max or min vector indices out of range");
+    }
+
+  Array1D<T> outputvec(vmax-vmin+1);
+  for(int i=vmin; i<=vmax; i++)
+    {
+      outputvec[i-vmin] =get(i,GFvcoord,GFacoord);
+    }
+  return outputvec;
+
+}
+
+template <class T>
+Array2D<T> VectorGridFunction<T>::getVectorNodeArray2D(int GFcoord,int startvec, int stopvec)
+{
+  if((GFcoord<0)||(GFcoord>GFvectorDim))
+    {
+      throw invalid_argument("Get indices out of range");
+    }
+  if((startvec<0)||(stopvec>=VGFvectorDim))
+    {
+      throw invalid_argument("Endpoints of vector requested are out of range");
+    }
+
+  Array2D<T> output(GFarrayDim,stopvec-startvec+1);
+  for(int i=startvec; i<=stopvec; i++)
+    {
+      for(int j=0; j<GFarrayDim; j++)
+        {
+          output[j][i-startvec]=get(i,GFcoord,j);
+        }
+    }
+  return output;
+    
+}
+
+
 
 //-----------------------------
 //not in class

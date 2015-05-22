@@ -27,9 +27,11 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
   VectorGridFunction<double> k(RHSvgf.vectorDim(),RHSvgf.gridDim(),RHSvgf.pointsDim());
 
   //step 0
-  
+  vector<Array2D<double>> du;
   //step 1
-  RHS(thegrid, uh, RHSvgf, t,true);
+
+  du=move(thegrid.characteristicflux(uh));
+  thegrid.RHS(uh, RHSvgf, t, du);
   k=deltat*RHSvgf;
   uh=uh+rk4b[0]*k;
 
@@ -37,7 +39,8 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
 
   //step2
   for(int i=2; i<=5; i++){
-    RHS(thegrid, uh, RHSvgf, t+rk4c[i-1]*deltat,false);
+    du=move(thegrid.characteristicflux(uh));
+    thegrid.RHS(uh, RHSvgf, t+rk4c[i-1]*deltat, du);
     k=rk4a[i-1]*k+deltat*RHSvgf;
     uh=uh+rk4b[i-1]*k;
   }
@@ -48,7 +51,7 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
 
 //---------------------
 
-void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
+/*void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
          VectorGridFunction<double>& RHSvgf, double t,bool output)
 {
   if(RHSvgf.vectorDim()>3)
@@ -272,7 +275,7 @@ void RHS(Grid thegrid, VectorGridFunction<double>& uh,
     }
 }
 
-
+*/
 
 //tests use old function definition of RK4 routine
 // test fourth order polynomial ODE, should be exact in RK4. it was.

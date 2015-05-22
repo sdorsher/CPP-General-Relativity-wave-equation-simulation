@@ -12,7 +12,7 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
                    VectorGridFunction<double>& RHSvgf, 
                    double t, double deltat);
 
-void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
-         VectorGridFunction<double>& RHSvgf, double t,bool output);
+//void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
+//         VectorGridFunction<double>& RHSvgf, double t,bool output);
 
 #endif

@@ -7,6 +7,7 @@
 #include <fstream>
 #include "DiffEq.h"
 #include "CharacteristicFlux.h"
+#include "VectorGridFunction.h"
 
 class Grid
 {
@@ -18,11 +19,15 @@ class Grid
   GridFunction<double> nodeLocs; //NxNp
   void calcjacobian();
   GridFunction<Array2D<double>> Amatrices;
+  GridFunction<Array2D<double>> Bmatrices;
   vector<CharacteristicFlux> AleftBoundaries;
   vector<CharacteristicFlux> ArightBoundaries;
   //vector<int> elementOrders; //N
   //map<int,ReferenceElement> allRefelems;
-  
+  vector<Array1D<double>> duL;
+  vector<Array1D<double>> duR;
+
+
 
  public:
   Grid(int elemorder, int numelements,double lowerlim, double upperlim);
@@ -34,8 +39,13 @@ class Grid
   GridFunction<double> gridNodeLocations();  
   vector<double> gridBoundaries();
   Array2D<double> getRescaledDmatrix();
-  vector<double> jacobian();
+  double jacobian(int elemnum);
   ReferenceElement refelem;
+  vector<TNT::Array2D<double>> characteristicflux(VectorGridFunction<double>& uh);
+  void RHS(VectorGridFunction<double>& uh, 
+           VectorGridFunction<double>& RHSvgf, double t, vector<Array2D<double>>& du );
+  
+
 };
 
 #endif
