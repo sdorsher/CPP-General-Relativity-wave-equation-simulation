@@ -156,11 +156,11 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
           uext0[1]=uh.get(1,0,0);//0.0;
           uext1[1]=uh.get(2,0,0);//0.0;
         }
-      if(elemnum==0){
-        //  cout << "LHS0 uext=" << uext0[0] << " uint=" << uint0[0] <<endl;
-        // cout << "RHS0 uext=" <<uext0[1] << " uint=" << uint0[1] << endl;
-        // cout << "LHS1 uext=" << uext1[0] << " uint=" << uint1[0] <<endl;
-        // cout << "RHS1 uext=" <<uext1[1] << " uint=" << uint1[1] << endl;
+      if(elemnum==5){
+         //cout << "LHS0 uext=" << uext0[0] << " uint=" << uint0[0] <<endl;
+       // cout << "RHS0 uext=" <<uext0[1] << " uint=" << uint0[1] << endl;
+       // cout << "LHS1 uext=" << uext1[0] << " uint=" << uint1[0] <<endl;
+       // cout << "RHS1 uext=" <<uext1[1] << " uint=" << uint1[1] << endl;
       }
       Array1D<double> nfluxL(2,0.0);
       Array1D<double> nfluxR(2,0.0);

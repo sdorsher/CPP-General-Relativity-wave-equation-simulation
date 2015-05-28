@@ -12,7 +12,7 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix):
   
   if(Amatrix.dim1()!=Amatrix.dim2())
     {
-      throw invalid_argument("Amatrix not square in characteristicFlux");
+      throw invalid_argument("Amatrix not square in CharacteristicFlux");
     }
 
   A=Amatrix;

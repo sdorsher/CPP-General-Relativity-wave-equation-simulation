@@ -48,11 +48,7 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
   vector<Array2D<double>> du;
   du.resize(NumElem);
   for(int elemnum=0; elemnum<NumElem; elemnum++){
-    Array1D<double> uintL;
-    Array1D<double> uintR;
-    Array1D<double> uextL;
-    Array1D<double> uextR;
-    int indL=0; //index of leftmost node
+     int indL=0; //index of leftmost node
     int indR=uh.pointsDim()-1; //index of rightmost node
     double nL=-1.0; //normal
     double nR=1.0;
@@ -64,6 +60,10 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
     int DdimR=ArightBoundaries[elemnum].getDdim();
     int vminR=vmaxR-DdimR+1;
 
+    Array1D<double> uintL(DdimL);
+    Array1D<double> uintR(DdimR);
+    Array1D<double> uextL(DdimL);
+    Array1D<double> uextR(DdimR);
     
     uintL=uh.getVectorAsArray1D(elemnum,indL,vminL,vmaxL); //internal u
     uintR=uh.getVectorAsArray1D(elemnum,indR,vminR,vmaxR);
@@ -81,6 +81,15 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
       uextR=uh.getVectorAsArray1D(0,indL,vminR,vmaxR); //periodic boundary conditions
     }
     
+
+    if(elemnum==5)
+      {
+        //cout << "LHS0 uext=" << uextL[0] << " uint=" << uintL[0] << endl;
+        //cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] <<endl;
+        //cout << "LHS1 uext=" << uextL[1] << " uint=" << uintL[1] << endl;
+        // cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] <<endl;
+        //correct at first time step, subsequently too small
+      }
     Array2D<double> lambdaminusL(DdimL,DdimL,0.0);
     Array2D<double> lambdaminusR(DdimR,DdimR,0.0);
     Array2D<double> lambdaplusL(DdimL,DdimL,0.0);
@@ -88,6 +97,7 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
 
     Array2D<double> lambdaL= AleftBoundaries[elemnum].getLambda();
     Array2D<double> lambdaR= ArightBoundaries[elemnum].getLambda();
+
 
     for(int j=0; j<DdimL; j++){
       if(nL*lambdaL[j][j]<=0){
@@ -103,22 +113,40 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
       }
     }
 
+    if(elemnum==5)
+      {
+        //        output2D(lambdaplusR);
+        //  output2D(lambdaminusR);
+      }
 
     Array2D<double> sinvL=AleftBoundaries[elemnum].getSinv();
     Array2D<double> sinvR=ArightBoundaries[elemnum].getSinv();
     Array2D<double> SL=AleftBoundaries[elemnum].getS();
     Array2D<double> SR=ArightBoundaries[elemnum].getS();
     
+
+    if(elemnum==5)
+      {
+        //        output2D(sinvL);
+        // output2D(sinvR);
+        //output2D(SL);
+        // output2D(SR);
+      }
     
-    Array1D<double> nfluxL=matmult(lambdaplusL,matmult(SL,uintL));
+    Array1D<double> nfluxL=matmult(lambdaplusL,matmult(sinvL,uintL));
     nfluxL+= matmult(lambdaminusL,matmult(sinvL,uextL));
     nfluxL=matmult(SL,nfluxL);
 
-    Array1D<double> nfluxR=matmult(lambdaplusR,matmult(SR,uintR));
+    Array1D<double> nfluxR=matmult(lambdaplusR,matmult(sinvR,uintR));
     nfluxR+= matmult(lambdaminusR,matmult(sinvR,uextR));
     nfluxR=matmult(SR,nfluxR);
 
-    
+
+    if(elemnum==5)
+      {
+        //        output1D(nfluxL);
+        // output1D(nfluxR);
+      }
 
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> AtrimmedR= AleftBoundaries[elemnum].getAtrimmed();
@@ -129,6 +157,11 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
     Array1D<double> duL = nL*matmult(AtrimmedL,uintL)-nfluxL; //needs - sign?
     Array1D<double> duR = nR*matmult(AtrimmedR,uintR)-nfluxR; //needs - sign?
 
+    if(elemnum==5){
+
+      //      output1D(duL);
+      //output1D(duR);
+    }
     insert_1D_into_2D(duelem,duL,0,false);
     insert_1D_into_2D(duelem,duR,1,false);
 
@@ -144,9 +177,11 @@ void Grid::RHS(VectorGridFunction<double>& uh,
                VectorGridFunction<double>& RHSvgf, double t, vector<Array2D<double>>& du )
 {
 
-  
+  //  output2D(du[5]);
 
   //don't forget to save in a VGF after each element!
+
+  //problem is in this routine HERE
 
   for(int elemnum=0; elemnum<NumElem; elemnum++){
     int vmaxAB=ArightBoundaries[elemnum].getAdim()-1;
