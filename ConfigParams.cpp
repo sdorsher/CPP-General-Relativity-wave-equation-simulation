@@ -38,7 +38,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   time.tmax=getConfigFromFile<double>(configFileName,"time","tmax");
   time.outputinterval=getConfigFromFile<double>(configFileName,"time","outputinterval");
   time.comparisoncount=getConfigFromFile<int>(configFileName,"time","comparisoncount");
-  time.usefixedtimestep=getConfigFromFile<int>(configFileName,"time","usefixedtimestep");
+  time.usefixedtimestep=getConfigFromFile<bool>(configFileName,"time","usefixedtimestep");
 
 
   file.pdesolution=getConfigFromFile<string>(configFileName,"file","pdesolution");
