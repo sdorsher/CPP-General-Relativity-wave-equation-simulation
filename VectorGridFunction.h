@@ -1,7 +1,6 @@
 #ifndef VECTORGRIDFUNCTION_H
 #define VECTORGRIDFUNCTION_H
 
-#include "tnt.h"
 #include "TNT2.h"
 #include "GridFunction.h"
 #include <fstream>
