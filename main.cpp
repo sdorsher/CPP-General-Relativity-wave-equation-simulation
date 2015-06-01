@@ -57,8 +57,8 @@ int main()
   fs.open(uhfilename);
 
   double t0=0.0;
-  double tmax=20.0;
-  double deltat=0.001;
+  double tmax=0.003;
+  double deltat=0.002;
   
   double courantfac=0.25;
   int nt=ceil(tmax/courantfac/dt0);

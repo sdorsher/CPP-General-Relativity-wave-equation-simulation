@@ -247,6 +247,14 @@ void RHS(Grid thegrid, VectorGridFunction& uh,
             *matmult(rx*refelem.getD(),uh.get(2,elemnum));
           Array1D<double> RHS2(RHSvgf.pointsDim());
           RHS2=matmult(rx*refelem.getD(),uh.get(1,elemnum));
+
+          if(elemnum==5)
+            {
+              cout << "RHS1" <<endl;
+              //output1D(RHS1);
+
+            }
+
           for(int k=0; k<RHS1.dim(); k++)
             {
               //     cout << nodes.get(elemnum,k) << " "<< RHS1[k] << " " << RHS2[k] << endl;
