@@ -179,8 +179,6 @@ void Grid::RHS(VectorGridFunction<double>& uh,
 
   //  output2D(du[5]);
 
-  //don't forget to save in a VGF after each element!
-
   //problem is in this routine HERE
 
   for(int elemnum=0; elemnum<NumElem; elemnum++){
@@ -194,17 +192,34 @@ void Grid::RHS(VectorGridFunction<double>& uh,
                           uh.getVectorAsArray1D(elemnum,nodenum,0,vmaxAB));
       insert_1D_into_2D(RHSB,RHSBpernode,nodenum,false);
 
-    }
+    }//this can be sped up by skipping the insert step and reading directly from per node
+
+
     //A contribution:
     
-
+    if(elemnum==5)
+      {
+        //        output2D(Bmatrices.get(elemnum,0));
+        //     output2D(RHSB);
+        // output1D(uh.getVectorAsArray1D(elemnum,0,0,vmaxAB));
+       //correct based on inputs but for some reason uh[1] is still zero for second timestep
+       // output1D(uh.get(1,elemnum));
+      }
 
     Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
                                     uh.getVectorNodeArray2D(elemnum,
                                                             vminA,vmaxAB)));
+    //needs a multiplication by an A matrix between D and vectornodearray,
+    //but A is position dependent. not sure how to handle this.
+
+    if(elemnum==5)
+      {
+        // output1D(uh.get(2,elemnum));
+        //output2D(RHSA1);//setting 2 column, not 1 column. wrong
+        output2D(uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB));
+      }
 
     Array2D<double> RHSA2=jacobian(elemnum)*matmult(refelem.getLift(),du[elemnum]);
-    
 
        //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
