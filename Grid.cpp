@@ -206,9 +206,21 @@ void Grid::RHS(VectorGridFunction<double>& uh,
        // output1D(uh.get(1,elemnum));
       }
 
-    Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
-                                    uh.getVectorNodeArray2D(elemnum,
-                                                            vminA,vmaxAB)));
+        Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
+                                  uh.getVectorNodeArray2D(elemnum,
+                                                          vminA,vmaxAB)));
+    /*
+    Array2D<double> prederiv(uh.pointsDim(),ArightBoundaries[elemnum].getDdim());
+    for(int nodenum=0; node<uh.pointsDim(); nodenum++)
+      {
+
+        Array1D<double> prederivpernode = matmult(trimmedAmatrices.get(elemnum,nodenum),uh.getVectorAsArray1D(elemnum,nodenum,vminA,vmaxAB));
+        
+        insert_1D_into_2D(prederiv,prederivpernode,nodenum,false);
+      }        
+
+    Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),prederiv);
+    */
     //needs a multiplication by an A matrix between D and vectornodearray,
     //but A is position dependent. not sure how to handle this.
 
