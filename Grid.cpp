@@ -6,7 +6,8 @@ Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):
   nodeLocs{0,elemorder+1}, 
   Amatrices{numelements,elemorder+1},
   Bmatrices{numelements,elemorder+1},
-  refelem{elemorder}
+  refelem{elemorder},
+  trimmedAmatrices(numelements,elemorder+1)
 
 {
   for(int i=0; i<=numelements; i++){
@@ -24,6 +25,14 @@ Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):
   calcjacobian();
   Amatrices=setupAmatrix(nodeLocs);
   Bmatrices=setupBmatrix(nodeLocs);
+
+  for(int i=0; i<nodeLocs.gridDim(); i++){
+    for(int j=0; j<nodeLocs.pointsDim(); j++)
+      {
+        CharacteristicFlux nodechar(Amatrices.get(i,j));
+        trimmedAmatrices.set(i,j,(nodechar.getAtrimmed()));
+      }
+  }
 
   for (int i=0; i<nodeLocs.gridDim(); i++){
     CharacteristicFlux left(Amatrices.get(i,0));
@@ -206,29 +215,47 @@ void Grid::RHS(VectorGridFunction<double>& uh,
        // output1D(uh.get(1,elemnum));
       }
 
-        Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
-                                  uh.getVectorNodeArray2D(elemnum,
-                                                          vminA,vmaxAB)));
-    /*
-    Array2D<double> prederiv(uh.pointsDim(),ArightBoundaries[elemnum].getDdim());
-    for(int nodenum=0; node<uh.pointsDim(); nodenum++)
+    //        Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
+    //                            uh.getVectorNodeArray2D(elemnum,
+    //                                                    vminA,vmaxAB)));
+
+    Array2D<double> RHSA1(uh.pointsDim(),ArightBoundaries[elemnum].getDdim());
+    
+    
+    Array2D<double> RHSA1preA=jacobian(elemnum)*(matmult(refelem.getD(),
+                                                         uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB)));
+    
+    
+    //multiply each row of rhsa1prea by a different a matrix
+    for(int nodenum=0; nodenum<uh.pointsDim(); nodenum++)
       {
+        int M = trimmedAmatrices.get(elemnum,nodenum).dim1();
+        int N = trimmedAmatrices.get(elemnum,nodenum).dim2();
+        int K = RHSA1preA.dim1();
+        int L = RHSA1preA.dim2();
 
-        Array1D<double> prederivpernode = matmult(trimmedAmatrices.get(elemnum,nodenum),uh.getVectorAsArray1D(elemnum,nodenum,vminA,vmaxAB));
-        
-        insert_1D_into_2D(prederiv,prederivpernode,nodenum,false);
-      }        
+        Array2D<double> tA=trimmedAmatrices.get(elemnum,nodenum);
+        Array2D<double> RHSA1(K,M);
+            
+        for (int i=0; i<M; i++)
+          {
+            double sum = 0;
+            
+            for (int k=0; k<N; k++)
+              sum += tA[i][k] * RHSA1preA[nodenum][k];
+            
+            RHSA1[nodenum][i] = sum;
+          }//copied and pasted from TmatmultT in TNT2 with modification of variable first matrix
+      }
 
-    Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),prederiv);
-    */
-    //needs a multiplication by an A matrix between D and vectornodearray,
-    //but A is position dependent. not sure how to handle this.
+    //needs a multiplication by an A matrix before D 
+    //but A is position dependent. 
 
     if(elemnum==5)
       {
         // output1D(uh.get(2,elemnum));
-        //output2D(RHSA1);//setting 2 column, not 1 column. wrong
-        output2D(uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB));
+        output2D(RHSA1);//setting 2 column, not 1 column. wrong
+        // output2D(uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB));
       }
 
     Array2D<double> RHSA2=jacobian(elemnum)*matmult(refelem.getLift(),du[elemnum]);

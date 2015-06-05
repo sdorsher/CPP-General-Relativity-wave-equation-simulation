@@ -26,7 +26,7 @@ class Grid
   //map<int,ReferenceElement> allRefelems;
   vector<Array1D<double>> duL;
   vector<Array1D<double>> duR;
-
+  GridFunction<Array2D<double>> trimmedAmatrices;
 
 
  public:

@@ -6,14 +6,33 @@ using namespace TNT;
 
 int main()
 {
-  Array2D<double> impauliy(2,2,0.0);
+  Array2D<double> rect(3,2);
+  Array2D<double> square(2,2);
+  rect[0][0]=0.0;
+  rect[0][1]=1.0;
+  rect[1][0]=2.0;
+  rect[1][1]=3.0;
+  rect[2][0]=4.0;
+  rect[2][0]=5.0;
+  output2D(rect);
+
+  square[0][0]=10.;
+  square[0][1]=9.;
+  square[1][0]=8.;
+  square[1][1]=7.;
+
+  output2D(square);
+    
+  output2D(TmatmultT(square,rect)); //checks out
+
+  /*Array2D<double> impauliy(2,2,0.0);
   impauliy[0][1]=-1.0;
   impauliy[1][0]=1.0;
 
   output2D(impauliy);
 
   output2D(transpose(impauliy));
-
+  */
 
   /*  Array2D<double> fours(4,4,4.0);
   Array1D<double> nines(3,9.0);
@@ -127,5 +146,7 @@ int main()
   //checks out up to here -------------------
 
   */
+
+
 
 }

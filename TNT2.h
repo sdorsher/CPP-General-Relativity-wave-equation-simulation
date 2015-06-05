@@ -15,6 +15,33 @@ using namespace std;
 namespace TNT
 {
 
+
+template <class T>
+Array2D<T> TmatmultT(const Array2D<T> &A, const Array2D<T> &B)
+{
+    if (A.dim2() != B.dim2())
+      throw invalid_argument("Mismatched matrix dimensions in matmultT");
+
+    int M = A.dim1();
+    int N = A.dim2();
+    int K = B.dim1();
+
+    Array2D<T> C(K,M);
+
+    for (int i=0; i<M; i++)
+        for (int j=0; j<K; j++)
+        {
+            T sum = 0;
+
+            for (int k=0; k<N; k++)
+                sum += A[i][k] * B [j][k];
+
+            C[j][i] = sum;
+        }
+
+    return C;
+
+}
   
   template <typename T>
     TNT::Array1D<T> matmult(const TNT::Array2D<T>& A, const TNT::Array1D<T>& B)
