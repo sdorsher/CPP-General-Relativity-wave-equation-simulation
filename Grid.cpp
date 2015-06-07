@@ -93,8 +93,7 @@ vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>
 
     if(elemnum==5)
       {
-        //cout << "LHS0 uext=" << uextL[0] << " uint=" << uintL[0] << endl;
-        //cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] <<endl;
+        //cout << "LHS0 uext=" << uextL[0] << " uint=" << uintL[0] << endl;        //cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] <<endl;
         //cout << "LHS1 uext=" << uextL[1] << " uint=" << uintL[1] << endl;
         // cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] <<endl;
         //correct at first time step, subsequently too small
@@ -235,18 +234,17 @@ void Grid::RHS(VectorGridFunction<double>& uh,
         int L = RHSA1preA.dim2();
 
         Array2D<double> tA=trimmedAmatrices.get(elemnum,nodenum);
-        Array2D<double> RHSA1(K,M);
             
         for (int i=0; i<M; i++)
           {
             double sum = 0;
             
             for (int k=0; k<N; k++)
-              sum += tA[i][k] * RHSA1preA[nodenum][k];
+              sum += -tA[i][k] * RHSA1preA[nodenum][k];
             
             RHSA1[nodenum][i] = sum;
           }//copied and pasted from TmatmultT in TNT2 with modification of variable first matrix
-      }
+      }//negative sign is because of definition of tA-- opposite side of equals sign in diff eq
 
     //needs a multiplication by an A matrix before D 
     //but A is position dependent. 
@@ -254,7 +252,7 @@ void Grid::RHS(VectorGridFunction<double>& uh,
     if(elemnum==5)
       {
         // output1D(uh.get(2,elemnum));
-        output2D(RHSA1);//setting 2 column, not 1 column. wrong
+        //output2D(RHSA1);//setting 2 column, not 1 column. wrong
         // output2D(uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB));
       }
 
