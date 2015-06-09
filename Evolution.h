@@ -8,11 +8,12 @@
 #include <fstream>
 #include "ConfigParams.h"
 
+
+//low storage fourth order Runga Kutta routine
+//see pg 64 of Hesthaven and Warburton
+
 void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
                    VectorGridFunction<double>& RHSvgf, 
                    double t, double deltat);
-
-//void RHS(Grid thegrid, VectorGridFunction<double>& uh, 
-//         VectorGridFunction<double>& RHSvgf, double t,bool output);
 
 #endif

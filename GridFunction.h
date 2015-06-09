@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 template <class T>
 class GridFunction
 {
@@ -18,36 +17,20 @@ class GridFunction
   void append(TNT::Array1D<T> array);
   T get(int vcoord, int acoord);
   TNT::Array1D<T> get(int vcoord);
-  int gridDim();
-  int pointsDim();
+  int gridDim(); //dimension of vector
+  int pointsDim(); //dimension of Array1D
   void save(string filename);
   
   // private:
  private:
   vector<TNT::Array1D<T>> data;
-  int GFvectorDim;
+  int GFvectorDim; 
   int GFarrayDim;
-
-  
-
-//  void initFromFile(string filename);
-
-
-
-
-
-
-//  GridFunction(GridFunction&&);
-//  GridFunction& operator=(GridFunction&&);
-  //need move constructors for addition of RHS and boundary conditions
-//  GridFunction(const GridFunction&);
-//  GridFunction& operator=(const GridFunction&);
-  //need copy constructors for intermediate steps of time evolution
- 
 };
 
 template <typename T>
 GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2);
+
 template <typename T>
 GridFunction<T> operator*(T A,GridFunction<T> gf2);
 

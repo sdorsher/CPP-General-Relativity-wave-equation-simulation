@@ -9,7 +9,6 @@ using namespace TNT;
 
 class ReferenceElement
 {
-
  public:
  ReferenceElement(int N);
 
@@ -33,15 +32,15 @@ private:
   Array2D<double> vandermondeMatrix; 
   Array2D<double> dVdr;
   Array2D<double> derivativeMatrix;
-  Array2D<double> lift; //used in numerical flux calculation, scaled by jacobian
+  Array2D<double> lift; //used in numerical flux calculation, 
+                        //scaled by jacobian
 
  public:
   Array2D<double> getD(); //get derivative matrix
-  Array1D<double> getr(); //get node locations
-  int getOrder(); //get order
   Array2D<double> getLift(); //get lift matrix
+  Array1D<double> getr(); //get node locations
   Array1D<double> getw(); //get weights
-  
+  int getOrder(); //get order
 };
 
 #endif

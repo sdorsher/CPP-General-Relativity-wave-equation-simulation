@@ -10,48 +10,51 @@ using namespace std;
 using namespace libconfig;
 
 struct WaveEqParams{
-  int pdenum;
-  double speed;
-  bool isgaussian;
-  bool issinusoid;
+  int pdenum; //number of components in coupled differential equations
+  double speed; //speed of wave
+  bool isgaussian; //true if wave is gaussian and zero time derivative
+  bool issinusoid; //true if wave is sinusoidal and travelling
 };
 
 struct SinusoidParams{
-  double phase;
+  double phase; 
   double amp;
-  double wavelength;
+  double wavelength; //most sensible if this is a standing wave
 };
 
 struct GaussParams{
   double amp;
   double mu;
-  double sigma;
+  double sigma; //sigma greater than or equal to element size works best
 };
 
 struct GridParams{
-  double lowerlim;
-  double upperlim;
-  int numelems;
-  int elemorder;
-  bool readfromfile;
+  double lowerlim; //lower boundary of grid
+  double upperlim; //upper boundary of grid
+  int numelems; //number of elements in grid
+  int elemorder; //order of each element (all are the same)
+  bool readfromfile; //broken right now, true or false
 };
 
 struct TimeParams{
-  double dt;
-  double courantfac;
-  double t0;
-  double tmax;
-  double outputinterval;
-  int comparisoncount;
-  bool usefixedtimestep;
+  double dt; //time step if time step is fixed
+  double courantfac; //ratio between smallest spatial step and time step 
+                     //if time step is not fixed
+  double t0; //initial time
+  double tmax; //end time
+  double outputinterval; //output with this time step
+  int comparisoncount; //use the wave data to evaluate the L2 norm after 
+                       //this integer number of output intervals
+  bool usefixedtimestep; 
 };
 
 struct FileParams
-{
-  string pdesolution;
-  string oneperioderror;
-  string L2error;
-  string initialconditions;
+{//file names
+  string pdesolution; //stores the pde solution at each output time
+  string oneperioderror; //the error as a function of position after 
+                         //one oscillation
+  string L2error; //order, timestep, number of elements, L2error
+  string initialconditions; //initial conditions as a function of position
 };
 
 //main structure to be used as global variable
@@ -70,6 +73,6 @@ struct ConfigParams {
                        const std::string& structkey, const std::string& key);
 };
 
-extern const ConfigParams params;
+extern const ConfigParams params; //global params variable
 
 #endif

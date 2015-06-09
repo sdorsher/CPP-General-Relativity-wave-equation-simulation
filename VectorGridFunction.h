@@ -5,7 +5,6 @@
 #include "GridFunction.h"
 #include <fstream>
 
-
 template <class T>
 class VectorGridFunction
 {
@@ -16,7 +15,8 @@ class VectorGridFunction
   int GFvectorDim;
 
  public:
-  VectorGridFunction(int VGFvecSize, int GFvecSize, int GFarraySize, T initvalue);
+  VectorGridFunction(int VGFvecSize, int GFvecSize, int GFarraySize, 
+                     T initvalue);
   VectorGridFunction(int VGFvecSize, int GFvecSize, int GFarraySize);
   T get(int VGFvcoord, int GFvcoord, int GFacoord);
   Array1D<T> get(int VGFvcoord,int GFvcoord);
@@ -30,7 +30,6 @@ class VectorGridFunction
   int pointsDim();//the dimension of the array within the GridFunction
   void append(GridFunction<T> gf);
   void save(string filenames); //vector of filenames to print to
-  //  void initFromFile(string filename);
   vector<T> getVector(int GFvcoord, int GFacoord);
   Array1D<T> getVectorAsArray1D(int GFvcoord, int GFacoord,int vmin, int vmax);
   Array2D<T> getVectorNodeArray2D(int GFcoord,int startvec, int stopvec);
@@ -38,11 +37,9 @@ class VectorGridFunction
 
 template <typename T>
 VectorGridFunction<T> operator+(VectorGridFunction<T>, VectorGridFunction<T>);
-  //need addition operator for addition of RHS and boundary conditions
 
 template <typename T>
 VectorGridFunction<T> operator*(T, VectorGridFunction<T>);
-//for easy multiplication in rk4 routine
 
 #include "VectorGridFunction.tpp"
 
