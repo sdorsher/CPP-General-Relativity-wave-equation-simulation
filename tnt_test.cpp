@@ -1,34 +1,27 @@
 #include "../tnt/tnt.h"
-//#include "../tnt/tnt_array1d.h"
-//#include "../tnt/tnt_array1d_utils.h"
-//#include "../tnt/tnt_array2d.h"
-//#include "../tnt/tnt_array2d_utils.h"
 #include "../jama125/jama_lu.h"
 #include "../jama125/jama_eig.h"
 using namespace std;
 
 void output2D(TNT::Array2D<double> matr)
 {
-  for(int i=0;i<matr.dim1();i++)
-    {
-      cout << "( ";
-      for(int j=0;j<matr.dim2();j++)
-	{
-	  cout << matr[i][j] <<" "; 
-	}
-      cout << ")\n";
+  for(int i=0;i<matr.dim1();i++){
+    cout << "( ";
+    for(int j=0;j<matr.dim2();j++){
+      cout << matr[i][j] <<" "; 
     }
+    cout << ")\n";
+  }
   cout << endl << endl;
 }
 
 void output1D(TNT::Array1D<double> matr)
 {
-  for(int i=0;i<matr.dim();i++)
-    {
-      cout << "( ";
-      cout << matr[i] <<" "; 
-      cout << ")\n";
-    }
+  for(int i=0;i<matr.dim();i++){
+    cout << "( ";
+    cout << matr[i] <<" "; 
+    cout << ")\n";
+  }
   cout << endl<< endl;
 }
 

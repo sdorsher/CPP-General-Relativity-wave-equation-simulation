@@ -4,13 +4,13 @@ template <class T>
 VectorGridFunction<T>::VectorGridFunction(int outerVecSize, 
                                           int innerVecSize, int arraySize, 
                                           T initvalue):
-  VGFvectorDim(outerVecSize),GFvectorDim(innerVecSize),GFarrayDim(arraySize)
+  VGFvectorDim(outerVecSize), GFvectorDim(innerVecSize), GFarrayDim(arraySize)
 {
-  if(outerVecSize<0){
+  if(outerVecSize<0) {
     throw invalid_argument("Negative Vector dimensions at VectorGridFunction constructor.");
   }
   
-  for(int i=0; i<outerVecSize; i++){
+  for(int i=0; i<outerVecSize; i++) {
     GridFunction<T> temp(innerVecSize,arraySize,initvalue);
     data.push_back(temp);
   }
@@ -19,13 +19,13 @@ VectorGridFunction<T>::VectorGridFunction(int outerVecSize,
 template <class T>
 VectorGridFunction<T>::VectorGridFunction(int outerVecSize, 
                                           int innerVecSize, int arraySize):
-  VGFvectorDim(outerVecSize),GFvectorDim(innerVecSize),GFarrayDim(arraySize)
+  VGFvectorDim(outerVecSize), GFvectorDim(innerVecSize), GFarrayDim(arraySize)
 {
   if(outerVecSize<0){
     throw invalid_argument("Negative Vector dimensions at VectorGridFunction constructor.");
   }
   
-  for(int i=0; i<outerVecSize; i++){
+  for(int i = 0; i < outerVecSize; i++){
     GridFunction<T> temp(innerVecSize,arraySize);
     data.push_back(temp);
   }
@@ -52,7 +52,7 @@ int VectorGridFunction<T>::pointsDim()
 template <class T>
 void VectorGridFunction<T>::set(int VGFvcoord, int GFvcoord, int GFacoord,T value)
 {
-  if((0>VGFvcoord)||(VGFvcoord>=VGFvectorDim))
+  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim))
     {
       throw invalid_argument("Vector index out of range in set");
     }
@@ -61,9 +61,9 @@ void VectorGridFunction<T>::set(int VGFvcoord, int GFvcoord, int GFacoord,T valu
 }
 
 template <class T>
-void VectorGridFunction<T>::set(int VGFcoord,GridFunction<T> gf)
+void VectorGridFunction<T>::set(int VGFcoord, GridFunction<T> gf)
 {
-  if((0>VGFcoord)||(VGFcoord>=VGFvectorDim)){
+  if((0 > VGFcoord) || (VGFcoord >= VGFvectorDim)){
       throw invalid_argument("Vector index out of range in set");
     }
 
@@ -71,10 +71,10 @@ void VectorGridFunction<T>::set(int VGFcoord,GridFunction<T> gf)
 }
 
 template <class T>
-void VectorGridFunction<T>::set(int VGFcoord,int GFcoord,TNT::Array1D<T> arr)
+void VectorGridFunction<T>::set(int VGFcoord, int GFcoord, TNT::Array1D<T> arr)
 {
 
-  if((0>VGFcoord)||(VGFcoord>=VGFvectorDim)){
+  if((0 > VGFcoord)||(VGFcoord >= VGFvectorDim)){
       throw invalid_argument("Vector index out of range in set");
     }
 
@@ -84,10 +84,10 @@ void VectorGridFunction<T>::set(int VGFcoord,int GFcoord,TNT::Array1D<T> arr)
 template <class T>
 void VectorGridFunction<T>::setVector(int GFcoord, int GFacoord, vector<T> vec)
 {
-  if((GFcoord<0)||(GFacoord<0)||(GFacoord>GFarrayDim)){
+  if((GFcoord < 0) || (GFacoord < 0) || (GFacoord > GFarrayDim)){
     throw invalid_argument("Coordinates in setVector out of range.");
   }
-  for(int i=0; i<VGFvectorDim; i++){
+  for(int i = 0; i < VGFvectorDim; i++){
     data.at(i).set(GFcoord,GFacoord,vec[i]);
   }
 }
@@ -95,7 +95,7 @@ void VectorGridFunction<T>::setVector(int GFcoord, int GFacoord, vector<T> vec)
 template <class T>
 T VectorGridFunction<T>::get(int VGFvcoord, int GFvcoord, int GFacoord)
 {
-  if((0>VGFvcoord)||(VGFvcoord>=VGFvectorDim)){
+  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim)){
     throw invalid_argument("Vector index out of range in get");
   }
   return data.at(VGFvcoord).get(GFvcoord,GFacoord);
@@ -104,7 +104,7 @@ T VectorGridFunction<T>::get(int VGFvcoord, int GFvcoord, int GFacoord)
 template <class T>
 Array1D<T> VectorGridFunction<T>::get(int VGFvcoord,int GFvcoord)
 {
-  if((0>VGFvcoord)||(VGFvcoord>=VGFvectorDim)){
+  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim)){
     throw invalid_argument("Vector index out of range in get");
   }
   return data.at(VGFvcoord).get(GFvcoord);
@@ -113,7 +113,7 @@ Array1D<T> VectorGridFunction<T>::get(int VGFvcoord,int GFvcoord)
 template <class T>
 GridFunction<T> VectorGridFunction<T>::get(int VGFvcoord)
 {
-  if((0>VGFvcoord)||(VGFvcoord>=VGFvectorDim)){
+  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim)){
     throw invalid_argument("Vector index out of range in get");
   }
   return data.at(VGFvcoord);
@@ -146,14 +146,14 @@ void VectorGridFunction<T>::save(string filename)
 template <class T>              
 vector<T> VectorGridFunction<T>::getVector(int GFvcoord, int GFacoord)
 {
-  if((GFvcoord<0)||(GFvcoord>=GFvectorDim)||(GFacoord<0)
-     ||(GFacoord>GFarrayDim)){
+  if((GFvcoord < 0) || (GFvcoord >= GFvectorDim) || (GFacoord < 0)
+     || (GFacoord > GFarrayDim)) {
     throw invalid_argument("Get indices out of range.");
   }
   
   vector<T> outputvec;
-  for(int i=0; i<VGFvectorDim; i++){
-    outputvec.push_back(get(i,GFvcoord,GFacoord));
+  for(int i = 0; i < VGFvectorDim; i++) {
+    outputvec.push_back(get(i, GFvcoord, GFacoord));
   }
   return outputvec;
 }
@@ -165,18 +165,18 @@ Array1D<T> VectorGridFunction<T>::getVectorAsArray1D(int GFvcoord,
                                                      int vmax)
 
 {
-  if((GFvcoord<0)||(GFvcoord>=GFvectorDim)||(GFacoord<0)
-     ||(GFacoord>GFarrayDim)){
+  if((GFvcoord < 0) || (GFvcoord >= GFvectorDim) || (GFacoord < 0)
+     || (GFacoord > GFarrayDim)) {
     throw invalid_argument("Get indices out of range.");
   }
   
-  if((vmax>VGFvectorDim)||(vmin<0)){
+  if((vmax > VGFvectorDim) || (vmin < 0)) {
     throw invalid_argument("Get max or min vector indices out of range");
   }
 
-  Array1D<T> outputvec(vmax-vmin+1);
-  for(int i=vmin; i<=vmax; i++){
-    outputvec[i-vmin] =get(i,GFvcoord,GFacoord);
+  Array1D<T> outputvec(vmax - vmin + 1);
+  for(int i = vmin; i <= vmax; i++){
+    outputvec[i - vmin] =get(i, GFvcoord, GFacoord);
   }
   return outputvec;
 }
@@ -186,18 +186,18 @@ Array2D<T> VectorGridFunction<T>::getVectorNodeArray2D(int GFcoord,
                                                        int startvec, 
                                                        int stopvec)
 {
-  if((GFcoord<0)||(GFcoord>GFvectorDim)){
+  if((GFcoord < 0) || (GFcoord > GFvectorDim)) {
     throw invalid_argument("Get indices out of range");
   }
 
-  if((startvec<0)||(stopvec>=VGFvectorDim)){
+  if((startvec < 0) || (stopvec >= VGFvectorDim)) {
     throw invalid_argument("Endpoints of vector requested are out of range");
   }
   
-  Array2D<T> output(GFarrayDim,stopvec-startvec+1);
-  for(int i=startvec; i<=stopvec; i++){
-    for(int j=0; j<GFarrayDim; j++){
-      output[j][i-startvec]=get(i,GFcoord,j);
+  Array2D<T> output(GFarrayDim, stopvec - startvec + 1);
+  for(int i = startvec; i <= stopvec; i++){
+    for(int j = 0; j < GFarrayDim; j++){
+      output[j][i - startvec]=get(i, GFcoord, j);
     }
   }
   return output;
@@ -210,12 +210,12 @@ template <typename T>
 VectorGridFunction<T> operator+(VectorGridFunction<T> vgf1, 
                                 VectorGridFunction<T> vgf2)
 {
-  if(vgf1.vectorDim()!=vgf2.vectorDim()){
+  if(vgf1.vectorDim() != vgf2.vectorDim()){
     throw invalid_argument("Vector dimension mismatch in + operation");
   }
-  VectorGridFunction<T> vgfsum(0,vgf1.gridDim(),vgf1.pointsDim());
-  for(int i=0; i<vgf1.vectorDim(); i++){
-    vgfsum.append(vgf1.get(i)+vgf2.get(i));
+  VectorGridFunction<T> vgfsum(0, vgf1.gridDim(), vgf1.pointsDim());
+  for(int i = 0; i < vgf1.vectorDim(); i++){
+    vgfsum.append(vgf1.get(i) + vgf2.get(i));
   }
   return vgfsum;
 }
@@ -224,9 +224,9 @@ template <typename T>
 VectorGridFunction<T> operator*(T A, VectorGridFunction<T> vgf)
 //for easy multiplication in rk4 routine
 {
-  VectorGridFunction<T> vgfprod(0,vgf.gridDim(),vgf.pointsDim());
-  for(int i=0; i<vgf.vectorDim(); i++){
-    vgfprod.append(A*vgf.get(i));
+  VectorGridFunction<T> vgfprod(0, vgf.gridDim(), vgf.pointsDim());
+  for(int i = 0; i < vgf.vectorDim(); i++){
+    vgfprod.append(A * vgf.get(i));
   }
   return vgfprod;
 }

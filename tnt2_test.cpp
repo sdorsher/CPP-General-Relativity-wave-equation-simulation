@@ -103,7 +103,6 @@ int main()
   
   output = 3.0-doubvec;
   output1D(output);
-  //---------------- checks out up to here --------
 
   Array2D<double> paulix(2,2);
   Array2D<double> pauliz(2,2);
