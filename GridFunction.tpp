@@ -2,6 +2,10 @@
 
 using namespace std;
 
+
+//Constructor. Initializes GridFunction to store Array1Ds consisting
+//of initial value of specified size. If vecSize=0 and arraySize is not
+//equal to zero, data with the same arraySize can be appended later.
 template <class T>
 GridFunction<T>::GridFunction(int vecSize, int arraySize,
                                   T initvalue)
@@ -10,13 +14,16 @@ GridFunction<T>::GridFunction(int vecSize, int arraySize,
   if((vecSize<0) || (arraySize<0)) {
     throw invalid_argument("Negative grid function dimensions at GridFunction constructor.");
   }
-
+ 
   for(int v=0; v < GFvectorDim; v++) {
     TNT::Array1D<T> temp(GFarrayDim, initvalue);
     data.push_back(temp);
   }
 }
 
+
+//Constructor with uninitialized values, has same property for vecSize=0 
+//as above.
 template <class T>
 GridFunction<T>::GridFunction(int vecSize, int arraySize)
   :GFvectorDim(vecSize), GFarrayDim(arraySize)
@@ -31,6 +38,7 @@ GridFunction<T>::GridFunction(int vecSize, int arraySize)
   }
 }
 
+//Set value at vector coordinate to an array
 template <class T>
 void GridFunction<T>::set(int vcoord, TNT::Array1D<T> arraydata)
 {
@@ -39,10 +47,12 @@ void GridFunction<T>::set(int vcoord, TNT::Array1D<T> arraydata)
   } else if (arraydata.dim()!=GFarrayDim) {
     throw invalid_argument("Grid function data size does not match.");
   } else {
-    data.at(vcoord) = arraydata.copy();
+    data.at(vcoord) = arraydata.copy(); 
+    //copy to avoid shallow copy memory problem in TNT Arrays
   }
 }
 
+//Set vector coordinate and array coordinate to a value.
 template <class T>
 void GridFunction<T>::set(int vcoord, int acoord, T value)
 {
@@ -55,6 +65,7 @@ void GridFunction<T>::set(int vcoord, int acoord, T value)
   }
 }
 
+//Append an array of the same size as the arrays already present.
 template <class T>
 void GridFunction<T>::append(TNT::Array1D<T> array)
 {
@@ -67,6 +78,8 @@ void GridFunction<T>::append(TNT::Array1D<T> array)
   GFvectorDim++;
 }
 
+
+//Get a value at a vector and array coordinate.
 template <class T>
 T GridFunction<T>::get(int vcoord, int acoord)
 {
@@ -79,6 +92,8 @@ T GridFunction<T>::get(int vcoord, int acoord)
   }
 }
 
+
+//Get an array at a vector coordinate.
 template <class T>
 TNT::Array1D<T> GridFunction<T>::get(int vcoord)
 {
@@ -89,18 +104,24 @@ TNT::Array1D<T> GridFunction<T>::get(int vcoord)
   }
 }
 
+
+//Get the dimension of the vector.
 template <class T>
 int GridFunction<T>::gridDim()
 {
   return GFvectorDim;
 }
 
+
+//Get the dimension of the array.
 template <class T>
 int GridFunction<T>::pointsDim()
 {
   return GFarrayDim;
 }
 
+
+//May be obsolete.
 template <class T>
 void GridFunction<T>::save(string filename)
 {
@@ -117,6 +138,7 @@ void GridFunction<T>::save(string filename)
 //-----------------------------------------
 // Not in class
 
+//Addition operator for GridFunctions.
 template <typename T>
 GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2)
 {
@@ -132,6 +154,7 @@ GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2)
   }
 }
 
+//Multiplication operator for a grid function and a scalar.
 template <typename T>
 GridFunction<T> operator*(T A, GridFunction<T> gf)
 {

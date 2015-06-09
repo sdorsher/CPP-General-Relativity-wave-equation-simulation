@@ -1,5 +1,8 @@
 #include "VectorGridFunction.h"
 
+//Constructor that initializes to a specific value. If inner vector size and 
+//array size are fixed, outer vector size may be zero and additional 
+//GridFunctions may be appended later.
 template <class T>
 VectorGridFunction<T>::VectorGridFunction(int outerVecSize, 
                                           int innerVecSize, int arraySize, 
@@ -16,6 +19,7 @@ VectorGridFunction<T>::VectorGridFunction(int outerVecSize,
   }
 }
 
+//Uninitialized constructor. Same property for outerVecSize=0 as above.
 template <class T>
 VectorGridFunction<T>::VectorGridFunction(int outerVecSize, 
                                           int innerVecSize, int arraySize):
@@ -31,56 +35,65 @@ VectorGridFunction<T>::VectorGridFunction(int outerVecSize,
   }
 }
 
+//Get dimension of outer vector.
 template <class T>
 int VectorGridFunction<T>::vectorDim()
 {
   return VGFvectorDim;
 }
 
+//Get dimension of inner vector.
 template <class T>
 int VectorGridFunction<T>::gridDim()
 {
   return GFvectorDim;
 }
 
+//Get dimension of array.
 template <class T>
 int VectorGridFunction<T>::pointsDim()
 {
   return GFarrayDim;
 }
 
+
+//Set the value of a specific point. 
 template <class T>
-void VectorGridFunction<T>::set(int VGFvcoord, int GFvcoord, int GFacoord,T value)
+void VectorGridFunction<T>::set(int VGFvcoord, int GFvcoord, int GFacoord,
+                                T value)
 {
-  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim))
-    {
-      throw invalid_argument("Vector index out of range in set");
-    }
+  if((0 > VGFvcoord) || (VGFvcoord >= VGFvectorDim)){
+    throw invalid_argument("Vector index out of range in set");
+  }
   
   data.at(VGFvcoord).set(GFvcoord,GFacoord,value);
 }
 
+//Set an outer vector coordinate to a grid function.
 template <class T>
 void VectorGridFunction<T>::set(int VGFcoord, GridFunction<T> gf)
 {
   if((0 > VGFcoord) || (VGFcoord >= VGFvectorDim)){
-      throw invalid_argument("Vector index out of range in set");
-    }
+    throw invalid_argument("Vector index out of range in set");
+  }
 
   data.at(VGFcoord)=gf;
 }
 
+//Set an outer and inner vector coordinate to an Array1D.
 template <class T>
 void VectorGridFunction<T>::set(int VGFcoord, int GFcoord, TNT::Array1D<T> arr)
 {
 
   if((0 > VGFcoord)||(VGFcoord >= VGFvectorDim)){
-      throw invalid_argument("Vector index out of range in set");
-    }
+    throw invalid_argument("Vector index out of range in set");
+  }
 
   data.at(VGFcoord).set(GFcoord,arr);
 
 }
+
+//Set an inner vector coordinate and an array coordinate to a vector of values.
 template <class T>
 void VectorGridFunction<T>::setVector(int GFcoord, int GFacoord, vector<T> vec)
 {
@@ -92,6 +105,7 @@ void VectorGridFunction<T>::setVector(int GFcoord, int GFacoord, vector<T> vec)
   }
 }
 
+//Get the value of a specific point.
 template <class T>
 T VectorGridFunction<T>::get(int VGFvcoord, int GFvcoord, int GFacoord)
 {
@@ -101,6 +115,7 @@ T VectorGridFunction<T>::get(int VGFvcoord, int GFvcoord, int GFacoord)
   return data.at(VGFvcoord).get(GFvcoord,GFacoord);
 }
 
+//Get an array from an inner and outer vector coordinate.
 template <class T>
 Array1D<T> VectorGridFunction<T>::get(int VGFvcoord,int GFvcoord)
 {
@@ -110,6 +125,8 @@ Array1D<T> VectorGridFunction<T>::get(int VGFvcoord,int GFvcoord)
   return data.at(VGFvcoord).get(GFvcoord);
 }
  
+
+//Get a GridFunction from an outer vector coordinate.
 template <class T>
 GridFunction<T> VectorGridFunction<T>::get(int VGFvcoord)
 {
@@ -119,6 +136,8 @@ GridFunction<T> VectorGridFunction<T>::get(int VGFvcoord)
   return data.at(VGFvcoord);
 }
 
+
+//Append a GridFunction to the end of the VectorGridFunction.
 template <class T>
 void VectorGridFunction<T>::append(GridFunction<T> gf)
 {
@@ -126,6 +145,7 @@ void VectorGridFunction<T>::append(GridFunction<T> gf)
   data.push_back(gf);
 }
 
+//May be obsolete.
 template <class T>
 void VectorGridFunction<T>::save(string filename)
 {
@@ -143,6 +163,8 @@ void VectorGridFunction<T>::save(string filename)
   fs.close();
 }
 
+
+//Get a vector from an inner vector coordinate and an array coordinate.
 template <class T>              
 vector<T> VectorGridFunction<T>::getVector(int GFvcoord, int GFacoord)
 {
@@ -158,7 +180,8 @@ vector<T> VectorGridFunction<T>::getVector(int GFvcoord, int GFacoord)
   return outputvec;
 }
     
-
+//Get an Array1D from an inner vector coordinate and an array coordinate, 
+//ranging from outer vector index vmin to vmax.
 template <class T>
 Array1D<T> VectorGridFunction<T>::getVectorAsArray1D(int GFvcoord, 
                                                      int GFacoord, int vmin, 
@@ -181,6 +204,10 @@ Array1D<T> VectorGridFunction<T>::getVectorAsArray1D(int GFvcoord,
   return outputvec;
 }
 
+//Get an Array2D containing the values of the VGF at an inner vector
+//coordinate, with the outer vector values running along the rows
+//and the array values running along the columns. Begins selecting
+//outer vector values at startvec and ends at stopvec.
 template <class T>
 Array2D<T> VectorGridFunction<T>::getVectorNodeArray2D(int GFcoord,
                                                        int startvec, 
@@ -206,6 +233,7 @@ Array2D<T> VectorGridFunction<T>::getVectorNodeArray2D(int GFcoord,
 //-----------------------------
 //not in class
 
+//Addition operator for VectorGridFunctions.
 template <typename T>
 VectorGridFunction<T> operator+(VectorGridFunction<T> vgf1, 
                                 VectorGridFunction<T> vgf2)
@@ -220,6 +248,7 @@ VectorGridFunction<T> operator+(VectorGridFunction<T> vgf1,
   return vgfsum;
 }
 
+//Scalar multiplication operator for VectorGridFunctions.
 template <typename T>
 VectorGridFunction<T> operator*(T A, VectorGridFunction<T> vgf)
 //for easy multiplication in rk4 routine
