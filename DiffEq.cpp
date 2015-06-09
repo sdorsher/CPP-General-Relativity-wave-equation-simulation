@@ -10,6 +10,8 @@ drho/dt=psi
 also dpi/dx=psi, but this is not needed for evolution
 */
 
+// A matrix must be formatted such that zero rows are at the top
+
 GridFunction<Array2D<double>> setupAmatrix(GridFunction<double>& nodes)
 {
   GridFunction<Array2D<double>> gf(nodes.gridDim(), nodes.pointsDim());

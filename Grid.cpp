@@ -1,321 +1,266 @@
 #include "Grid.h"
 
-Grid::Grid(int elemorder, int numelements,double lowerlim, double upperlim):
+//du/dt + A du/dx + Bu = 0
+
+Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
   order{elemorder},
   NumElem{numelements},
-  nodeLocs{0,elemorder+1}, 
-  Amatrices{numelements,elemorder+1},
-  Bmatrices{numelements,elemorder+1},
+  nodeLocs{0,elemorder + 1}, 
+  Amatrices{numelements, elemorder + 1},
+  Bmatrices{numelements, elemorder + 1},
   refelem{elemorder},
-  trimmedAmatrices(numelements,elemorder+1)
+  trimmedAmatrices(numelements, elemorder + 1)
 
 {
-  for(int i=0; i<=numelements; i++){
-    elementBoundaries.push_back(lowerlim + i*(upperlim-lowerlim)/float(numelements));
+
+  //assign evenly spaced element boundaries
+  for(int i = 0; i <= numelements; i++) {
+    elementBoundaries.push_back(lowerlim + i * (upperlim - lowerlim) 
+                                / float(numelements));
   }
   
-  Array1D<double> physicalPosition(elemorder+1);
-  for(int elem=0; elem<numelements; elem++){
-    physicalPosition = ((elementBoundaries[elem+1] - elementBoundaries[elem]) / 2.0)
+  //get physical positions of nodes from the reference element
+  Array1D<double> physicalPosition(elemorder + 1);
+  for(int elem = 0; elem < numelements; elem++){
+    physicalPosition = ((elementBoundaries[elem + 1] 
+                         - elementBoundaries[elem]) / 2.0)
       *refelem.getr()
-      +((elementBoundaries[elem+1] + elementBoundaries[elem]) / 2.0);
+      +((elementBoundaries[elem + 1] + elementBoundaries[elem]) / 2.0);
     nodeLocs.append(physicalPosition);
   }
-
+  
+  //calculate the jacobian associated with the transformation each element
+  //from the reference element to physical space
   calcjacobian();
-  Amatrices=setupAmatrix(nodeLocs);
-  Bmatrices=setupBmatrix(nodeLocs);
+  
+  //setup the A and B matrices in DiffEq.cpp
+  Amatrices = setupAmatrix(nodeLocs);
+  Bmatrices = setupBmatrix(nodeLocs);
 
-  for(int i=0; i<nodeLocs.gridDim(); i++){
-    for(int j=0; j<nodeLocs.pointsDim(); j++)
+  //get the A matrix with its zero dimensions removed for each node
+  for(int i = 0; i < nodeLocs.gridDim(); i++){
+    for(int j = 0; j < nodeLocs.pointsDim(); j++)
       {
         CharacteristicFlux nodechar(Amatrices.get(i,j));
-        trimmedAmatrices.set(i,j,(nodechar.getAtrimmed()));
+        trimmedAmatrices.set(i, j, (nodechar.getAtrimmed()));
       }
   }
 
-  for (int i=0; i<nodeLocs.gridDim(); i++){
-    CharacteristicFlux left(Amatrices.get(i,0));
-    CharacteristicFlux right(Amatrices.get(i,nodeLocs.pointsDim()-1));
+  // get all characteristic equation information for each boundary node
+  for (int i = 0; i < nodeLocs.gridDim(); i++){
+    CharacteristicFlux left(Amatrices.get(i, 0));
+    CharacteristicFlux right(Amatrices.get(i, nodeLocs.pointsDim() - 1));
     AleftBoundaries.push_back(left);
     ArightBoundaries.push_back(right);
   }
   
-
+  //allocate memory for the left and right boundary du that contributes
+  // to the characteristic flux when multiplied by the lift matrix. 
+  // there will be one Array1D of length 2 for each boundary of each element.
+  //this is not a GridFunction because although it shares the same 
+  //implementation format, it doesn't share the same conceptual format. 
+  //it does not embody a function that has values over all nodes of the grid.
   duL.resize(NumElem);
   duR.resize(NumElem);
 
-  //need some kind of A matrix as a function of position or function
-  //build A matrix Gridfunction
-  //build CharacteristicFlux vector-- make that a function of position (how)
-  
-
 }
 
-vector<TNT::Array2D<double>> Grid::characteristicflux(VectorGridFunction<double>& uh)
+vector<TNT::Array2D<double>> 
+Grid::characteristicflux(VectorGridFunction<double>& uh)
 {
   vector<Array2D<double>> du;
   du.resize(NumElem);
   for(int elemnum=0; elemnum<NumElem; elemnum++){
-     int indL=0; //index of leftmost node
-    int indR=uh.pointsDim()-1; //index of rightmost node
-    double nL=-1.0; //normal
-    double nR=1.0;
-    //vmin and vmax are min and max indices in vector dimension (psi, rho phi)
-    int vmaxL=AleftBoundaries[elemnum].getAdim()-1;
+    int indL = 0; //index of leftmost node of that element
+    int indR = uh.pointsDim()-1; //index of rightmost node of that element
+    double nL = -1.0; //normal to the leftmost node
+    double nR = 1.0; //normal to the rightmost node
+
+    //dimension of the components of the differential equation with 
+    // spatial derivatives (dimension of the trimmed A matrices)
     int DdimL = AleftBoundaries[elemnum].getDdim();
-    int vminL=vmaxL-DdimL+1;
-    int vmaxR=ArightBoundaries[elemnum].getAdim()-1;
-    int DdimR=ArightBoundaries[elemnum].getDdim();
-    int vminR=vmaxR-DdimR+1;
-
-    Array1D<double> uintL(DdimL);
-    Array1D<double> uintR(DdimR);
-    Array1D<double> uextL(DdimL);
-    Array1D<double> uextR(DdimR);
+    int DdimR = ArightBoundaries[elemnum].getDdim();
     
-    uintL=uh.getVectorAsArray1D(elemnum,indL,vminL,vmaxL); //internal u
-    uintR=uh.getVectorAsArray1D(elemnum,indR,vminR,vmaxR);
+    //vmin and vmax are min and max indices in vector dimension (psi, rho, pi)
+    int vmaxL = AleftBoundaries[elemnum].getAdim() - 1;
+    int vminL = vmaxL - DdimL + 1; //neglect zero rows at top of A matrix
+    int vmaxR = ArightBoundaries[elemnum].getAdim() - 1;
+    int vminR = vmaxR - DdimR + 1; //neglect zero rows at top of A matrix
+
+    Array1D<double> uintL(DdimL); //internal u at left boundary
+    Array1D<double> uintR(DdimR); //internal u at right boundary
+    Array1D<double> uextL(DdimL); //external u at left boundary
+    Array1D<double> uextR(DdimR); //external u at right boundary
+    
+    uintL = uh.getVectorAsArray1D(elemnum, indL, vminL, vmaxL); 
+    uintR = uh.getVectorAsArray1D(elemnum, indR, vminR, vmaxR);
 
     
-    if(elemnum>0){
-      uextL=uh.getVectorAsArray1D(elemnum-1,indR,vminL,vmaxL); //external u, left boundary
+    if(elemnum > 0) {
+      uextL = uh.getVectorAsArray1D(elemnum - 1, indR, vminL, vmaxL); 
+      //external u, left boundary
     }else{
-      uextL=uh.getVectorAsArray1D(NumElem-1,indR,vminL,vmaxL); //periodic boundary conditions
+      uextL = uh.getVectorAsArray1D(NumElem - 1, indR, vminL, vmaxL); 
+      //periodic boundary conditions
     }
 
-    if(elemnum<NumElem-1){
-      uextR=uh.getVectorAsArray1D(elemnum+1,indL,vminR,vmaxR); //external u, right boundary
+    if(elemnum < NumElem - 1) {
+      uextR = uh.getVectorAsArray1D(elemnum + 1, indL, vminR, vmaxR); 
+      //external u, right boundary
     }else{
-      uextR=uh.getVectorAsArray1D(0,indL,vminR,vmaxR); //periodic boundary conditions
+      uextR = uh.getVectorAsArray1D(0, indL, vminR, vmaxR); 
+      //periodic boundary conditions
     }
     
-
-    if(elemnum==5)
-      {
-        //cout << "LHS0 uext=" << uextL[0] << " uint=" << uintL[0] << endl;        //cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] <<endl;
-        //cout << "LHS1 uext=" << uextL[1] << " uint=" << uintL[1] << endl;
-        // cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] <<endl;
-        //correct at first time step, subsequently too small
-      }
-    Array2D<double> lambdaminusL(DdimL,DdimL,0.0);
-    Array2D<double> lambdaminusR(DdimR,DdimR,0.0);
-    Array2D<double> lambdaplusL(DdimL,DdimL,0.0);
-    Array2D<double> lambdaplusR(DdimR,DdimR,0.0);
+    //initialize plus and minus components of lambda matrix to zero at both
+    //boundaries
+    Array2D<double> lambdaminusL(DdimL, DdimL, 0.0);
+    Array2D<double> lambdaminusR(DdimR, DdimR, 0.0);
+    Array2D<double> lambdaplusL(DdimL, DdimL, 0.0);
+    Array2D<double> lambdaplusR(DdimR, DdimR, 0.0);
 
     Array2D<double> lambdaL= AleftBoundaries[elemnum].getLambda();
     Array2D<double> lambdaR= ArightBoundaries[elemnum].getLambda();
 
-
-    for(int j=0; j<DdimL; j++){
-      if(nL*lambdaL[j][j]<=0){
-        lambdaminusL[j][j]=nL*lambdaL[j][j];
-      }else{
-        lambdaplusL[j][j]=nL*lambdaL[j][j];
+    //lambda minus contains outward moving wave components
+    //lambda plus contains inward moving wave components
+    //might be an incorrect summary. trust the math, not the words
+    //see pg 35 of Hesthaven and Warburten
+    for(int j = 0; j < DdimL; j++) {
+      if(nL * lambdaL[j][j] <= 0) {
+        lambdaminusL[j][j] = nL * lambdaL[j][j];
+      } else {
+        lambdaplusL[j][j] = nL * lambdaL[j][j];
       }
       
-      if(nR*lambdaR[j][j]<=0){
-        lambdaminusR[j][j]=nR*lambdaR[j][j];
-      }else{
-        lambdaplusR[j][j]=nR*lambdaR[j][j];
+      if(nR * lambdaR[j][j] <= 0) {
+        lambdaminusR[j][j] = nR * lambdaR[j][j];
+      } else {
+        lambdaplusR[j][j] = nR * lambdaR[j][j];
       }
     }
-
-    if(elemnum==5)
-      {
-        //        output2D(lambdaplusR);
-        //  output2D(lambdaminusR);
-      }
-
-    Array2D<double> sinvL=AleftBoundaries[elemnum].getSinv();
-    Array2D<double> sinvR=ArightBoundaries[elemnum].getSinv();
-    Array2D<double> SL=AleftBoundaries[elemnum].getS();
-    Array2D<double> SR=ArightBoundaries[elemnum].getS();
+    //S and S inverse matrices at both boundaries
+    Array2D<double> sinvL = AleftBoundaries[elemnum].getSinv();
+    Array2D<double> sinvR = ArightBoundaries[elemnum].getSinv();
+    Array2D<double> SL = AleftBoundaries[elemnum].getS();
+    Array2D<double> SR = ArightBoundaries[elemnum].getS();
     
+    //numerical fluxes at both boundaries 
+    //see Hesthaven and Warburten pg 35 (n*F)
+    Array1D<double> nfluxL = matmult(lambdaplusL, matmult(sinvL, uintL));
+    nfluxL += matmult(lambdaminusL, matmult(sinvL, uextL));
+    nfluxL = matmult(SL, nfluxL);
 
-    if(elemnum==5)
-      {
-        //        output2D(sinvL);
-        // output2D(sinvR);
-        //output2D(SL);
-        // output2D(SR);
-      }
-    
-    Array1D<double> nfluxL=matmult(lambdaplusL,matmult(sinvL,uintL));
-    nfluxL+= matmult(lambdaminusL,matmult(sinvL,uextL));
-    nfluxL=matmult(SL,nfluxL);
-
-    Array1D<double> nfluxR=matmult(lambdaplusR,matmult(sinvR,uintR));
-    nfluxR+= matmult(lambdaminusR,matmult(sinvR,uextR));
-    nfluxR=matmult(SR,nfluxR);
-
-
-    if(elemnum==5)
-      {
-        //        output1D(nfluxL);
-        // output1D(nfluxR);
-      }
+    Array1D<double> nfluxR = matmult(lambdaplusR, matmult(sinvR, uintR));
+    nfluxR += matmult(lambdaminusR, matmult(sinvR, uextR));
+    nfluxR = matmult(SR, nfluxR);
 
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> AtrimmedR= AleftBoundaries[elemnum].getAtrimmed();
-    Array2D<double> duelem(AtrimmedR.dim1(),2,0.0);
+    Array2D<double> duelem(AtrimmedR.dim1(), 2, 0.0);
 
 
-    
-    Array1D<double> duL = nL*matmult(AtrimmedL,uintL)-nfluxL; //needs - sign?
-    Array1D<double> duR = nR*matmult(AtrimmedR,uintR)-nfluxR; //needs - sign?
+    //this gets multiplied by lift matrix to calculate flux
+    Array1D<double> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
+    Array1D<double> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
 
-    if(elemnum==5){
+    insert_1D_into_2D(duelem, duL, 0, false);
+    insert_1D_into_2D(duelem, duR, 1, false);
 
-      //      output1D(duL);
-      //output1D(duR);
-    }
-    insert_1D_into_2D(duelem,duL,0,false);
-    insert_1D_into_2D(duelem,duR,1,false);
-
-
-    du[elemnum]=duelem;
-
-
+    du[elemnum] = duelem;
   }
   return du;
 }
 
 void Grid::RHS(VectorGridFunction<double>& uh, 
-               VectorGridFunction<double>& RHSvgf, double t, vector<Array2D<double>>& du )
+               VectorGridFunction<double>& RHSvgf, double t, 
+               vector<Array2D<double>>& du )
 {
 
-  //  output2D(du[5]);
+  for(int elemnum = 0; elemnum < NumElem; elemnum++){
+    //maximum index for both A and B matrix
+    int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
+    //minimum index for use with trimmed A matrix. 
+    //minimum index for B matrix is zero
+    int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
 
-  //problem is in this routine HERE
-
-  for(int elemnum=0; elemnum<NumElem; elemnum++){
-    int vmaxAB=ArightBoundaries[elemnum].getAdim()-1;
-    int vminA=vmaxAB-ArightBoundaries[elemnum].getDdim()+1;
-    Array2D<double> RHSB(uh.pointsDim(),ArightBoundaries[elemnum].getAdim());
+    //The B matrix component of the RHS. Might have a - sign error that 
+    //cancels in the definition of B
+    Array2D<double> RHSB(uh.pointsDim(), ArightBoundaries[elemnum].getAdim());
                          
-    for(int nodenum=0; nodenum<uh.pointsDim(); nodenum++){
+    for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
       Array1D<double> RHSBpernode;
-      RHSBpernode=matmult(Bmatrices.get(elemnum,nodenum),
-                          uh.getVectorAsArray1D(elemnum,nodenum,0,vmaxAB));
-      insert_1D_into_2D(RHSB,RHSBpernode,nodenum,false);
+      //multiply the B matrix times a "vector" of u for each node
+      RHSBpernode = matmult(Bmatrices.get(elemnum, nodenum),
+                          uh.getVectorAsArray1D(elemnum, nodenum, 0, vmaxAB));
+      //insert that result into the rows of a larger matrix
+      insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
 
-    }//this can be sped up by skipping the insert step and reading directly from per node
+    }//this can be sped up by skipping the insert step and reading directly 
+    //from per node
 
 
     //A contribution:
+    Array2D<double> RHSA1(uh.pointsDim(), ArightBoundaries[elemnum].getDdim());
     
-    if(elemnum==5)
-      {
-        //        output2D(Bmatrices.get(elemnum,0));
-        //     output2D(RHSB);
-        // output1D(uh.getVectorAsArray1D(elemnum,0,0,vmaxAB));
-       //correct based on inputs but for some reason uh[1] is still zero for second timestep
-       // output1D(uh.get(1,elemnum));
-      }
-
-    //        Array2D<double> RHSA1=jacobian(elemnum)*(matmult(refelem.getD(),
-    //                            uh.getVectorNodeArray2D(elemnum,
-    //                                                    vminA,vmaxAB)));
-
-    Array2D<double> RHSA1(uh.pointsDim(),ArightBoundaries[elemnum].getDdim());
+    //the A contribution needs to be multiplied one node at a time by the
+    //trimmed A matrix in a similar manner to the B contribution. But first,
+    //we take the spatial derivative across all nodes. 
+    Array2D<double> RHSA1preA = jacobian(elemnum) * (matmult(refelem.getD(),
+                            uh.getVectorNodeArray2D(elemnum, vminA, vmaxAB)));
     
     
-    Array2D<double> RHSA1preA=jacobian(elemnum)*(matmult(refelem.getD(),
-                                                         uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB)));
-    
-    
-    //multiply each row of rhsa1prea by a different a matrix
-    for(int nodenum=0; nodenum<uh.pointsDim(); nodenum++)
+    //multiply each row of RHSA1preA by a different a Atrimmed matrix
+    for(int nodenum=0; nodenum < uh.pointsDim(); nodenum++)
       {
         int M = trimmedAmatrices.get(elemnum,nodenum).dim1();
         int N = trimmedAmatrices.get(elemnum,nodenum).dim2();
         int K = RHSA1preA.dim1();
         int L = RHSA1preA.dim2();
 
-        Array2D<double> tA=trimmedAmatrices.get(elemnum,nodenum);
+        Array2D<double> tA = trimmedAmatrices.get(elemnum, nodenum);
             
-        for (int i=0; i<M; i++)
-          {
+        for (int i=0; i<M; i++){
             double sum = 0;
-            
             for (int k=0; k<N; k++)
               sum += -tA[i][k] * RHSA1preA[nodenum][k];
-            
             RHSA1[nodenum][i] = sum;
-          }//copied and pasted from TmatmultT in TNT2 with modification of variable first matrix
-      }//negative sign is because of definition of tA-- opposite side of equals sign in diff eq
+          }
+        //copied and pasted from TmatmultT in TNT2 a
+        //with modification of variable first matrix
+        //TmatmultT was copied and pasted from matmult in tnt itself
+      }
+    //negative sign is because of definition of tA
+    //A is definied to appear on the left hand side of the differential
+    //equation, but this routine calculates the right hand side
 
     //needs a multiplication by an A matrix before D 
     //but A is position dependent. 
 
-    if(elemnum==5)
-      {
-        // output1D(uh.get(2,elemnum));
-        //output2D(RHSA1);//setting 2 column, not 1 column. wrong
-        // output2D(uh.getVectorNodeArray2D(elemnum,vminA,vmaxAB));
-      }
+    //this is the contribution due to du, or the numerical flux
+    Array2D<double> RHSA2 = jacobian(elemnum) 
+      * matmult(refelem.getLift(), du[elemnum]);
 
-    Array2D<double> RHSA2=jacobian(elemnum)*matmult(refelem.getLift(),du[elemnum]);
-
-       //RHSA and RHSB will have different sizes due to the different 
+    //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
     //for loop while assigning values to the RHSvgf vector grid function
 
-    Array2D<double> RHSA=RHSA1+RHSA2;
+    Array2D<double> RHSA = RHSA1 + RHSA2;
 
-    for(int vecnum=0; vecnum<RHSvgf.vectorDim(); vecnum++)
-      {
-        for(int nodenum=0; nodenum<RHSvgf.pointsDim(); nodenum++)
-          {
-            if(vecnum<vminA){
-              RHSvgf.set(vecnum,elemnum,nodenum,RHSB[nodenum][vecnum]);
-            }else{
-              RHSvgf.set(vecnum,elemnum,nodenum,RHSB[nodenum][vecnum]
-                         +RHSA[nodenum][vecnum-vminA]);
-            }
+    //sum the contributions from B, derivative, and flux, 
+    //accounting for different matrix dimensions
+    for(int vecnum = 0; vecnum < RHSvgf.vectorDim(); vecnum++){
+        for(int nodenum = 0; nodenum < RHSvgf.pointsDim(); nodenum++){
+          if(vecnum<vminA){
+            RHSvgf.set(vecnum,elemnum,nodenum,RHSB[nodenum][vecnum]);
+          } else {
+            RHSvgf.set(vecnum, elemnum, nodenum, RHSB[nodenum][vecnum]
+                         + RHSA[nodenum][vecnum - vminA]);
           }
-      }
+        }
+    }
   }
 
-}
-
-
-/*Grid::Grid(string fileElemBoundaries,int elemorder, int numelements):order{elemorder},NumElem{numelements},nodeLocs{0,elemorder+1,false}, refelem{elemorder}
-{
-  ifstream fs;
-  fs.open(fileElemBoundaries);
-  double data;
-  fs >> data;
-  while(!fs.eof())
-    {
-      elementBoundaries.push_back(data);
-      fs >> data;
-    }
-  fs.close();
-  if(elementBoundaries.size()-1 != numelements)
-    {
-      throw invalid_argument("Element boundaries too long or too short for number of elements given.");
-    }
-
-  //  ReferenceElement refelem(elemord);
-  // when we generalize this, use map to store order, element pairs
-  // so they do not need to be recalculated with each element of the same
-  // order
-  Array1D<double> physicalPosition(elemorder+1);
-  for(int elem=0; elem<numelements; elem++)
-    {
-      physicalPosition = ((elementBoundaries[elem+1]-elementBoundaries[elem]) / 2.0)
-                          *refelem.getr()
-                       + ((elementBoundaries[elem+1]+elementBoundaries[elem]) / 2.0);
-      nodeLocs.append(physicalPosition);
-    }
-  calcjacobian();
-}
-*/
-int Grid::numberElements()
-{
-  return NumElem;
 }
 
 GridFunction<double> Grid::gridNodeLocations()
@@ -330,12 +275,11 @@ vector<double> Grid::gridBoundaries()
 
 void Grid::calcjacobian()
 {
-  for(int elem=0; elem<NumElem; elem++)
-    {
-      double rx= 2.0/(elementBoundaries[elem+1]-elementBoundaries[elem]);
-      //cout << elem << " " <<rx << endl;
-      drdx.push_back(rx);
-    }
+  for(int elem = 0; elem < NumElem; elem++){
+    double rx = 2.0 / (elementBoundaries[elem + 1] 
+                       - elementBoundaries[elem]);
+    drdx.push_back(rx);
+  }
 }
 
 double Grid::jacobian(int elemnum)
