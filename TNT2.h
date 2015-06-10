@@ -15,7 +15,7 @@ using namespace std;
 namespace TNT
 {
 
-  //multiplies A B^T to yield the transpose of the result. 
+  //Multiplies A B^T to yield the transpose of the result. 
   template <class T>
     Array2D<T> TmatmultT(const Array2D<T> &A, const Array2D<T> &B)
     {
@@ -40,6 +40,7 @@ namespace TNT
       return C;
     }
   
+  //Multiplies a 2D matrix by a 1D column vector to the right.
   template <typename T>
     TNT::Array1D<T> matmult(const TNT::Array2D<T>& A, const TNT::Array1D<T>& B)
     {
@@ -58,6 +59,7 @@ namespace TNT
       return ans;
     }
 
+  //Multiplies a 1D row vector by a 2D matrix
   template <typename T>
     TNT::Array1D<T> matmult(const TNT::Array1D<T>& A, const TNT::Array2D<T>& B)
     {//really using the transpose of A, produces a column vector when it 
@@ -77,7 +79,7 @@ namespace TNT
       return ans;
     }
   
-
+  //Inserts a 1D array into a 1D array at index origin
   template<typename T>
     void insert_1D(TNT::Array1D<T>& original, 
                    const TNT::Array1D<T>& inserted, const int origin)
@@ -89,7 +91,8 @@ namespace TNT
         original[j]=inserted[j-origin];
       }
     }
-
+  
+  //Inserts a 2D array into a 2D array at indices origin1,origin2
   template <typename T>
     void insert_2D(TNT::Array2D<T>& original, const TNT::Array2D<T>& inserted, 
 		   const int origin1, const int origin2)
@@ -107,6 +110,8 @@ namespace TNT
       }
     }
   
+  //Inserts a 1D array into a 2D array at index along either a column or a 
+  //row depending on whether iscolumn is true or false. 
   template <typename T>
     void insert_1D_into_2D(TNT::Array2D<T>& original, 
 			   const TNT::Array1D<T>& inserted, 

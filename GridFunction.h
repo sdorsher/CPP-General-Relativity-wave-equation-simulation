@@ -10,15 +10,16 @@ template <class T>
 class GridFunction
 {
  public:
+  //See .cpp file for explanations of functions
   GridFunction(int vecSize, int arraySize,T initvalue);
   GridFunction(int vecSize, int arraySize);
-  void set(int vcoord, TNT::Array1D<T>);
-  void set(int vcoord, int acoord,T value);
+  void set(int vcoord, TNT::Array1D<T>); 
+  void set(int vcoord, int acoord,T value); 
   void append(TNT::Array1D<T> array);
   T get(int vcoord, int acoord);
   TNT::Array1D<T> get(int vcoord);
-  int gridDim(); //dimension of vector
-  int pointsDim(); //dimension of Array1D
+  int gridDim(); //Dimension of vector
+  int pointsDim(); //Dimension of Array1D
   void save(string filename);
   
   // private:

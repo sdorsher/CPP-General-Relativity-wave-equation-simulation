@@ -9,8 +9,8 @@
 #include "ConfigParams.h"
 
 
-//low storage fourth order Runga Kutta routine
-//see pg 64 of Hesthaven and Warburton
+//Low storage fourth order Runga Kutta routine.
+//See pg 64 of Hesthaven and Warburton.
 
 void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
                    VectorGridFunction<double>& RHSvgf, 

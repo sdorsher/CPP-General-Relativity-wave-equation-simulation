@@ -7,6 +7,7 @@
 
 namespace TNT
 {
+  //Takes the square root of each element
   template <class T>
     Array1D<T> sqrt(const Array1D<T> &A)
     {
@@ -18,6 +19,7 @@ namespace TNT
       return C;
     }
 
+  //Adds a sacalar to an array
   template <class T>
     Array1D<T> operator+(const Array1D<T> &A, const T B)
     {
@@ -29,6 +31,7 @@ namespace TNT
       return C;
     }
   
+  //Adds a scalar to an array
   template <class T>
     Array1D<T> operator+(const T B, const Array1D<T> &A)
     {
@@ -40,7 +43,7 @@ namespace TNT
       return C;
     }
 
-
+  //Multiplies a scalar times an array
   template <class T>
     Array1D<T> operator*(const T B, const Array1D<T> &A)
     {
@@ -52,6 +55,7 @@ namespace TNT
       return C;
     }
 
+  //Multiplies a scalar times an array
   template <class T>
     Array1D<T> operator*(const Array1D<T> &A, const T B)
     {
@@ -63,6 +67,7 @@ namespace TNT
       return C;
     }
   
+  //Divides an array by a scalar
   template <class T>
     Array1D<T> operator/(const Array1D<T> &A, const T B)
     {
@@ -74,6 +79,7 @@ namespace TNT
       return C;
     }
 
+  //Divides a scalar by the elements of an array
   template <class T>
     Array1D<T> operator/(const T B, const Array1D<T> &A)
     {
@@ -85,6 +91,7 @@ namespace TNT
       return C;
     }
 
+  //Subtracts an array from a scalar
   template <class T>
     Array1D<T> operator-(const T B, const Array1D<T> &A)
     {
@@ -96,6 +103,7 @@ namespace TNT
       return C;
     }
 
+  //Subtracts a scalar from an array
   template <class T>
     Array1D<T> operator-(const Array1D<T> &A, const T B)
     {

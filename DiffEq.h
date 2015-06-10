@@ -7,7 +7,7 @@
 
 using namespace TNT;
 
-//user supplied functions to set up the differential equation
+//User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0
 
 GridFunction<Array2D<double>> setupAmatrix(GridFunction<double>& nodes);

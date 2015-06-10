@@ -5,14 +5,15 @@
 #include "GridFunction.h"
 #include <fstream>
 
+//See .cpp file for explanations of functions
 template <class T>
 class VectorGridFunction
 {
  public:
   vector<GridFunction<T>> data;
-  int VGFvectorDim;
-  int GFarrayDim;
-  int GFvectorDim;
+  int VGFvectorDim; //outer vector dimension
+  int GFarrayDim; //array dimension
+  int GFvectorDim; //inner vector dimension
 
  public:
   VectorGridFunction(int VGFvecSize, int GFvecSize, int GFarraySize, 

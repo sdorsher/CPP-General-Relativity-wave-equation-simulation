@@ -9,6 +9,8 @@ using namespace TNT;
 
 class ReferenceElement
 {
+
+  //see .cpp file for explanation of functions
  public:
  ReferenceElement(int N);
 
