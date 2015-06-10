@@ -184,8 +184,7 @@ void Grid::RHS(VectorGridFunction<double>& uh,
     //Minimum index for B matrix is zero
     int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
 
-    //The B matrix component of the RHS. Might have a - sign error that 
-    //cancels in the definition of B
+    //The B matrix component of the RHS. 
     Array2D<double> RHSB(uh.pointsDim(), ArightBoundaries[elemnum].getAdim());
                          
     for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
@@ -252,11 +251,12 @@ void Grid::RHS(VectorGridFunction<double>& uh,
     for(int vecnum = 0; vecnum < RHSvgf.vectorDim(); vecnum++){
         for(int nodenum = 0; nodenum < RHSvgf.pointsDim(); nodenum++){
           if(vecnum<vminA){
-            RHSvgf.set(vecnum,elemnum,nodenum,RHSB[nodenum][vecnum]);
+            RHSvgf.set(vecnum,elemnum,nodenum,-RHSB[nodenum][vecnum]);
           } else {
-            RHSvgf.set(vecnum, elemnum, nodenum, RHSB[nodenum][vecnum]
+            RHSvgf.set(vecnum, elemnum, nodenum, -RHSB[nodenum][vecnum]
                          + RHSA[nodenum][vecnum - vminA]);
-          }
+          }//-sign in B because it is on the left hand side of the 
+          //equation in the definition supplied in DiffEq.cpp
         }
     }
   }

@@ -125,7 +125,6 @@ int main()
   //Evolution.cpp, in RHS.
 }
 
-//CURRENTLY UNTESTED
 void initialSinusoid(VectorGridFunction<double>& uh, Grid grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
@@ -138,7 +137,7 @@ void initialSinusoid(VectorGridFunction<double>& uh, Grid grd){
                                          + params.sine.phase);
       double pivar = omega * params.sine.amp * cos(omega * nodes.get(i, j)
                                            + params.sine.phase);
-      double rho = -params.waveeq.speed * rho;
+      double rho = -params.waveeq.speed * pivar;
       //travelling wave
       uh.set(0, i, j, psi);
       uh.set(1, i, j, rho);
