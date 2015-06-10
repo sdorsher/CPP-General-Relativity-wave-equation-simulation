@@ -4,10 +4,10 @@
 const ConfigParams params("params.cfg");
 
 ConfigParams::ConfigParams(const std::string& configFileName)
-{ //use template function that uses libconfig commands to read in global
+{ //Use template function that uses libconfig commands to read in global
   //parameters into a params structure, for example, params.waveq.pdenum
 
-  //read parameters associated with the wave equation
+  //Read parameters associated with the wave equation
   waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
   waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
   waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",
@@ -15,7 +15,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   waveeq.issinusoid=getConfigFromFile<bool>(configFileName, "waveeq",
                                             "issinusoid");
 
-  //if it is gaussian, read parameters associated with gaussian 
+  //If it is gaussian, read parameters associated with gaussian 
   //initial conditions
   if(waveeq.isgaussian){
     gauss.amp=getConfigFromFile<double>(configFileName, "gauss", 
@@ -24,18 +24,18 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     gauss.sigma= getConfigFromFile<double>(configFileName, "gauss", "sigma");
 
   } else if(waveeq.issinusoid) { 
-    //if sinusoidal initial conditions, read in parameters 
+    //If sinusoidal initial conditions, read in parameters 
     //associated with those
     sine.amp=getConfigFromFile<double>(configFileName, "sine", "amplitude");
     sine.phase=getConfigFromFile<double>(configFileName, "sine", "phase");
     sine.wavelength=getConfigFromFile<double>(configFileName, "sine",
                                               "wavelength");
     }else{
-    //currently no other options
+    //Currently no other options
       throw invalid_argument("No initial conditions set in parameter file.");
     }
 
-  //read in parameters associated with the grid
+  //Read in parameters associated with the grid
   grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
   grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
   grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
@@ -43,7 +43,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
                                             "readfromfile");
   
-  //read in parameters associated with time evolution
+  //Read in parameters associated with time evolution
   time.dt=getConfigFromFile<double>(configFileName, "time", "dt");
   time.courantfac=getConfigFromFile<double>(configFileName, "time",
                                             "courantfac");
@@ -56,7 +56,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   time.usefixedtimestep=getConfigFromFile<bool>(configFileName, "time",
                                                 "usefixedtimestep");
 
-  //read in filename parameters
+  //Read in filename parameters
   file.pdesolution=getConfigFromFile<string>(configFileName, "file",
                                              "pdesolution");
   file.oneperioderror=getConfigFromFile<string>(configFileName, "file",
@@ -67,7 +67,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
                                                    "initialconditions");
 }
 
-//template function that handles libconfig input from file for different
+//Template function that handles libconfig input from file for different
 //types of data
 template <typename T>
 T ConfigParams::getConfigFromFile( const std::string& configFileName, 

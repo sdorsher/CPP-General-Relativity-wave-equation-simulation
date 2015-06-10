@@ -9,11 +9,11 @@
 #include <fstream>
 #include "ConfigParams.h"
 
-//initial condition options
+//Initial condition options
 void initialGaussian(VectorGridFunction<double>& uh, Grid grd);
 void initialSinusoid(VectorGridFunction<double>& uh, Grid grd);
 
-//characterization of convergence, error using L2 norm
+//Characterization of convergence, error using L2 norm
 double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, 
                  VectorGridFunction<double>& uhend);
 
@@ -23,8 +23,8 @@ int main()
   Grid thegrid(params.grid.elemorder, params.grid.numelems,
                params.grid.lowerlim, params.grid.upperlim);
 
-  //declaration of calculation variables and 
-  //initialization to either zero or value read from file
+  //Declaration of calculation variables and 
+  //Initialization to either zero or value read from file
   VectorGridFunction<double> uh(params.waveeq.pdenum,
                                 params.grid.numelems,
                                 params.grid.elemorder+1,
@@ -33,7 +33,7 @@ int main()
                                  params.grid.numelems,
                                  params.grid.elemorder + 1,
                                  0.0);
-  //solution to PDE, possibly a vector 
+  //Solution to PDE, possibly a vector 
   VectorGridFunction<double> RHSvgf(params.waveeq.pdenum,
                                     params.grid.numelems,
                                     params.grid.elemorder + 1,
@@ -41,7 +41,7 @@ int main()
 
   GridFunction<double> nodes = thegrid.gridNodeLocations();
 
-  //setup initial conditions
+  //Setup initial conditions
   if(params.waveeq.issinusoid){
     initialSinusoid(uh, thegrid);
   } else if(params.waveeq.isgaussian) {
@@ -49,7 +49,7 @@ int main()
   }
   uh0 = uh;
   
-  //set time based on smallest grid spacing
+  //Set time based on smallest grid spacing
   double dt0 = nodes.get(0, 1) - nodes.get(0, 0);
 
   int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
@@ -59,12 +59,12 @@ int main()
     deltat = params.time.dt;
   } else {
     deltat = (params.time.tmax - params.time.t0) / nt; 
-    //make deltat go into tmax an integer number of times
+    //Make deltat go into tmax an integer number of times
   }
   cout << dt0 << " " << deltat << endl;
   
 
-  //initialize loop variables to determine when output
+  //Initialize loop variables to determine when output
   double output = deltat / 2.0;
   int outputcount = 0;
 
@@ -73,19 +73,19 @@ int main()
 
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
-      //output in gnuplot format
+      //Output in gnuplot format
       fs << endl << endl;
       fs << " #time = " << t << endl;
       for (int i = 0; i < uh.gridDim(); i++){
         for(int j = 0; j < uh.pointsDim(); j++){
-          //print out at select time steps
+          //Print out at select time steps
           fs << thegrid.gridNodeLocations().get(i, j) << " " 
              << uh.get(0, i, j) << " " << uh.get(1, i, j) <<" " 
              << uh.get(2, i, j)<< endl;
         }
       }
 
-      //output the difference in the waveforms between the 
+      //Output the difference in the waveforms between the 
       //oscillation initially and after one period
       if(outputcount == params.time.comparisoncount){
         cout << t << endl;
@@ -99,7 +99,7 @@ int main()
         }
         fs2.close();
 
-        //append the L2 error to that file, measured after one period
+        //Append the L2 error to that file, measured after one period
         ofstream fsconvergence;
         fsconvergence.open(params.file.L2error,ios::app);
             
@@ -115,13 +115,13 @@ int main()
       output -= params.time.outputinterval; 
       outputcount++;
     }
-    //increment the timestep
+    //Increment the timestep
     rk4lowStorage(thegrid, uh, RHSvgf, t, deltat);
 
-    //increment the count to determine whether or not to output
+    //Increment the count to determine whether or not to output
     output += deltat;
   }
-  //initial conditions, numerical fluxes, boundary conditions handled inside 
+  //Initial conditions, numerical fluxes, boundary conditions handled inside 
   //Evolution.cpp, in RHS.
 }
 
@@ -170,7 +170,7 @@ void initialGaussian(VectorGridFunction<double>& uh, Grid grd){
 double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, 
                  VectorGridFunction<double>& uhend)
 {
-  //the square root of the integral of the squared difference
+  //The square root of the integral of the squared difference
   double L2;
   L2 = 0.0;
   Array1D<double> weights;

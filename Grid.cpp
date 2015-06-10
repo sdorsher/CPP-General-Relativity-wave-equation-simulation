@@ -19,7 +19,7 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
                                 / float(numelements));
   }
   
-  //get physical positions of nodes from the reference element
+  //Get physical positions of nodes from the reference element
   Array1D<double> physicalPosition(elemorder + 1);
   for(int elem = 0; elem < numelements; elem++){
     physicalPosition = ((elementBoundaries[elem + 1] 
@@ -29,15 +29,15 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
     nodeLocs.append(physicalPosition);
   }
   
-  //calculate the jacobian associated with the transformation each element
+  //Calculate the jacobian associated with the transformation each element
   //from the reference element to physical space
   calcjacobian();
   
-  //setup the A and B matrices in DiffEq.cpp
+  //Setup the A and B matrices in DiffEq.cpp
   Amatrices = setupAmatrix(nodeLocs);
   Bmatrices = setupBmatrix(nodeLocs);
 
-  //get the A matrix with its zero dimensions removed for each node
+  //Get the A matrix with its zero dimensions removed for each node
   for(int i = 0; i < nodeLocs.gridDim(); i++){
     for(int j = 0; j < nodeLocs.pointsDim(); j++)
       {
@@ -46,7 +46,7 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
       }
   }
 
-  // get all characteristic equation information for each boundary node
+  //Get all characteristic equation information for each boundary node
   for (int i = 0; i < nodeLocs.gridDim(); i++){
     CharacteristicFlux left(Amatrices.get(i, 0));
     CharacteristicFlux right(Amatrices.get(i, nodeLocs.pointsDim() - 1));
@@ -54,12 +54,12 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
     ArightBoundaries.push_back(right);
   }
   
-  //allocate memory for the left and right boundary du that contributes
-  // to the characteristic flux when multiplied by the lift matrix. 
-  // there will be one Array1D of length 2 for each boundary of each element.
+  //Allocate memory for the left and right boundary du that contributes
+  //to the characteristic flux when multiplied by the lift matrix. 
+  //There will be one Array1D of length 2 for each boundary of each element.
   //this is not a GridFunction because although it shares the same 
   //implementation format, it doesn't share the same conceptual format. 
-  //it does not embody a function that has values over all nodes of the grid.
+  //It does not embody a function that has values over all nodes of the grid.
   duL.resize(NumElem);
   duR.resize(NumElem);
 
@@ -76,8 +76,8 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
     double nL = -1.0; //normal to the leftmost node
     double nR = 1.0; //normal to the rightmost node
 
-    //dimension of the components of the differential equation with 
-    // spatial derivatives (dimension of the trimmed A matrices)
+    //Dimension of the components of the differential equation with 
+    //spatial derivatives (dimension of the trimmed A matrices)
     int DdimL = AleftBoundaries[elemnum].getDdim();
     int DdimR = ArightBoundaries[elemnum].getDdim();
     
@@ -112,7 +112,7 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
       //periodic boundary conditions
     }
     
-    //initialize plus and minus components of lambda matrix to zero at both
+    //Initialize plus and minus components of lambda matrix to zero at both
     //boundaries
     Array2D<double> lambdaminusL(DdimL, DdimL, 0.0);
     Array2D<double> lambdaminusR(DdimR, DdimR, 0.0);
@@ -124,8 +124,8 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
 
     //lambda minus contains outward moving wave components
     //lambda plus contains inward moving wave components
-    //might be an incorrect summary. trust the math, not the words
-    //see pg 35 of Hesthaven and Warburten
+    //Might be an incorrect summary. Trust the math, not the words
+    //See pg 35 of Hesthaven and Warburten
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
         lambdaminusL[j][j] = nL * lambdaL[j][j];
@@ -145,8 +145,8 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
     Array2D<double> SL = AleftBoundaries[elemnum].getS();
     Array2D<double> SR = ArightBoundaries[elemnum].getS();
     
-    //numerical fluxes at both boundaries 
-    //see Hesthaven and Warburten pg 35 (n*F)
+    //Numerical fluxes at both boundaries 
+    //See Hesthaven and Warburten pg 35 (n*F)
     Array1D<double> nfluxL = matmult(lambdaplusL, matmult(sinvL, uintL));
     nfluxL += matmult(lambdaminusL, matmult(sinvL, uextL));
     nfluxL = matmult(SL, nfluxL);
@@ -160,7 +160,7 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
     Array2D<double> duelem(AtrimmedR.dim1(), 2, 0.0);
 
 
-    //this gets multiplied by lift matrix to calculate flux
+    //This gets multiplied by lift matrix to calculate flux
     Array1D<double> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<double> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
 
@@ -178,10 +178,10 @@ void Grid::RHS(VectorGridFunction<double>& uh,
 {
 
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
-    //maximum index for both A and B matrix
+    //Maximum index for both A and B matrix
     int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
-    //minimum index for use with trimmed A matrix. 
-    //minimum index for B matrix is zero
+    //Minimum index for use with trimmed A matrix. 
+    //Minimum index for B matrix is zero
     int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
 
     //The B matrix component of the RHS. Might have a - sign error that 
@@ -190,27 +190,27 @@ void Grid::RHS(VectorGridFunction<double>& uh,
                          
     for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
       Array1D<double> RHSBpernode;
-      //multiply the B matrix times a "vector" of u for each node
+      //Multiply the B matrix times a "vector" of u for each node
       RHSBpernode = matmult(Bmatrices.get(elemnum, nodenum),
                           uh.getVectorAsArray1D(elemnum, nodenum, 0, vmaxAB));
-      //insert that result into the rows of a larger matrix
+      //Insert that result into the rows of a larger matrix
       insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
 
-    }//this can be sped up by skipping the insert step and reading directly 
+    }//This can be sped up by skipping the insert step and reading directly 
     //from per node
 
 
     //A contribution:
     Array2D<double> RHSA1(uh.pointsDim(), ArightBoundaries[elemnum].getDdim());
     
-    //the A contribution needs to be multiplied one node at a time by the
+    //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
     //we take the spatial derivative across all nodes. 
     Array2D<double> RHSA1preA = jacobian(elemnum) * (matmult(refelem.getD(),
                             uh.getVectorNodeArray2D(elemnum, vminA, vmaxAB)));
     
     
-    //multiply each row of RHSA1preA by a different a Atrimmed matrix
+    //Multiply each row of RHSA1preA by a different a Atrimmed matrix
     for(int nodenum=0; nodenum < uh.pointsDim(); nodenum++)
       {
         int M = trimmedAmatrices.get(elemnum,nodenum).dim1();
@@ -226,18 +226,18 @@ void Grid::RHS(VectorGridFunction<double>& uh,
               sum += -tA[i][k] * RHSA1preA[nodenum][k];
             RHSA1[nodenum][i] = sum;
           }
-        //copied and pasted from TmatmultT in TNT2 a
+        //Copied and pasted from TmatmultT in TNT2 a
         //with modification of variable first matrix
         //TmatmultT was copied and pasted from matmult in tnt itself
       }
-    //negative sign is because of definition of tA
+    //Negative sign is because of definition of tA
     //A is definied to appear on the left hand side of the differential
     //equation, but this routine calculates the right hand side
 
-    //needs a multiplication by an A matrix before D 
+    //Needs a multiplication by an A matrix before D 
     //but A is position dependent. 
 
-    //this is the contribution due to du, or the numerical flux
+    //This is the contribution due to du, or the numerical flux
     Array2D<double> RHSA2 = jacobian(elemnum) 
       * matmult(refelem.getLift(), du[elemnum]);
 
@@ -247,7 +247,7 @@ void Grid::RHS(VectorGridFunction<double>& uh,
 
     Array2D<double> RHSA = RHSA1 + RHSA2;
 
-    //sum the contributions from B, derivative, and flux, 
+    //Sum the contributions from B, derivative, and flux, 
     //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHSvgf.vectorDim(); vecnum++){
         for(int nodenum = 0; nodenum < RHSvgf.pointsDim(); nodenum++){

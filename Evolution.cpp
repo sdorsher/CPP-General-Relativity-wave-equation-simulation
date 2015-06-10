@@ -2,10 +2,10 @@
 
 //Fourth order low storage Runga Kutta method for time integration
 
-//coefficients copied and pasted from Fortran code by Peter Diener
-//he thinks the coefficients were copied and pasted from the Matlab 
-//code by Hesthaven and Warburn
-//see page 63 of Hesthaven and Warburn for this routine
+//coefficients copied and pasted from Fortran code by Peter Diener.
+//He thinks the coefficients were copied and pasted from the Matlab 
+//code by Hesthaven and Warburn.
+//See page 63 of Hesthaven and Warburn for this routine
 
 void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
                    VectorGridFunction<double>& RHSvgf, 

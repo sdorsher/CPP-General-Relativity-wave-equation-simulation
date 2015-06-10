@@ -1,7 +1,7 @@
 #include "CharacteristicFlux.h"
 
 
-//this object DOES NOT CALCULATE THE CHARACTERISTIC FLUX. That is i
+//This object DOES NOT CALCULATE THE CHARACTERISTIC FLUX. That is i
 //misnomer. It converts the separated linearized differential equation
 //to its characteristic form, which supplies the matrices needed
 //to calculate the characteristic flux. This calculation is done
