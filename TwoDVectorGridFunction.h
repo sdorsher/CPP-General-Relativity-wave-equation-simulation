@@ -21,10 +21,12 @@ class TwoDVectorGridFunction
                          int GFarraySize, T initvalue);
   TwoDVectorGridFunction(int TDVGFSize, int VGFvecSize, int GFvecSize, 
                          int GFarraySize);
+  VectorGridFunction<T> get(int TDVGFvcoord);
   T get(int TDVGFvcoord, int VGFvcoord, int GFvcoord, int GFacoord);
   Array1D<T> get(int TDVGFvcoord, int VGFvcoord,int GFvcoord);
   GridFunction<T> get(int TDVGFvcoord, int VGFvcoord);
   void set(int TDGVFvcoord, int VGFvcoord, int GFvcoord, int GFacoord,T value);
+  void set(int TDVGFvcoord, VectorGridFunction<T> vgf);
   void set(int TDVGFvcoord, int VGFcoord,GridFunction<T> value);
   void set(int TDVGFvcoord, int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
   void setVector(int TDVGFvcoord, int GFcoord, int GFacoord, vector<T> vec);

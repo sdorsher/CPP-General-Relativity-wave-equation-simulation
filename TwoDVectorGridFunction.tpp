@@ -86,6 +86,18 @@ void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFvcoord,
   data.at(TDVGFvcoord).set(VGFvcoord, GFvcoord, GFacoord, value);
 }
 
+//Set the outer coordinate to a VectorGridFunction.
+//May want to generalize to the middle coordinate later
+template <class T>
+void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, 
+                                    VectorGridFunction<T> vgf)
+{
+  if((TDVGFvcoord < 0) || (TDVGFvcoord >= TDVGFvectorDim)) {
+    throw invalid_argument("2D vector index out of range in VGF set");
+  }
+  data.at(TDVGFvcoord)=vgf;
+}
+
 //Set an outer and middle vector coordinate to a grid function.
 template <class T>
 void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFcoord, 
@@ -135,6 +147,18 @@ T TwoDVectorGridFunction<T>::get(int TDVGFvcoord, int VGFvcoord,
     throw invalid_argument("2D vector index out of range in get");
   }
   return data.at(TDVGFvcoord).get(VGFvcoord, GFvcoord, GFacoord);
+}
+
+//Get a VectorGridFunction from an outer vector coordinate. 
+//May want to generalize this later to also handle middle vector coordinates,
+//although performance would suffer for that case due to the need to copy. 
+template <class T>
+VectorGridFunction<T> TwoDVectorGridFunction<T>::get(int TDVGFvcoord) 
+{
+  if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)) {
+    throw invalid_argument("2D vector index out of range in VGF get");
+  }
+  return data.at(TDVGFvcoord);
 }
 
 //Get an array from an inner, middle, and outer vector coordinate.
@@ -207,7 +231,9 @@ Array1D<T> TwoDVectorGridFunction<T>::getVectorAsArray1D(int vectorCoord,
     throw invalid_argument("Get indices out of range in TwoDVectorGridFunction");
   }
   
-  if((vmax >= VGFvectorDim) || (vmin < 0)){
+  if(((dimension == 0) && (vmax >= VGFvectorDim))
+    || ((dimension == 1) && (vmax >= TDVGFvectorDim))
+    || (vmin < 0)){
     throw invalid_argument("Get max or min vector indices out of range in TwoDVectorGridFunction");
   }
   
