@@ -23,7 +23,9 @@ class Grid
   GridFunction<double> nodeLocs; //N by Np. Physical node locations.
   void calcjacobian();
   GridFunction<Array2D<double>> Amatrices;
-  GridFunction<Array2D<double>> Bmatrices;
+  VectorGridFunction<Array2D<double>> Bmatrices;
+  int multipoleDim; 
+  vector<double> ll; //mode list
   vector<CharacteristicFlux> AleftBoundaries;
   vector<CharacteristicFlux> ArightBoundaries;
   vector<Array1D<double>> duL; //A component of the flux, left boundary
@@ -36,9 +38,11 @@ class Grid
   //to make multiple orders possible
 
  public:
-  Grid(int elemorder, int numelements,double lowerlim, double upperlim);
+  Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
+       double upperlim);
   ReferenceElement refelem; //member variable: the reference element
 
+  int modesDim();
   int numberElements();//Returns number of elements, calculated from input file
   GridFunction<double> gridNodeLocations();  //Returns physical node location
   vector<double> gridBoundaries(); //Returns the boundaries of the elements

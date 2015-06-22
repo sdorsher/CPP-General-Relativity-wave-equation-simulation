@@ -10,31 +10,36 @@
 #include "ConfigParams.h"
 
 //Initial condition options
-void initialGaussian(VectorGridFunction<double>& uh, Grid grd);
-void initialSinusoid(VectorGridFunction<double>& uh, Grid grd);
+void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
+void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd);
+void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd);
+
 
 //Characterization of convergence, error using L2 norm
-double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, 
-                 VectorGridFunction<double>& uhend);
+double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0, 
+                 TwoDVectorGridFunction<double>& uhend);
 
 int main()
 {
 
-  Grid thegrid(params.grid.elemorder, params.grid.numelems,
+  Grid thegrid(params.grid.elemorder, params.grid.numelems, params.waveeq.modenum,
                params.grid.lowerlim, params.grid.upperlim);
 
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
-  VectorGridFunction<double> uh(params.waveeq.pdenum,
+  TwoDVectorGridFunction<double> uh(params.waveeq.modenum,
+                                   params.waveeq.pdenum,
                                 params.grid.numelems,
                                 params.grid.elemorder+1,
                                 0.0); 
-  VectorGridFunction<double> uh0(params.waveeq.pdenum,
+  TwoDVectorGridFunction<double> uh0(params.waveeq.modenum,
+                                    params.waveeq.pdenum,
                                  params.grid.numelems,
                                  params.grid.elemorder + 1,
                                  0.0);
   //Solution to PDE, possibly a vector 
-  VectorGridFunction<double> RHSvgf(params.waveeq.pdenum,
+  TwoDVectorGridFunction<double> RHSvgf(params.waveeq.modenum,
+                                       params.waveeq.pdenum,
                                     params.grid.numelems,
                                     params.grid.elemorder + 1,
                                     0.0); //right hand side of PDE
@@ -46,7 +51,10 @@ int main()
     initialSinusoid(uh, thegrid);
   } else if(params.waveeq.isgaussian) {
     initialGaussian(uh, thegrid);
+    // } else if(params.waveeq.isschwarzchild) {
+    // initialSchwarzchild(uh, thegrid);
   }
+  
   uh0 = uh;
   
   //Set time based on smallest grid spacing
@@ -125,49 +133,72 @@ int main()
   //Evolution.cpp, in RHS.
 }
 
-void initialSinusoid(VectorGridFunction<double>& uh, Grid grd){
+
+/*void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
+  GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
+  nodes=grd.gridNodeLocations();
+  for(int i = 0; i < uh.gridDim(); i++) {
+    for (int j = 0; j < uh.pointsDim(); j++) {
+      for (int n = 0; n < uh.modesDim(); n++) {
+        double modeval = exp(-0.5 * pow(thegrid.rho.get(i,j) / sigma), 2.0);
+        uh.set(n,0,i,j,0.0);
+        if(!params.blackhole.usesource) {
+          uh.set(n,1,i,j,modeval);
+        }
+        uh.set(n,2,i,j,0.0);
+      }
+    }
+  }
+}
+*/
+  
+
+void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
-  
-  for(int i = 0; i < uh.gridDim(); i++){
-    for (int j = 0; j < uh.pointsDim(); j++){
-      double psi = params.sine.amp * sin(omega * nodes.get(i, j)
-                                         + params.sine.phase);
-      double pivar = omega * params.sine.amp * cos(omega * nodes.get(i, j)
+
+  for(int k = 0; k < uh.modesDim(); k++) {
+    for(int i = 0; i < uh.gridDim(); i++){
+      for (int j = 0; j < uh.pointsDim(); j++){
+        double psi = params.sine.amp * sin(omega * nodes.get(i, j)
                                            + params.sine.phase);
-      double rho = -params.waveeq.speed * pivar;
-      //travelling wave
-      uh.set(0, i, j, psi);
-      uh.set(1, i, j, rho);
-      uh.set(2, i, j, pivar);
+        double pivar = omega * params.sine.amp * cos(omega * nodes.get(i, j)
+                                                     + params.sine.phase);
+        double rho = -params.waveeq.speed * pivar;
+        //travelling wave
+        uh.set(k, 0, i, j, psi);
+        uh.set(k, 1, i, j, rho);
+        uh.set(k, 2, i, j, pivar);
+      }
     }
   }
 }
- 
-void initialGaussian(VectorGridFunction<double>& uh, Grid grd){
+void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd){
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
   
-  for(int i = 0; i < uh.gridDim(); i++){
-    for(int j = 0; j < uh.pointsDim(); j++){
-      double gaussian = params.gauss.amp * exp(-pow((nodes.get(i, j)
-                                                 - params.gauss.mu), 2.0)
-                                               / 2.0 
-                                               / pow(params.gauss.sigma, 2.0));
-      double dgauss = -(nodes.get(i, j) - params.gauss.mu)
-        / pow(params.gauss.sigma, 2.0) * gaussian;
-      uh.set(0, i, j, gaussian);
-      uh.set(1, i, j, 0.0); //time derivative is zero
-                            //starts at center and splits
-      uh.set(2, i, j, dgauss);
+  for(int k = 0; k < uh.modesDim(); k++) {
+    for(int i = 0; i < uh.gridDim(); i++){
+      for(int j = 0; j < uh.pointsDim(); j++){
+        double gaussian = params.gauss.amp * exp(-pow((nodes.get(i, j)
+                                                       - params.gauss.mu), 2.0)
+                                                 / 2.0 
+                                                 / pow(params.gauss.sigma, 2.0));
+        double dgauss = -(nodes.get(i, j) - params.gauss.mu)
+          / pow(params.gauss.sigma, 2.0) * gaussian;
+        uh.set(k, 0, i, j, gaussian);
+        uh.set(k, 1, i, j, 0.0); //time derivative is zero
+        //starts at center and splits
+        uh.set(k, 2, i, j, dgauss);
+      }
     }
   }
 }
 
-double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0, 
-                 VectorGridFunction<double>& uhend)
+double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0, 
+                 TwoDVectorGridFunction<double>& uhend)
 {
   //The square root of the integral of the squared difference
   double L2;
@@ -178,8 +209,8 @@ double LTwoerror(Grid thegrid, VectorGridFunction<double>& uh0,
   nodes = thegrid.gridNodeLocations();
   for(int i = 0; i < uh0.gridDim(); i++){
     for(int j = 0; j < uh0.pointsDim(); j++){
-      double added = weights[j] * pow(uh0.get(0, i, j)
-                                   - uhend.get(0, i, j), 2.0)
+      double added = weights[j] * pow(uh0.get(0, 0, i, j)
+                                      - uhend.get(0, 0, i, j), 2.0)
         / thegrid.jacobian(i);
       L2 += added;
     }

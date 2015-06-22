@@ -2,7 +2,7 @@
 #define EVOLUTION_H
 
 #include "TNT2.h"
-#include "VectorGridFunction.h"
+#include "TwoDVectorGridFunction.h"
 #include "GridFunction.h"
 #include "Grid.h"
 #include <fstream>
@@ -12,8 +12,8 @@
 //Low storage fourth order Runga Kutta routine.
 //See pg 64 of Hesthaven and Warburton.
 
-void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
-                   VectorGridFunction<double>& RHSvgf, 
+void rk4lowStorage(Grid thegrid, TwoDVectorGridFunction<double>& uh, 
+                   TwoDVectorGridFunction<double>& RHSvgf, 
                    double t, double deltat);
 
 #endif

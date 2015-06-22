@@ -2,15 +2,15 @@
 
 //du/dt + A du/dx + Bu = 0
 
-Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
+Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
+           double upperlim):
   order{elemorder},
   NumElem{numelements},
   nodeLocs{0,elemorder + 1}, 
   Amatrices{numelements, elemorder + 1},
-  Bmatrices{numelements, elemorder + 1},
+  Bmatrices{nummodes,numelements, elemorder + 1},
   refelem{elemorder},
-  trimmedAmatrices(numelements, elemorder + 1)
-
+  trimmedAmatrices{numelements, elemorder + 1}
 {
 
   //assign evenly spaced element boundaries
@@ -34,16 +34,19 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
   calcjacobian();
   
   //Setup the A and B matrices in DiffEq.cpp
-  Amatrices = setupAmatrix(nodeLocs);
-  Bmatrices = setupBmatrix(nodeLocs);
+  GridFunction<double> gfAmatrices(numelements,elemorder);
+  VectorGridFunction<double> vgfBmatrices(nummodes,numelements,elemorder);
+  setupABmatrices(this,nodeLocs,gfAmatrices,vgfBmatrices);
+  Amatrices=gfAmatrices;
+  Bmatrices=vgfBmatrices;
 
   //Get the A matrix with its zero dimensions removed for each node
   for(int i = 0; i < nodeLocs.gridDim(); i++){
-    for(int j = 0; j < nodeLocs.pointsDim(); j++)
-      {
-        CharacteristicFlux nodechar(Amatrices.get(i,j));
-        trimmedAmatrices.set(i, j, (nodechar.getAtrimmed()));
-      }
+    for(int j = 0; j < nodeLocs.pointsDim(); j++) {
+      //get the trimmed A matrices at each node coordinate
+      CharacteristicFlux nodechar(Amatrices.get(i,j));
+      trimmedAmatrices.set(i, j, (nodechar.getAtrimmed()));
+    }
   }
 
   //Get all characteristic equation information for each boundary node
@@ -68,6 +71,12 @@ Grid::Grid(int elemorder, int numelements, double lowerlim, double upperlim):
 vector<TNT::Array2D<double>> 
 Grid::characteristicflux(VectorGridFunction<double>& uh)
 {
+  //We can loop over characteristicFlux in an external function because
+  //in general, neither the RHS of the differential equation nor du mixes
+  //spherical harmonic modes. 
+  
+  int modesDim = uh.modesDim();
+
   vector<Array2D<double>> du;
   du.resize(NumElem);
   for(int elemnum=0; elemnum<NumElem; elemnum++){
@@ -92,23 +101,26 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
     Array1D<double> uextL(DdimL); //external u at left boundary
     Array1D<double> uextR(DdimR); //external u at right boundary
     
-    uintL = uh.getVectorAsArray1D(elemnum, indL, vminL, vmaxL); 
-    uintR = uh.getVectorAsArray1D(elemnum, indR, vminR, vmaxR);
+    uintL = uh.getVectorAsArray1D(modesDim,elemnum, indL, vminL, vmaxL, 0); 
+    uintR = uh.getVectorAsArray1D(modesDim,elemnum, indR, vminR, vmaxR, 0);
 
     
     if(elemnum > 0) {
-      uextL = uh.getVectorAsArray1D(elemnum - 1, indR, vminL, vmaxL); 
+      uextL = uh.getVectorAsArray1D(modesDim, elemnum - 1, indR, vminL, 
+                                    vmaxL, 0); 
       //external u, left boundary
     }else{
-      uextL = uh.getVectorAsArray1D(NumElem - 1, indR, vminL, vmaxL); 
+      uextL = uh.getVectorAsArray1D(modesDim, NumElem - 1, indR, vminL, 
+                                    vmaxL, 0); 
       //periodic boundary conditions
     }
 
     if(elemnum < NumElem - 1) {
-      uextR = uh.getVectorAsArray1D(elemnum + 1, indL, vminR, vmaxR); 
+      uextR = uh.getVectorAsArray1D(modesDim, elemnum + 1, indL, vminR, 
+                                    vmaxR, 0); 
       //external u, right boundary
     }else{
-      uextR = uh.getVectorAsArray1D(0, indL, vminR, vmaxR); 
+      uextR = uh.getVectorAsArray1D(modesDim, 0, indL, vminR, vmaxR, 0); 
       //periodic boundary conditions
     }
     
@@ -164,6 +176,10 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
     Array1D<double> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<double> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
 
+
+    //create a 2D array with one column corresponding to the left
+    //boundary and one column corresponding to the right boundary
+    //of du for the the various components of u. 
     insert_1D_into_2D(duelem, duL, 0, false);
     insert_1D_into_2D(duelem, duR, 1, false);
 
@@ -172,11 +188,15 @@ Grid::characteristicflux(VectorGridFunction<double>& uh)
   return du;
 }
 
-void Grid::RHS(VectorGridFunction<double>& uh, 
-               VectorGridFunction<double>& RHSvgf, double t, 
+void Grid::RHS(int modenum, TwoDVectorGridFunction<double>& uh, 
+               TwoDVectorGridFunction<double>& RHStdgf, double t, 
                vector<Array2D<double>>& du )
 {
 
+  //We can loop over RHS in an external function independent of mode 
+  //because in general the right hand side of the differential equation
+  //does not mix spherical harmonic modes. Neither does the numerical flux. 
+   
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
     //Maximum index for both A and B matrix
     int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
@@ -185,13 +205,14 @@ void Grid::RHS(VectorGridFunction<double>& uh,
     int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
 
     //The B matrix component of the RHS. 
-    Array2D<double> RHSB(uh.pointsDim(), ArightBoundaries[elemnum].getAdim());
-                         
-    for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
-      Array1D<double> RHSBpernode;
-      //Multiply the B matrix times a "vector" of u for each node
-      RHSBpernode = matmult(Bmatrices.get(elemnum, nodenum),
-                          uh.getVectorAsArray1D(elemnum, nodenum, 0, vmaxAB));
+      Array2D<double> RHSB(uh.pointsDim(), 
+                           ArightBoundaries[elemnum].getAdim());
+      for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
+        Array1D<double> RHSBpernode;
+        //Multiply the B matrix times a "vector" of u for each node
+      RHSBpernode = matmult(Bmatrices.get(modenum, elemnum, nodenum),
+                            uh.getVectorAsArray1D(modenum,elemnum, nodenum, 
+                                                  0, vmaxAB, 0));
       //Insert that result into the rows of a larger matrix
       insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
 
@@ -205,8 +226,10 @@ void Grid::RHS(VectorGridFunction<double>& uh,
     //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
     //we take the spatial derivative across all nodes. 
-    Array2D<double> RHSA1preA = jacobian(elemnum) * (matmult(refelem.getD(),
-                            uh.getVectorNodeArray2D(elemnum, vminA, vmaxAB)));
+
+    Array2D<double> RHSA1preA = jacobian(elemnum) 
+      * (matmult(refelem.getD(),
+                 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)));
     
     
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
@@ -242,18 +265,18 @@ void Grid::RHS(VectorGridFunction<double>& uh,
 
     //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
-    //for loop while assigning values to the RHSvgf vector grid function
+    //for loop while assigning values to the RHStdvgf vector grid function
 
     Array2D<double> RHSA = RHSA1 + RHSA2;
 
     //Sum the contributions from B, derivative, and flux, 
     //accounting for different matrix dimensions
-    for(int vecnum = 0; vecnum < RHSvgf.vectorDim(); vecnum++){
-        for(int nodenum = 0; nodenum < RHSvgf.pointsDim(); nodenum++){
+    for(int vecnum = 0; vecnum < RHStdvgf.vectorDim(); vecnum++){
+        for(int nodenum = 0; nodenum < RHStdvgf.pointsDim(); nodenum++){
           if(vecnum<vminA){
-            RHSvgf.set(vecnum,elemnum,nodenum,-RHSB[nodenum][vecnum]);
+            RHStdvgf.set(modenum, vecnum,elemnum,nodenum,-RHSB[nodenum][vecnum]);
           } else {
-            RHSvgf.set(vecnum, elemnum, nodenum, -RHSB[nodenum][vecnum]
+            RHStdvgf.set(modenum, vecnum, elemnum, nodenum, -RHSB[nodenum][vecnum]
                          + RHSA[nodenum][vecnum - vminA]);
           }//-sign in B because it is on the left hand side of the 
           //equation in the definition supplied in DiffEq.cpp
@@ -262,6 +285,19 @@ void Grid::RHS(VectorGridFunction<double>& uh,
   }
 
 }
+
+GridFunction<double> Grid::modeRHS(TwoDVectorGridFunction<double>& uh,
+                                   TwoDVectorGridFunction<double>& RHStdgf, 
+                                   double t, 
+                                   vector<Array2D<double>>& du )
+{
+
+  for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
+    du = characteristicFlux(uh);
+    RHS(modenum, uh, RHStdgf, t, du);
+  }
+}
+
 
 GridFunction<double> Grid::gridNodeLocations()
 {

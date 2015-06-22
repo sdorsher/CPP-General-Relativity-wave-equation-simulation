@@ -8,6 +8,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   //parameters into a params structure, for example, params.waveq.pdenum
 
   //Read parameters associated with the wave equation
+  waveeq.modenum = getConfigFromFile<int>(configFileName, "waveeq", "modenum");
   waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
   waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
   waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",

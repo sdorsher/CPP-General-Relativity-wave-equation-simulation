@@ -7,8 +7,8 @@
 //code by Hesthaven and Warburn.
 //See page 63 of Hesthaven and Warburn for this routine
 
-void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh, 
-                   VectorGridFunction<double>& RHSvgf, 
+void rk4lowStorage(Grid thegrid, TwoDVectorGridFunction<double>& uh, 
+                   TwoDVectorGridFunction<double>& RHSvgf, 
                    double t, double deltat)
 {
   vector<double> rk4a{0.0, 
@@ -29,8 +29,8 @@ void rk4lowStorage(Grid thegrid, VectorGridFunction<double>& uh,
   
   int nsteps=5;
   
-  VectorGridFunction<double> k(RHSvgf.vectorDim(), RHSvgf.gridDim(),
-                               RHSvgf.pointsDim());
+  TwoDVectorGridFunction<double> k(RHSvgf.vectorDim(), RHSvgf.gridDim(),
+                                   RHSvgf.pointsDim());
 
   //step 0
   vector<Array2D<double>> du;
