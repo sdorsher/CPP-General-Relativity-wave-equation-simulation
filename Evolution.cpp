@@ -7,8 +7,9 @@
 //code by Hesthaven and Warburn.
 //See page 63 of Hesthaven and Warburn for this routine
 
-void rk4lowStorage(Grid thegrid, TwoDVectorGridFunction<double>& uh, 
-                   TwoDVectorGridFunction<double>& RHSvgf, 
+void rk4lowStorage(Grid thegrid, DiffEq theequation, 
+                   TwoDVectorGridFunction<double>& uh, 
+                   TwoDVectorGridFunction<double>& RHStdvgf, 
                    double t, double deltat)
 {
   vector<double> rk4a{0.0, 
@@ -29,23 +30,24 @@ void rk4lowStorage(Grid thegrid, TwoDVectorGridFunction<double>& uh,
   
   int nsteps=5;
   
-  TwoDVectorGridFunction<double> k(RHSvgf.vectorDim(), RHSvgf.gridDim(),
-                                   RHSvgf.pointsDim());
+  TwoDVectorGridFunction<double> k(RHStdvgf.modesDim(),
+                                   RHStdvgf.vectorDim(), RHStdvgf.gridDim(),
+                                   RHStdvgf.pointsDim());
 
   //step 0
-  vector<Array2D<double>> du;
+  //  vector<Array2D<double>> du;
 
   //step 1
-  du = move(thegrid.characteristicflux(uh));
-  thegrid.RHS(uh, RHSvgf, t, du);
-  k = deltat * RHSvgf;
+  //  du = move(thegrid.characteristicflux(uh));
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t);
+  k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
   
   //steps 2-5
   for(int i=2; i<=5; i++){
-    du = move(thegrid.characteristicflux(uh));
-    thegrid.RHS(uh, RHSvgf, t + rk4c[i-1] * deltat, du);
-    k = rk4a[i-1] * k + deltat * RHSvgf;
+    //du = move(thegrid.characteristicflux(uh));
+    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat);
+    k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
   }
 }

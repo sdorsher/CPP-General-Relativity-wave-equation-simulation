@@ -11,7 +11,7 @@ dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o Dif
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o $(LCONF) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TNT2.h ConfigParams.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
@@ -26,7 +26,7 @@ ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c Grid.cpp
 
-Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp VectorGridFunction.h VectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h
+Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h
@@ -35,10 +35,10 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c DiffEq.cpp
 
-CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h
+CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c CharacteristicFlux.cpp
 
 clean:

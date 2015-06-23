@@ -8,6 +8,8 @@
 #include <cmath>
 #include <fstream>
 #include "ConfigParams.h"
+#include "DiffEq.h"
+#include "TwoDVectorGridFunction.h"
 
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
@@ -21,10 +23,13 @@ double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0,
 
 int main()
 {
-
-  Grid thegrid(params.grid.elemorder, params.grid.numelems, params.waveeq.modenum,
+  //setup the grid and the reference element
+  Grid thegrid(params.grid.elemorder, params.grid.numelems,
                params.grid.lowerlim, params.grid.upperlim);
 
+  //setup the differential equation
+  DiffEq theequation(thegrid);
+  
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   TwoDVectorGridFunction<double> uh(params.waveeq.modenum,
@@ -124,7 +129,7 @@ int main()
       outputcount++;
     }
     //Increment the timestep
-    rk4lowStorage(thegrid, uh, RHSvgf, t, deltat);
+    rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
 
     //Increment the count to determine whether or not to output
     output += deltat;
