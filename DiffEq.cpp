@@ -72,10 +72,8 @@ void DiffEq::setupABmatrices(Grid& thegrid)
   double Omega, Omegap, H, Hp, eL, eLp, fT, fTp, fTpp,rm2M;
   GridFunction<double> nodes = thegrid.gridNodeLocations();
 
-  GridFunction<Array2D<double>> Amatrices(nodes.gridDim(), nodes.pointsDim());
   for(int i = 0; i < nodes.gridDim(); i++){
     for(int j = 0; j < nodes.pointsDim(); j++){
-      
       //regular wave equation
       //      if(params.metric.flatspacetime){
         Array2D<double> A(3, 3, 0.0);
@@ -215,13 +213,13 @@ void DiffEq::setupABmatrices(Grid& thegrid)
 
 
 vector<TNT::Array2D<double>> 
-DiffEq::characteristicflux(int modenum, Grid thegrid,
+DiffEq::characteristicflux(int modenum, Grid& thegrid,
                            TwoDVectorGridFunction<double>& uh)
 {
   //We can loop over characteristicFlux in an external function because
   //in general, neither the RHS of the differential equation nor du mixes
   //spherical harmonic modes. 
-  
+
   int NumElem = thegrid.numberElements();
 
   vector<Array2D<double>> du;
@@ -335,7 +333,7 @@ DiffEq::characteristicflux(int modenum, Grid thegrid,
   return du;
 }
 
-void DiffEq::RHS(int modenum, Grid thegrid,
+void DiffEq::RHS(int modenum, Grid& thegrid,
                  TwoDVectorGridFunction<double>& uh, 
                  TwoDVectorGridFunction<double>& RHStdvgf, double t, 
                  vector<Array2D<double>>& du )
@@ -437,15 +435,15 @@ void DiffEq::RHS(int modenum, Grid thegrid,
 
 }
 
-GridFunction<double> DiffEq::modeRHS(Grid thegrid,
-                                     TwoDVectorGridFunction<double>& uh,
-                                     TwoDVectorGridFunction<double>& RHStdvgf, 
-                                     double t)
+void DiffEq::modeRHS(Grid& thegrid,
+                     TwoDVectorGridFunction<double>& uh,
+                     TwoDVectorGridFunction<double>& RHStdvgf, 
+                     double t)
 {
 
   for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
     vector<Array2D<double>> du;
-    du = characteristicflux(modenum, thegrid, uh);
+    du = move(characteristicflux(modenum, thegrid, uh));
     RHS(modenum, thegrid, uh, RHStdvgf, t, du);
   }
 }

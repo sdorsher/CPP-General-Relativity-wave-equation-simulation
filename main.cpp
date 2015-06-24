@@ -7,6 +7,7 @@
 #include "globals.h"
 #include <cmath>
 #include <fstream>
+#include <sstream>
 #include "ConfigParams.h"
 #include "DiffEq.h"
 #include "TwoDVectorGridFunction.h"
@@ -80,24 +81,29 @@ int main()
   //Initialize loop variables to determine when output
   double output = deltat / 2.0;
   int outputcount = 0;
-
-  ofstream fs;
-  fs.open(params.file.pdesolution);
-
+     
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
       //Output in gnuplot format
-      fs << endl << endl;
-      fs << " #time = " << t << endl;
-      for (int i = 0; i < uh.gridDim(); i++){
-        for(int j = 0; j < uh.pointsDim(); j++){
-          //Print out at select time steps
-          fs << thegrid.gridNodeLocations().get(i, j) << " " 
-             << uh.get(0, i, j) << " " << uh.get(1, i, j) <<" " 
-             << uh.get(2, i, j)<< endl;
+      for(int k = 0; k < uh.modesDim(); k++) {
+        ofstream fs;
+        
+        string solnfilestring;
+        ostringstream oss;
+        oss << params.file.pdesolution << "." << k << ".txt";
+        fs.open(oss.str(), ios::app);
+        fs << endl << endl;
+        fs << " #time = " << t << endl;
+        for (int i = 0; i < uh.gridDim(); i++){
+          for(int j = 0; j < uh.pointsDim(); j++){
+            //Print out at select time steps
+            fs << thegrid.gridNodeLocations().get(i, j) << " " 
+               << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
+               << uh.get(k, 2, i, j)<< endl;
+          }
         }
+        fs.close();
       }
-
       //Output the difference in the waveforms between the 
       //oscillation initially and after one period
       if(outputcount == params.time.comparisoncount){
@@ -107,22 +113,22 @@ int main()
         for(int i = 0; i < uh.gridDim(); i++){
           for (int j = 0; j < uh.pointsDim(); j++){
             fs2 << thegrid.gridNodeLocations().get(i, j) << " " 
-                << uh.get(0, i, j) - uh0.get(0, i, j) << endl;
+                << uh.get(0, 0, i, j) - uh0.get(0, 0, i, j) << endl;
           }
         }
         fs2.close();
-
+        
         //Append the L2 error to that file, measured after one period
         ofstream fsconvergence;
         fsconvergence.open(params.file.L2error,ios::app);
-            
+          
         double L2;
         L2=LTwoerror(thegrid, uh0, uh);
         cout << "Order, deltat, num elems, L2 norm" << endl;
         cout << params.grid.elemorder << " " << deltat << " " 
-            << params.grid.numelems << " " << L2 << endl;
+             << params.grid.numelems << " " << L2 << endl;
         fsconvergence << params.grid.elemorder << " " << deltat 
-                     << " " << params.grid.numelems << " " << L2 << endl;
+                      << " " << params.grid.numelems << " " << L2 << endl;
         fsconvergence.close();
       }
       output -= params.time.outputinterval; 
@@ -130,7 +136,7 @@ int main()
     }
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
-
+    
     //Increment the count to determine whether or not to output
     output += deltat;
   }
@@ -205,6 +211,7 @@ void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd){
 double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0, 
                  TwoDVectorGridFunction<double>& uhend)
 {
+  //FIX THIS SO IT DEALS WITH SUM OF MODES
   //The square root of the integral of the squared difference
   double L2;
   L2 = 0.0;

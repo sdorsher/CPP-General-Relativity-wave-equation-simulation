@@ -35,19 +35,19 @@ class DiffEq
   Array2D<double> getAtrimmed(int gridindex, int pointsindex);
 
   //Returns du, for the characteristic flux.
-  vector<TNT::Array2D<double>> characteristicflux(int modenum, Grid thegrid,
+  vector<TNT::Array2D<double>> characteristicflux(int modenum, Grid& thegrid,
                                                   TwoDVectorGridFunction<double>& 
                                                   uh);
   //Returns the right hand side of the differential equation
-  void RHS(int modenum, Grid thegrid,
+  void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<double>& uh, 
            TwoDVectorGridFunction<double>& RHSvgf, 
            double t, vector<Array2D<double>>& du );
 
-  GridFunction<double> modeRHS(Grid thegrid,
-                               TwoDVectorGridFunction<double>& uh,
-                               TwoDVectorGridFunction<double>& RHStdgf, 
-                               double t); 
+  void modeRHS(Grid& thegrid,
+               TwoDVectorGridFunction<double>& uh,
+               TwoDVectorGridFunction<double>& RHStdgf, 
+               double t); 
 };
 
 #endif
