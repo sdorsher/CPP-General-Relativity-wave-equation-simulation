@@ -51,7 +51,7 @@ DiffEq::DiffEq(Grid& thegrid):
 
   //Get the A matrix with its zero dimensions removed for each node
   for(int i = 0; i < thegrid.numberElements(); i++){
-    for(int j = 0; j < thegrid.nodeOrder(); j++) {
+    for(int j = 0; j <= thegrid.nodeOrder(); j++) {
       //get the trimmed A matrices at each node coordinate
       CharacteristicFlux nodechar(Amatrices.get(i,j));
       trimmedAmatrices.set(i, j, (nodechar.getAtrimmed()));
@@ -61,7 +61,7 @@ DiffEq::DiffEq(Grid& thegrid):
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
     CharacteristicFlux left(Amatrices.get(i, 0));
-    CharacteristicFlux right(Amatrices.get(i, thegrid.nodeOrder() - 1));
+    CharacteristicFlux right(Amatrices.get(i, thegrid.nodeOrder()));
     AleftBoundaries.push_back(left);
     ArightBoundaries.push_back(right);
   }
@@ -296,6 +296,7 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
         lambdaplusR[j][j] = nR * lambdaR[j][j];
       }
     }
+
     //S and S inverse matrices at both boundaries
     Array2D<double> sinvL = AleftBoundaries[elemnum].getSinv();
     Array2D<double> sinvR = ArightBoundaries[elemnum].getSinv();
@@ -304,23 +305,21 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     
     //Numerical fluxes at both boundaries 
     //See Hesthaven and Warburten pg 35 (n*F)
-    Array1D<double> nfluxL = matmult(lambdaplusL, matmult(sinvL, uintL));
-    nfluxL += matmult(lambdaminusL, matmult(sinvL, uextL));
-    nfluxL = matmult(SL, nfluxL);
+    Array1D<double> nfluxL1 = matmult(lambdaplusL, matmult(sinvL, uintL));
+    Array1D<double> nfluxL2 =  matmult(lambdaminusL, matmult(sinvL, uextL));
+    Array1D<double> nfluxL = matmult(SL, nfluxL1+nfluxL2);
 
-    Array1D<double> nfluxR = matmult(lambdaplusR, matmult(sinvR, uintR));
-    nfluxR += matmult(lambdaminusR, matmult(sinvR, uextR));
-    nfluxR = matmult(SR, nfluxR);
+    Array1D<double> nfluxR1 = matmult(lambdaplusR, matmult(sinvR, uintR));
+    Array1D<double> nfluxR2 = matmult(lambdaminusR, matmult(sinvR, uextR));
+    Array1D<double> nfluxR = matmult(SR, nfluxR1 + nfluxR2);
 
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> AtrimmedR= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> duelem(AtrimmedR.dim1(), 2, 0.0);
-
-
+    
     //This gets multiplied by lift matrix to calculate flux
     Array1D<double> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<double> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
-
 
     //create a 2D array with one column corresponding to the left
     //boundary and one column corresponding to the right boundary
@@ -352,22 +351,21 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //Minimum index for use with trimmed A matrix. 
     //Minimum index for B matrix is zero
     int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
-
+    
     //The B matrix component of the RHS. 
-      Array2D<double> RHSB(uh.pointsDim(), 
+    Array2D<double> RHSB(uh.pointsDim(), 
                            ArightBoundaries[elemnum].getAdim());
-      for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
-        Array1D<double> RHSBpernode;
-        //Multiply the B matrix times a "vector" of u for each node
+    for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
+      Array1D<double> RHSBpernode;
+      //Multiply the B matrix times a "vector" of u for each node
       RHSBpernode = matmult(Bmatrices.get(modenum, elemnum, nodenum),
                             uh.getVectorAsArray1D(modenum,elemnum, nodenum, 
                                                   0, vmaxAB, 0));
       //Insert that result into the rows of a larger matrix
       insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
-
+          
     }//This can be sped up by skipping the insert step and reading directly 
     //from per node
-
 
     //A contribution:
     Array2D<double> RHSA1(uh.pointsDim(), ArightBoundaries[elemnum].getDdim());
@@ -379,7 +377,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     Array2D<double> RHSA1preA = thegrid.jacobian(elemnum) 
       * (matmult(thegrid.refelem.getD(),
                  uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)));
-    
+
     
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
     for(int nodenum=0; nodenum < uh.pointsDim(); nodenum++)
@@ -389,8 +387,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
         int K = RHSA1preA.dim1();
         int L = RHSA1preA.dim2();
 
-        Array2D<double> tA = trimmedAmatrices.get(elemnum, nodenum);
-            
+        Array2D<double> tA(M,N); 
+        tA= trimmedAmatrices.get(elemnum, nodenum);
+
         for (int i=0; i<M; i++){
             double sum = 0;
             for (int k=0; k<N; k++)
@@ -407,10 +406,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
     //Needs a multiplication by an A matrix before D 
     //but A is position dependent. 
-
+    
     //This is the contribution due to du, or the numerical flux
     Array2D<double> RHSA2 = thegrid.jacobian(elemnum) 
       * matmult(thegrid.refelem.getLift(), du[elemnum]);
+
+    
 
     //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
