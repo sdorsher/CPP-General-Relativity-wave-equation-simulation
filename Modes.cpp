@@ -1,6 +1,11 @@
 #include "Modes.h"
 
-int n_of_l(int l)
+Modes::Modes(int lmax) 
+{
+  set_lm_mode_info(lmax);
+}
+
+int Modes::n_of_l(int l)
 {
   if (l % 2 == 0) {
     return (l + 2) / 2;
@@ -9,7 +14,7 @@ int n_of_l(int l)
   }
 }
 
-int nmodes_of_l(int lmax)
+int Modes::nmodes_of_l(int lmax)
 {
   int nmodes = 0;
   
@@ -19,4 +24,16 @@ int nmodes_of_l(int lmax)
   return nmodes;
 }
 
-  
+void Modes::set_lm_mode_info(int lmax) {
+  ntotal = nmodes_of_l(lmax);
+  ll.resize(ntotal);
+  mm.resize(ntotal);
+  int n = 0;
+  for(int l=0; l<=lmax; l++){
+    for(int m = l%2; m<=l; m+=2){
+      ll[n]=l;
+      mm[n]=m;
+      n++;
+    }
+  }
+}
