@@ -15,7 +15,6 @@ struct MetricParams{
 };
 
 struct WaveEqParams{
-  int modenum;
   int pdenum; //number of components in coupled differential equations
   double speed; //speed of wave
   bool isgaussian; //true if wave is gaussian and zero time derivative
@@ -36,6 +35,7 @@ struct GaussParams{
 
 struct SchwParams{
   double mass;
+  double sigma;
 };
 
 struct ModeParams{

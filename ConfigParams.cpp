@@ -16,7 +16,6 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 
   if(metric.flatspacetime) {
     //Read parameters associated with the wave equation
-    waveeq.modenum = getConfigFromFile<int>(configFileName, "waveeq", "modenum");
     waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
     waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
     waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",
@@ -45,6 +44,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     }
   } else {
     schw.mass = getConfigFromFile<double>(configFileName, "schw", "mass");
+    schw.sigma = getConfigFromFile<double>(configFileName, "schw", "sigma");
   }
 
   //Read in parameters associated with the modes

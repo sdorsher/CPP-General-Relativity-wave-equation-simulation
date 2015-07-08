@@ -38,14 +38,17 @@ Array2D<double> DiffEq::getAtrimmed(int gridindex, int pointsindex)
 
 // The A matrix must be formatted such that zero rows are at the top
 
-DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes):
+DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
   Amatrices{params.grid.numelems, params.grid.elemorder + 1},
-  Bmatrices{params.waveeq.modenum, params.grid.numelems, 
+  Bmatrices{nmodetotal, params.grid.numelems, 
       params.grid.elemorder + 1},
   trimmedAmatrices{params.grid.numelems, params.grid.elemorder + 1}
 {
+
   //set up the A and B matrices
   setupABmatrices(thegrid, lmmodes);
+  
+
 
   //  GridFunction<double> nodeLocs = thegrid.gridNodeLocations();
 
@@ -87,10 +90,9 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           Bmatrices.set(k, i, j, B);
         }
 
-       } else if (params.metric.schwarzchild) {
+       } else if (params.metric.schwarschild) {
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
         //nodes = rho
-        
         //scri-minus
         if(nodes.get(i, j)==params.hyperb.Sminus) {
           Omega = 0.0;
@@ -99,9 +101,9 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           eLp = 0.0;
           H = -1.0;
           Hp = 0.0;
-          thegrid.rstar.set(i,j,DBL_MAX); 
+          thegrid.rstar.set(i,j,DBL_MAX);
           thegrid.rschw.set(i,j,2.0*params.schw.mass); 
-          term1 = 0.0;
+                    term1 = 0.0;
           term2 = 1.0;
           Array2D<double> A(3, 3, 0.0);
           A[1][2] = -1.0;
@@ -114,7 +116,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             Bmatrices.set(k, i, j, B);
           }
           //inner hyperboloidal layer
-        } else if ((nodes.get(i, j) > params.hyperb.Sminus) 
+        } else if ((nodes.get(i, j) > params.hyperb.Sminus)
                    && (nodes.get(i,j) < params.hyperb.Rminus)) {
           transition(nodes.get(i, j), params.hyperb.Rminus, 
                      params.hyperb.Sminus, fT, fTp, fTpp);
@@ -174,7 +176,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           //outer hyperboloidal region
         } else if ((nodes.get(i, j) > params.hyperb.Rplus) 
                    && (nodes.get(i, j) < params.hyperb.Splus)) { 
-          call transition(nodes.get(i,j), params.hyperb.Rplus, params.hyperb.Splus, fT, fTp, fTpp);
+          transition(nodes.get(i,j), params.hyperb.Rplus, params.hyperb.Splus, fT, fTp, fTpp);
           Omega = 1.0 - nodes.get(i, j) / params.hyperb.Splus * fT;
           Omegap = -(fT + nodes.get(i, j) * fTp) / params.hyperb.Splus;
           eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / params.hyperb.Splus; 
@@ -185,8 +187,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             / pow(eL, 2.0);
           thegrid.rstar.set(i, j, nodes.get(i, j) / Omega);
           rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
-          thegrid.rschw.set(2.0 * params.schw.mass + rm2M);
-          term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j)));
+          thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
+          term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j),3.0));
           term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
           Array2D<double> A(3, 3, 0.0);
           A[1][2] = -1.0;
@@ -210,11 +212,27 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           eLp = 0.0;
           H = 1.0;
           Hp = 0.0;
-          thegrid.rstar.set(i, j, -DBL_MAX); 
-          }*/
-    }//end inner for            
-  }//end outer for
-}//end function set AB
+          thegrid.rstar.set(i, j, -DBL_MAX);
+          thegrid.rschw.set(i,j, -DBL_MAX);
+          term1 = 1.0/ pow(nodes.get(i,j),2.0);
+          term2 = 0.0;
+          Array2D<double> A(3,3,0.0);
+          A[1][2]=-1.0;
+          A[2][2]=1.0;
+          Amatrices.set(i,j,A);
+          for(int k= 0; k < lmmodes.ntotal; k++) {
+            Array2D<double> B(3,3,0.0);
+            B[0][2]=-1.0;
+            B[2][0]=-2.0*lmmodes.ll[k]*(lmmodes.ll[k]+1.0)
+              /(params.hyperb.Rplus - params.hyperb.Splus) 
+              / params.hyperb.Splus;
+            Bmatrices.set(k,i,j,B);
+          }
+        }
+      }//end inner for            
+    }//end outer for
+  }//end if schw
+}//end function setab
 
 
 vector<TNT::Array2D<double>> 

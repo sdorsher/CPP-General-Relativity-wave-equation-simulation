@@ -34,22 +34,23 @@ int main()
   Modes lmmodes(params.modes.lmax);
 
   //setup the differential equation
-  DiffEq theequation(thegrid, lmmodes);
+  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
   
+  cout << params.waveeq.pdenum<<endl;
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
-  TwoDVectorGridFunction<double> uh(params.waveeq.modenum,
+  TwoDVectorGridFunction<double> uh(lmmodes.ntotal,
                                    params.waveeq.pdenum,
                                 params.grid.numelems,
                                 params.grid.elemorder+1,
                                 0.0); 
-  TwoDVectorGridFunction<double> uh0(params.waveeq.modenum,
+  TwoDVectorGridFunction<double> uh0(lmmodes.ntotal,
                                     params.waveeq.pdenum,
                                  params.grid.numelems,
                                  params.grid.elemorder + 1,
                                  0.0);
   //Solution to PDE, possibly a vector 
-  TwoDVectorGridFunction<double> RHSvgf(params.waveeq.modenum,
+  TwoDVectorGridFunction<double> RHSvgf(lmmodes.ntotal,
                                        params.waveeq.pdenum,
                                     params.grid.numelems,
                                     params.grid.elemorder + 1,
@@ -62,10 +63,12 @@ int main()
     initialSinusoid(uh, thegrid);
   } else if(params.waveeq.isgaussian) {
     initialGaussian(uh, thegrid);
-    // } else if(params.waveeq.isschwarzchild) {
-    // initialSchwarzchild(uh, thegrid);
+  } else if(params.metric.schwarschild) {
+    initialSchwarzchild(uh, thegrid);
+    //need to write initial swcharzchild
   }
-  
+
+
   uh0 = uh;
   
   //Set time based on smallest grid spacing
@@ -81,7 +84,6 @@ int main()
     //Make deltat go into tmax an integer number of times
   }
   cout << dt0 << " " << deltat << endl;
-  
 
   //Initialize loop variables to determine when output
   double output = deltat / 2.0;
@@ -139,6 +141,7 @@ int main()
       output -= params.time.outputinterval; 
       outputcount++;
     }
+
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
     
@@ -150,23 +153,23 @@ int main()
 }
 
 
-/*void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
-  GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
-  nodes=grd.gridNodeLocations();
+void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
+  GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
+  rho=grd.gridNodeLocations();
+  cout << uh.vectorDim() <<endl;
   for(int i = 0; i < uh.gridDim(); i++) {
     for (int j = 0; j < uh.pointsDim(); j++) {
       for (int n = 0; n < uh.modesDim(); n++) {
-        double modeval = exp(-0.5 * pow(thegrid.rho.get(i,j) / sigma), 2.0);
+        double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
-        if(!params.blackhole.usesource) {
+        //if(!params.blackhole.usesource) {
           uh.set(n,1,i,j,modeval);
-        }
+          //}
         uh.set(n,2,i,j,0.0);
       }
     }
   }
 }
-*/
   
 
 void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd){

@@ -9,6 +9,7 @@
 #include "VectorGridFunction.h"
 #include "Modes.h"
 #include "HyperboloidalCoords.h"
+#include <cfloat>
 
 using namespace TNT;
 
@@ -28,7 +29,7 @@ class DiffEq
 
 
  public:
-  DiffEq(Grid& thegrid, Modes& lmmodes);
+  DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal);
   Array2D<double> getA(int gridindex, int pointsindex);
   Array2D<double> getB(int modesindex, int gridindex, int pointsindex);
   CharacteristicFlux getAleft(int elemnum);

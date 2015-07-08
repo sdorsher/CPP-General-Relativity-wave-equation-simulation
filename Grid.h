@@ -20,7 +20,6 @@ class Grid
   vector<double> elementBoundaries; //(N+1)
   vector<double> drdx; //jacobian
   GridFunction<double> nodeLocs; //N by Np. Physical node locations.
-  GridFunction<double> rschw;
   void calcjacobian();
 
   //Thoughts for the future:
@@ -29,6 +28,8 @@ class Grid
   //to make multiple orders possible
 
  public:
+  GridFunction<double> rschw;
+  GridFunction<double> rstar;
   Grid(int elemorder, int numelements, double lowerlim, 
        double upperlim);
   ReferenceElement refelem; //member variable: the reference element

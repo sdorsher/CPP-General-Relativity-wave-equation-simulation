@@ -8,10 +8,10 @@ LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
 
 
 dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o $(LCONF) -o dg1D
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o $(LCONF) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
