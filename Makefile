@@ -7,7 +7,7 @@ ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf
 LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
 
 
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o $(LCONF) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
@@ -35,11 +35,17 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c CharacteristicFlux.cpp
+
+HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h 
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c HyperboloidalCoords.cpp
+
+Modes.o: Modes.cpp Modes.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c Modes.cpp
 
 clean:
 	rm -f *.o dg1D

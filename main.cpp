@@ -11,6 +11,8 @@
 #include "ConfigParams.h"
 #include "DiffEq.h"
 #include "TwoDVectorGridFunction.h"
+#include "Modes.h"
+
 
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
@@ -28,8 +30,11 @@ int main()
   Grid thegrid(params.grid.elemorder, params.grid.numelems,
                params.grid.lowerlim, params.grid.upperlim);
 
+  //setup the modes
+  Modes lmmodes(params.modes.lmax);
+
   //setup the differential equation
-  DiffEq theequation(thegrid);
+  DiffEq theequation(thegrid, lmmodes);
   
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file

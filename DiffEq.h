@@ -7,6 +7,8 @@
 #include "CharacteristicFlux.h"
 #include "Grid.h"
 #include "VectorGridFunction.h"
+#include "Modes.h"
+#include "HyperboloidalCoords.h"
 
 using namespace TNT;
 
@@ -22,12 +24,11 @@ class DiffEq
   vector<CharacteristicFlux> AleftBoundaries;
   vector<CharacteristicFlux> ArightBoundaries;
   GridFunction<Array2D<double>> trimmedAmatrices;
-  void setupABmatrices(Grid& thegrid);
-  vector<double> ll;
+  void setupABmatrices(Grid& thegrid, Modes& lmmodes);
 
 
  public:
-  DiffEq(Grid& thegrid);
+  DiffEq(Grid& thegrid, Modes& lmmodes);
   Array2D<double> getA(int gridindex, int pointsindex);
   Array2D<double> getB(int modesindex, int gridindex, int pointsindex);
   CharacteristicFlux getAleft(int elemnum);

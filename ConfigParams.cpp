@@ -7,34 +7,48 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 { //Use template function that uses libconfig commands to read in global
   //parameters into a params structure, for example, params.waveq.pdenum
 
-  //Read parameters associated with the wave equation
-  waveeq.modenum = getConfigFromFile<int>(configFileName, "waveeq", "modenum");
-  waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
-  waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
-  waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",
-                                            "isgaussian");
-  waveeq.issinusoid=getConfigFromFile<bool>(configFileName, "waveeq",
-                                            "issinusoid");
+  //Read parameters associated with the metric
+  metric.flatspacetime = getConfigFromFile<bool>(configFileName, "metric", 
+                                                 "flatspacetime");
+  metric.schwarschild =  getConfigFromFile<bool>(configFileName, "metric", 
+                                                 "schwarschild");
+  //if schwartschild, also hyperboloidal
 
-  //If it is gaussian, read parameters associated with gaussian 
-  //initial conditions
-  if(waveeq.isgaussian){
-    gauss.amp=getConfigFromFile<double>(configFileName, "gauss", 
-                                        "amplitude");
-    gauss.mu= getConfigFromFile<double>(configFileName, "gauss", "mu");
-    gauss.sigma= getConfigFromFile<double>(configFileName, "gauss", "sigma");
+  if(metric.flatspacetime) {
+    //Read parameters associated with the wave equation
+    waveeq.modenum = getConfigFromFile<int>(configFileName, "waveeq", "modenum");
+    waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
+    waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
+    waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",
+                                              "isgaussian");
+    waveeq.issinusoid=getConfigFromFile<bool>(configFileName, "waveeq",
+                                              "issinusoid");
 
-  } else if(waveeq.issinusoid) { 
-    //If sinusoidal initial conditions, read in parameters 
+    //If it is gaussian, read parameters associated with gaussian 
+    //initial conditions
+    if(waveeq.isgaussian){
+      gauss.amp=getConfigFromFile<double>(configFileName, "gauss", 
+                                          "amplitude");
+      gauss.mu= getConfigFromFile<double>(configFileName, "gauss", "mu");
+      gauss.sigma= getConfigFromFile<double>(configFileName, "gauss", "sigma");
+      
+    } else if(waveeq.issinusoid) { 
+      //If sinusoidal initial conditions, read in parameters 
     //associated with those
-    sine.amp=getConfigFromFile<double>(configFileName, "sine", "amplitude");
-    sine.phase=getConfigFromFile<double>(configFileName, "sine", "phase");
-    sine.wavelength=getConfigFromFile<double>(configFileName, "sine",
-                                              "wavelength");
+      sine.amp=getConfigFromFile<double>(configFileName, "sine", "amplitude");
+      sine.phase=getConfigFromFile<double>(configFileName, "sine", "phase");
+      sine.wavelength=getConfigFromFile<double>(configFileName, "sine",
+                                                "wavelength");
     }else{
-    //Currently no other options
+      //Currently no other options
       throw invalid_argument("No initial conditions set in parameter file.");
     }
+  } else {
+    schw.mass = getConfigFromFile<double>(configFileName, "schw", "mass");
+  }
+
+  //Read in parameters associated with the modes
+  modes.lmax = getConfigFromFile<int>(configFileName,"modes", "lmax");
 
   //Read in parameters associated with the grid
   grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
@@ -43,6 +57,13 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
   grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
                                             "readfromfile");
+  //Read in parameters associated with hyperboloidal coordinates
+  hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
+  hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
+  hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
+  hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
+  
+
   
   //Read in parameters associated with time evolution
   time.dt=getConfigFromFile<double>(configFileName, "time", "dt");

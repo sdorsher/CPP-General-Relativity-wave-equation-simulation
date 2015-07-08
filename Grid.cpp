@@ -7,7 +7,8 @@ Grid::Grid(int elemorder, int numelements, double lowerlim,
   order{elemorder},
   NumElem{numelements},
   nodeLocs{0,elemorder + 1}, 
-  refelem{elemorder}
+  refelem{elemorder},
+  rschw{numelements,elemorder+1}
 {
 
   //assign evenly spaced element boundaries

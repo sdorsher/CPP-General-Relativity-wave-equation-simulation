@@ -9,6 +9,11 @@
 using namespace std;
 using namespace libconfig;
 
+struct MetricParams{
+  bool flatspacetime;
+  bool schwarschild;
+};
+
 struct WaveEqParams{
   int modenum;
   int pdenum; //number of components in coupled differential equations
@@ -29,12 +34,27 @@ struct GaussParams{
   double sigma; //sigma greater than or equal to element size works best
 };
 
+struct SchwParams{
+  double mass;
+};
+
+struct ModeParams{
+  int lmax;
+};
+
 struct GridParams{
   double lowerlim; //lower boundary of grid
   double upperlim; //upper boundary of grid
   int numelems; //number of elements in grid
   int elemorder; //order of each element (all are the same)
   bool readfromfile; //broken right now, true or false
+};
+
+struct HyperbParams{ //hyperboloidal coordinate parameters
+  double Splus; //scri plus
+  double Sminus; //scri minus
+  double Rplus; //boundary of outer hyperboloidal region
+  double Rminus; //boundary of inner hyperboloidal region
 };
 
 struct TimeParams{
@@ -60,12 +80,16 @@ struct FileParams
 
 //main structure to be used as global variable
 struct ConfigParams {
+  MetricParams metric;
   WaveEqParams waveeq;
   SinusoidParams sine;
   GaussParams gauss;
+  ModeParams modes;
   GridParams grid;
+  HyperbParams hyperb;
   TimeParams time;
   FileParams file;
+  SchwParams schw;
 
   ConfigParams(const std::string& configFileName);
 
