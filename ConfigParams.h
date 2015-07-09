@@ -15,7 +15,6 @@ struct MetricParams{
 };
 
 struct WaveEqParams{
-  int pdenum; //number of components in coupled differential equations
   double speed; //speed of wave
   bool isgaussian; //true if wave is gaussian and zero time derivative
   bool issinusoid; //true if wave is sinusoidal and travelling
@@ -43,6 +42,7 @@ struct ModeParams{
 };
 
 struct GridParams{
+  int pdenum; //number of components in coupled differential equations
   double lowerlim; //lower boundary of grid
   double upperlim; //upper boundary of grid
   int numelems; //number of elements in grid

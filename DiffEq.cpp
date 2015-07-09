@@ -306,6 +306,8 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     //lambda plus contains inward moving wave components
     //Might be an incorrect summary. Trust the math, not the words
     //See pg 35 of Hesthaven and Warburten
+
+    cout << DdimL << " " << DdimR << endl;
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
         lambdaminusL[j][j] = nL * lambdaL[j][j];

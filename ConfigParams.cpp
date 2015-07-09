@@ -16,7 +16,6 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 
   if(metric.flatspacetime) {
     //Read parameters associated with the wave equation
-    waveeq.pdenum=getConfigFromFile<int>(configFileName, "waveeq", "pdenum");
     waveeq.speed=getConfigFromFile<double>(configFileName, "waveeq", "speed");
     waveeq.isgaussian=getConfigFromFile<bool>(configFileName,"waveeq",
                                               "isgaussian");
@@ -51,42 +50,43 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   modes.lmax = getConfigFromFile<int>(configFileName,"modes", "lmax");
 
   //Read in parameters associated with the grid
-  grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
-  grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
-  grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
-  grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
-  grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
+    grid.pdenum=getConfigFromFile<int>(configFileName, "grid", "pdenum");
+    grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
+    grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
+    grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
+    grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
+    grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
                                             "readfromfile");
   //Read in parameters associated with hyperboloidal coordinates
-  hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
-  hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
-  hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
-  hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
-  
+    hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
+    hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
+    hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
+    hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
+    
 
   
   //Read in parameters associated with time evolution
-  time.dt=getConfigFromFile<double>(configFileName, "time", "dt");
-  time.courantfac=getConfigFromFile<double>(configFileName, "time",
-                                            "courantfac");
-  time.t0=getConfigFromFile<double>(configFileName, "time", "t0");
-  time.tmax=getConfigFromFile<double>(configFileName, "time", "tmax");
-  time.outputinterval=getConfigFromFile<double>(configFileName, "time",
-                                                "outputinterval");
-  time.comparisoncount=getConfigFromFile<int>(configFileName, "time", 
-                                              "comparisoncount");
-  time.usefixedtimestep=getConfigFromFile<bool>(configFileName, "time",
+    time.dt=getConfigFromFile<double>(configFileName, "time", "dt");
+    time.courantfac=getConfigFromFile<double>(configFileName, "time",
+                                              "courantfac");
+    time.t0=getConfigFromFile<double>(configFileName, "time", "t0");
+    time.tmax=getConfigFromFile<double>(configFileName, "time", "tmax");
+    time.outputinterval=getConfigFromFile<double>(configFileName, "time",
+                                                  "outputinterval");
+    time.comparisoncount=getConfigFromFile<int>(configFileName, "time", 
+                                                "comparisoncount");
+    time.usefixedtimestep=getConfigFromFile<bool>(configFileName, "time",
                                                 "usefixedtimestep");
-
-  //Read in filename parameters
-  file.pdesolution=getConfigFromFile<string>(configFileName, "file",
-                                             "pdesolution");
-  file.oneperioderror=getConfigFromFile<string>(configFileName, "file",
-                                                "oneperioderror");
-  file.L2error=getConfigFromFile<string>(configFileName, "file",
+    
+    //Read in filename parameters
+    file.pdesolution=getConfigFromFile<string>(configFileName, "file",
+                                               "pdesolution");
+    file.oneperioderror=getConfigFromFile<string>(configFileName, "file",
+                                                  "oneperioderror");
+    file.L2error=getConfigFromFile<string>(configFileName, "file",
                                          "L2error");
-  file.initialconditions=getConfigFromFile<string>(configFileName, "file",
-                                                   "initialconditions");
+    file.initialconditions=getConfigFromFile<string>(configFileName, "file",
+                                                     "initialconditions");
 }
 
 //Template function that handles libconfig input from file for different

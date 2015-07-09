@@ -36,22 +36,22 @@ int main()
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
   
-  cout << params.waveeq.pdenum<<endl;
+  cout << params.grid.pdenum  <<  endl;
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   TwoDVectorGridFunction<double> uh(lmmodes.ntotal,
-                                   params.waveeq.pdenum,
+                                   params.grid.pdenum,
                                 params.grid.numelems,
                                 params.grid.elemorder+1,
                                 0.0); 
   TwoDVectorGridFunction<double> uh0(lmmodes.ntotal,
-                                    params.waveeq.pdenum,
+                                    params.grid.pdenum,
                                  params.grid.numelems,
                                  params.grid.elemorder + 1,
                                  0.0);
   //Solution to PDE, possibly a vector 
   TwoDVectorGridFunction<double> RHSvgf(lmmodes.ntotal,
-                                       params.waveeq.pdenum,
+                                       params.grid.pdenum,
                                     params.grid.numelems,
                                     params.grid.elemorder + 1,
                                     0.0); //right hand side of PDE
