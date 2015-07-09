@@ -15,9 +15,10 @@
 // Sinv= inverse of S
 // Sinv*Atrimmed*S=Lamb, Lamb has eigenvalues of Atrimmed on diagonals
 
-CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix): 
+CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
+                                       TNT::Array2D<double> Atrim): 
   A(Amatrix.dim1(), Amatrix.dim2()),
-  Atrimmed(0, 0),
+  Atrimmed(Atrim.dim1(), Atrim.dim2()),
   Smatrix(0, 0), 
   Sinv(0, 0), 
   Lamb(0, 0), 
@@ -30,8 +31,8 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix):
   }
 
   A = Amatrix;
+  Atrimmed = Atrim;
   Adimension = A.dim1();
-  Atrimmed = trimA();
   
   Array2D<double> onetemp(Ddimension, Ddimension, 0.0);
   
@@ -53,28 +54,32 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix):
 
 }
 
-Array2D<double> CharacteristicFlux::trimA()
+//this function does not work because it is not generally solveable. It works 
+//for the wave equation but not in general
+/*Array2D<double> CharacteristicFlux::trimA() 
 {
-  vector<int> nonzeros;
+  vector<int> non_zero_row_index;
+
   for(int i = 0; i < Adimension; i++) {//loop over rows
     bool rownonzeros = false;
-    for( int j = 0; j < Adimension; j++) {//loop over columns
+    for( int j = 0; j < Adimension; j++) {//loop over columns 
       rownonzeros = ((A[i][j] != 0) || rownonzeros);
     }
     if(rownonzeros){
-      nonzeros.push_back(i);
+      non_zero_row_index.push_back(i); //save index of row
     }
   }
-  
-  Ddimension=nonzeros.size();
+
+  Ddimension=non_zero_row_index.size();
   Array2D<double> Atrim(Ddimension, Ddimension);
   for(int i = 0; i < Ddimension; i++) {
     for(int j = 0; j < Ddimension; j++){
-      Atrim[i][j] = A[nonzeros[i]][nonzeros[j]];
+      Atrim[i][j] = A[nonzeros[i]][nonzeros[j]]; 
+      //build Atrim out of nonzero rows
     }
   }
   return Atrim;
-}
+  }*/
 
 Array2D<double> CharacteristicFlux::getS()
 {

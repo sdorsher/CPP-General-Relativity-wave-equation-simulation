@@ -16,12 +16,12 @@ class CharacteristicFlux
   Array2D<double> Sinv;
   Array2D<double> Lamb; //eigenvalue of A matrix (characteristic form)
   Array2D<double> one; //identity matrix
-  Array2D<double> trimA(); 
+  //  Array2D<double> trimA(); 
   int Adimension; //dimension of A
   int Ddimension; //dimension of non-zero derivative variables
 
  public:
-  CharacteristicFlux(Array2D<double> Amatrix);
+  CharacteristicFlux(Array2D<double> Amatrix, Array2D<double> Atrimmed);
   Array2D<double> getA();
   Array2D<double> getS();
   Array2D<double> getSinv();

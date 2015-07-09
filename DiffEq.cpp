@@ -46,25 +46,31 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
 {
 
   //set up the A and B matrices
+
+  cout << "entering AB setup" <<endl;
   setupABmatrices(thegrid, lmmodes);
-  
+  cout << "A, trimmed A, B setup" << endl;
 
 
   //  GridFunction<double> nodeLocs = thegrid.gridNodeLocations();
-
+  /*
   //Get the A matrix with its zero dimensions removed for each node
   for(int i = 0; i < thegrid.numberElements(); i++){
     for(int j = 0; j <= thegrid.nodeOrder(); j++) {
       //get the trimmed A matrices at each node coordinate
-      CharacteristicFlux nodechar(Amatrices.get(i,j));
-      trimmedAmatrices.set(i, j, (nodechar.getAtrimmed()));
+      CharacteristicFlux nodechar(Amatrices.get(i,j), 
+                                  trimmedAmatrices.get(i,j));
     }
   }
 
+  */
+
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
-    CharacteristicFlux left(Amatrices.get(i, 0));
-    CharacteristicFlux right(Amatrices.get(i, thegrid.nodeOrder()));
+    cout << "begin characteristic flux for grid element " << i<< endl;
+    CharacteristicFlux left(Amatrices.get(i, 0), trimmedAmatrices.get(i,0));
+    CharacteristicFlux right(Amatrices.get(i, thegrid.nodeOrder()),
+                             trimmedAmatrices.get(i, thegrid.nodeOrder()));
     AleftBoundaries.push_back(left);
     ArightBoundaries.push_back(right);
   }
@@ -83,6 +89,10 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         A[1][2] = -pow(params.waveeq.speed, 2.0);
         A[2][1] = -1.0;
         Amatrices.set(i, j, A);
+        Array2D<double> tA(2,2,0.0);
+        tA[0][1] = -pow(params.waveeq.speed, 2.0);
+        tA[1][0] = -1.0;
+        trimmedAmatrices.set(i, j, tA);
         //vector dimension of B is actually number of modes
         for(int k = 0; k < Bmatrices.vectorDim(); k++) {
           Array2D<double> B(3, 3, 0.0);
@@ -93,7 +103,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
        } else if (params.metric.schwarschild) {
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
         //nodes = rho
-        //scri-minus
+        //horizon
         if(nodes.get(i, j)==params.hyperb.Sminus) {
           Omega = 0.0;
           Omegap = 0.0;
@@ -110,6 +120,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           A[2][1] = 0.0;
           A[2][2] = -1.0;
           Amatrices.set(i, j, A);
+          Array2D<double> tA(2, 2, 0.0);
+          tA[0][1] = -1.0;
+          tA[1][0] = 0.0;
+          tA[1][1] = -1.0;
+          trimmedAmatrices.set(i, j, tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
@@ -140,6 +155,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           A[2][1] = -(1.0 + H) / (1.0 - H);
           A[2][2] = 2.0 * H / (1.0 - H);
           Amatrices.set(i,j,A);
+          Array2D<double> tA(2, 2, 0.0);
+          tA[0][1] = -1.0;
+          tA[1][0] = -(1.0 + H) / (1.0 - H);
+          tA[1][1] = 2.0 * H / (1.0 - H);
+          trimmedAmatrices.set(i,j,tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
              Array2D<double> B(3, 3, 0.0);
              B[0][2] = -1.0;
@@ -166,6 +186,9 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           Array2D<double> A(3, 3, 0.0);
           A[1][2] = -1.0;
           Amatrices.set(i, j, A);
+          Array2D<double> tA(2, 2, 0.0);
+          tA[0][1] = -1.0;
+          trimmedAmatrices.set(i, j, tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
@@ -195,6 +218,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           A[2][1] = -(1.0 - H) / (1.0 + H);
           A[2][2] = 2.0 * H / (1.0 + H);
           Amatrices.set(i, j, A);
+          Array2D<double> tA(2, 2, 0.0);
+          tA[0][1] = -1.0;
+          tA[1][0] = -(1.0 - H) / (1.0 + H);
+          tA[1][1] = 2.0 * H / (1.0 + H);
+          Amatrices.set(i, j, tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
@@ -220,6 +248,10 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           A[1][2]=-1.0;
           A[2][2]=1.0;
           Amatrices.set(i,j,A);
+          Array2D<double> tA(2,2,0.0);
+          tA[0][1]=-1.0;
+          tA[1][1]=1.0;
+          trimmedAmatrices.set(i,j,tA);
           for(int k= 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3,3,0.0);
             B[0][2]=-1.0;
@@ -308,6 +340,8 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     //See pg 35 of Hesthaven and Warburten
 
     cout << DdimL << " " << DdimR << endl;
+    GridFunction<double> nodes = thegrid.gridNodeLocations();
+    if(DdimL!=DdimR) cout <<"mismatched dimensions at " << nodes.get(elemnum,0) << " "<< nodes.get(elemnum,4) << endl;
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
         lambdaminusL[j][j] = nL * lambdaL[j][j];
