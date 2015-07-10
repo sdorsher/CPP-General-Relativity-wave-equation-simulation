@@ -163,8 +163,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           for(int k = 0; k < lmmodes.ntotal; k++) {
              Array2D<double> B(3, 3, 0.0);
              B[0][2] = -1.0;
-             B[2][1] = Hp / (1.0 - H);
-             B[2][2] = -Hp / (1.0 - H);
+             B[2][1] = -Hp / (1.0 - H);
+             B[2][2] = Hp / (1.0 - H);
              B[2][0] = 1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1
                *( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
              Bmatrices.set(k, i, j, B);
@@ -185,9 +185,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
           Array2D<double> A(3, 3, 0.0);
           A[1][2] = -1.0;
+          A[2][1] = -1.0;
           Amatrices.set(i, j, A);
           Array2D<double> tA(2, 2, 0.0);
           tA[0][1] = -1.0;
+          tA[1][0] = -1.0;
           trimmedAmatrices.set(i, j, tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
@@ -226,8 +228,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
-            B[2][2] = Hp / (1.0 + H);
             B[2][1] = Hp / (1.0 + H);
+            B[2][2] = Hp / (1.0 + H);
             B[2][0] = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1
               * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
             Bmatrices.set(k, i, j, B);
