@@ -29,17 +29,16 @@ int main()
   //setup the grid and the reference element
   Grid thegrid(params.grid.elemorder, params.grid.numelems,
                params.grid.lowerlim, params.grid.upperlim);
-  cout << "setup the grid" << endl;
+
+  GridFunction<double> nodes = thegrid.gridNodeLocations();
+  
 
   //setup the modes
   Modes lmmodes(params.modes.lmax);
 
-  cout << "setup the modes" << endl;
 
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
-  
-  cout << "setup the differential equation" << endl;
 
   cout << params.grid.pdenum  <<  endl;
   //Declaration of calculation variables and 
@@ -61,9 +60,6 @@ int main()
                                     params.grid.elemorder + 1,
                                     0.0); //right hand side of PDE
 
-  GridFunction<double> nodes = thegrid.gridNodeLocations();
-
-  cout << "initialized variables" << endl;
 
   //Setup initial conditions
   if(params.waveeq.issinusoid){
@@ -77,8 +73,7 @@ int main()
 
 
   uh0 = uh;
-  
-  cout << "initial conditions set" << endl;
+
 
   //Set time based on smallest grid spacing
   double dt0 = nodes.get(0, 1) - nodes.get(0, 0);
@@ -98,7 +93,6 @@ int main()
   double output = deltat / 2.0;
   int outputcount = 0;
      
-  cout << "entering time evolution" << endl;
 
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
@@ -167,7 +161,6 @@ int main()
 void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
   GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
   rho=grd.gridNodeLocations();
-  cout << uh.vectorDim() <<endl;
   for(int i = 0; i < uh.gridDim(); i++) {
     for (int j = 0; j < uh.pointsDim(); j++) {
       for (int n = 0; n < uh.modesDim(); n++) {

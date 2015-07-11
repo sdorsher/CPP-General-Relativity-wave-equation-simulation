@@ -1,3 +1,5 @@
+#ifndef CHARACTERISTICFLUX_H
+#define CHARACTERISTICFLUX_H
 #include "TNT2.h"
 
 using namespace TNT;
@@ -30,3 +32,5 @@ class CharacteristicFlux
   int getAdim();//untrimmed A dimension
   int getDdim();//derivative dimension (Atrimmed.dim())
 };
+
+#endif

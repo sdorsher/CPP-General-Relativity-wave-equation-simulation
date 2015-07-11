@@ -47,27 +47,11 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
 
   //set up the A and B matrices
 
-  cout << "entering AB setup" <<endl;
   setupABmatrices(thegrid, lmmodes);
-  cout << "A, trimmed A, B setup" << endl;
 
-
-  //  GridFunction<double> nodeLocs = thegrid.gridNodeLocations();
-  /*
-  //Get the A matrix with its zero dimensions removed for each node
-  for(int i = 0; i < thegrid.numberElements(); i++){
-    for(int j = 0; j <= thegrid.nodeOrder(); j++) {
-      //get the trimmed A matrices at each node coordinate
-      CharacteristicFlux nodechar(Amatrices.get(i,j), 
-                                  trimmedAmatrices.get(i,j));
-    }
-  }
-
-  */
 
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
-    cout << "begin characteristic flux for grid element " << i<< endl;
     CharacteristicFlux left(Amatrices.get(i, 0), trimmedAmatrices.get(i,0));
     CharacteristicFlux right(Amatrices.get(i, thegrid.nodeOrder()),
                              trimmedAmatrices.get(i, thegrid.nodeOrder()));
@@ -224,7 +208,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           tA[0][1] = -1.0;
           tA[1][0] = -(1.0 - H) / (1.0 + H);
           tA[1][1] = 2.0 * H / (1.0 + H);
-          Amatrices.set(i, j, tA);
+          trimmedAmatrices.set(i, j, tA);
           for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
@@ -341,9 +325,7 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     //Might be an incorrect summary. Trust the math, not the words
     //See pg 35 of Hesthaven and Warburten
 
-    cout << DdimL << " " << DdimR << endl;
     GridFunction<double> nodes = thegrid.gridNodeLocations();
-    if(DdimL!=DdimR) cout <<"mismatched dimensions at " << nodes.get(elemnum,0) << " "<< nodes.get(elemnum,4) << endl;
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
         lambdaminusL[j][j] = nL * lambdaL[j][j];

@@ -30,10 +30,16 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
     throw invalid_argument("Amatrix not square in CharacteristicFlux");
   }
 
+  if(Atrim.dim1() != Atrim.dim2()) {
+    throw invalid_argument("Atrim not square in CharacteristicFlux");
+  }
+
   A = Amatrix;
   Atrimmed = Atrim;
   Adimension = A.dim1();
   
+  Ddimension = Atrim.dim1();
+
   Array2D<double> onetemp(Ddimension, Ddimension, 0.0);
   
   for(int i = 0; i < Ddimension; i++) {
@@ -44,13 +50,12 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
   
   Array2D<double> Smatrixtemp(Ddimension, Ddimension);
   Smatrix = Smatrixtemp.copy();
-  
+
   JAMA::Eigenvalue<double> Seigen(Atrimmed);
   Seigen.getV(Smatrix);
   JAMA::LU<double> Sinverter(Smatrix);
   Sinv=Sinverter.solve(one);
   Lamb = matmult(Sinv, matmult(Atrimmed, Smatrix));
-
 
 }
 
