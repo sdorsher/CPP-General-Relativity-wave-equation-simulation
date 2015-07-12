@@ -167,9 +167,9 @@ void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
         double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
         //if(!params.blackhole.usesource) {
-          uh.set(n,1,i,j,modeval);
+          uh.set(n,2,i,j,modeval);
           //}
-        uh.set(n,2,i,j,0.0);
+        uh.set(n,1,i,j,0.0);
       }
     }
   }
