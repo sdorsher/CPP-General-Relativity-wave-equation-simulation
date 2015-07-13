@@ -30,6 +30,7 @@ int main()
   Grid thegrid(params.grid.elemorder, params.grid.numelems,
                params.grid.lowerlim, params.grid.upperlim);
 
+
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
 
@@ -94,27 +95,47 @@ int main()
   int outputcount = 0;
      
 
+  cout << params.file.outputradiusfixed << " "<< params.file.outputtimefixed 
+       << " " << params.hyperb.outputelement<<endl;
+
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
       //Output in gnuplot format
       for(int k = 0; k < uh.modesDim(); k++) {
-        ofstream fs;
+        if(params.file.outputtimefixed)
+          {
+            ofstream fs;
         
-        string solnfilestring;
-        ostringstream oss;
-        oss << params.file.pdesolution << "." << k << ".txt";
-        fs.open(oss.str(), ios::app);
-        fs << endl << endl;
-        fs << " #time = " << t << endl;
-        for (int i = 0; i < uh.gridDim(); i++){
-          for(int j = 0; j < uh.pointsDim(); j++){
-            //Print out at select time steps
-            fs << thegrid.gridNodeLocations().get(i, j) << " " 
-               << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
-               << uh.get(k, 2, i, j)<< endl;
+            string solnfilestring;
+            ostringstream oss;
+            oss << params.file.pdesolution << "." << k << ".txt";
+            fs.open(oss.str(), ios::app);
+            fs << endl << endl;
+            fs << " #time = " << t << endl;
+            for (int i = 0; i < uh.gridDim(); i++){
+              for(int j = 0; j < uh.pointsDim(); j++){
+                //Print out at select time steps
+                fs << thegrid.gridNodeLocations().get(i, j) << " "
+                   << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
+                   << uh.get(k, 2, i, j)<< endl;
+              }
+            }
+            fs.close();
           }
+        if(params.file.outputradiusfixed){
+          ofstream fs;
+          ostringstream oss;
+          oss << params.file.fixedradiusfilename << "." << k << ".txt";
+          fs.open(oss.str(), ios::app);
+          int i = params.hyperb.outputelement;
+          fs << thegrid.gridNodeLocations().get(i, 0) << " " 
+             << t << " "
+             << uh.get(k, 0, i, 0) << " " << uh.get(k, 1, i, 0) <<" " 
+             << uh.get(k, 2, i, 0)<< endl;
+          fs.close();
         }
-        fs.close();
+          
+        
       }
       //Output the difference in the waveforms between the 
       //oscillation initially and after one period
@@ -146,6 +167,7 @@ int main()
       output -= params.time.outputinterval; 
       outputcount++;
     }
+
 
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);

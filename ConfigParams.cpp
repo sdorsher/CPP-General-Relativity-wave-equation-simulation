@@ -57,12 +57,13 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
     grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
                                             "readfromfile");
+    
   //Read in parameters associated with hyperboloidal coordinates
     hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
     hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
     hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
     hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
-    
+    hyperb.outputelement = getConfigFromFile<int>(configFileName, "hyperb", "outputelement");
 
   
   //Read in parameters associated with time evolution
@@ -79,6 +80,17 @@ ConfigParams::ConfigParams(const std::string& configFileName)
                                                 "usefixedtimestep");
     
     //Read in filename parameters
+
+    file.outputtimefixed =getConfigFromFile<bool>(configFileName, "file",
+                                                    "outputtimefixed");
+
+    file.outputradiusfixed = getConfigFromFile<bool>(configFileName, "file",
+                                                       "outputradiusfixed");
+
+    file.fixedradiusfilename = getConfigFromFile<string>(configFileName, "file",
+                                                         "fixedradiusfilename");
+
+
     file.pdesolution=getConfigFromFile<string>(configFileName, "file",
                                                "pdesolution");
     file.oneperioderror=getConfigFromFile<string>(configFileName, "file",

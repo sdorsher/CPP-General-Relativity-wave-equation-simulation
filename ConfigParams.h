@@ -55,6 +55,8 @@ struct HyperbParams{ //hyperboloidal coordinate parameters
   double Sminus; //scri minus
   double Rplus; //boundary of outer hyperboloidal region
   double Rminus; //boundary of inner hyperboloidal region
+  int outputelement; //element number at which output occurs (0th node)
+
 };
 
 struct TimeParams{
@@ -76,6 +78,10 @@ struct FileParams
                          //one oscillation
   string L2error; //order, timestep, number of elements, L2error
   string initialconditions; //initial conditions as a function of position
+  bool outputtimefixed; 
+  bool outputradiusfixed; 
+  string fixedradiusfilename;
+
 };
 
 //main structure to be used as global variable
