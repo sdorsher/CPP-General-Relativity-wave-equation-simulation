@@ -35,6 +35,7 @@ struct GaussParams{
 struct SchwParams{
   double mass;
   double sigma;
+  double p_orb; //location of orbit
 };
 
 struct ModeParams{
@@ -48,6 +49,7 @@ struct GridParams{
   int numelems; //number of elements in grid
   int elemorder; //order of each element (all are the same)
   bool readfromfile; //broken right now, true or false
+  double outputradius;
 };
 
 struct HyperbParams{ //hyperboloidal coordinate parameters
@@ -55,8 +57,6 @@ struct HyperbParams{ //hyperboloidal coordinate parameters
   double Sminus; //scri minus
   double Rplus; //boundary of outer hyperboloidal region
   double Rminus; //boundary of inner hyperboloidal region
-  int outputelement; //element number at which output occurs (0th node)
-
 };
 
 struct TimeParams{

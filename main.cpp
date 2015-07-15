@@ -14,6 +14,8 @@
 #include "Modes.h"
 
 
+using namespace std;
+
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
 void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd);
@@ -26,13 +28,59 @@ double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0,
 
 int main()
 {
-  //setup the grid and the reference element
-  Grid thegrid(params.grid.elemorder, params.grid.numelems,
-               params.grid.lowerlim, params.grid.upperlim);
 
+  //params is initialized at the beginning of this file by its 
+  //inclusion in the file
+  //modify such that hyperboloidal and tortoise boundaries
+  // occur at element boundaries
+
+  Sminus = params.hyperb.Sminus;
+  double rstar_orb = rstar_of_r(params.schw.p_orb, params.schw.mass);
+  double deltar = (rstar_orb - Sminus)* 2.0/params.grid.numelems; 
+  Splus = rstar_orb +round(0.5* params.grid.numelems) *deltar;
+  Rminus = rstar_orb 
+    - round(0.175 * params.grid.numelems) * deltar;
+  Rplus = rstar_orb 
+    + round(0.125 * params.grid.numelems) * deltar;
+  cout << Sminus << " " << Rminus << " " 
+       << Rplus <<" " << Splus << " " << endl;
+  
+
+  
+
+  double lowlim, uplim; 
+
+  //setup the grid and the reference element
+  if (params.metric.flatspacetime) {
+    lowlim = params.grid.lowerlim;
+    uplim = params.grid.upperlim;
+
+   } else if (params.metric.schwarschild) {
+    lowlim = Sminus;
+    uplim = Splus;
+  }
+ 
+  Grid thegrid(params.grid.elemorder, params.grid.numelems,
+                lowlim, uplim);
+
+  cout << "grid established " << endl;
+  
+
+ //find the indices associated with the radii to extract the solution at
+  
+  int ifinite, iSplus, jfinite, jSplus;
+  thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
+                                        params.schw.mass), Splus, 
+                             ifinite,iSplus, jfinite, jSplus);
+
+
+  cout << params.schw.p_orb<< " " << params.grid.outputradius << endl;
+  cout << ifinite << " " << jfinite << " " << iSplus << " " << jSplus << endl;
 
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
+  cout << nodes.get(ifinite,jfinite) << " " <<
+    nodes.get(iSplus,jSplus) << endl;
 
   //setup the modes
   Modes lmmodes(params.modes.lmax);
@@ -96,7 +144,7 @@ int main()
      
 
   cout << params.file.outputradiusfixed << " "<< params.file.outputtimefixed 
-       << " " << params.hyperb.outputelement<<endl;
+       << " " << params.grid.outputradius<<endl;
 
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
@@ -105,7 +153,7 @@ int main()
         if(params.file.outputtimefixed)
           {
             ofstream fs;
-        
+            
             string solnfilestring;
             ostringstream oss;
             oss << params.file.pdesolution << "." << k << ".txt";
@@ -115,7 +163,7 @@ int main()
             for (int i = 0; i < uh.gridDim(); i++){
               for(int j = 0; j < uh.pointsDim(); j++){
                 //Print out at select time steps
-                fs << thegrid.gridNodeLocations().get(i, j) << " "
+                fs << nodes.get(i, j) << " "
                    << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
                    << uh.get(k, 2, i, j)<< endl;
               }
@@ -127,11 +175,15 @@ int main()
           ostringstream oss;
           oss << params.file.fixedradiusfilename << "." << k << ".txt";
           fs.open(oss.str(), ios::app);
-          int i = params.hyperb.outputelement;
-          fs << thegrid.gridNodeLocations().get(i, 0) << " " 
+          fs << nodes.get(ifinite, jfinite) << " " 
              << t << " "
-             << uh.get(k, 0, i, 0) << " " << uh.get(k, 1, i, 0) <<" " 
-             << uh.get(k, 2, i, 0)<< endl;
+             << uh.get(k, 0, ifinite, jfinite) << " " 
+             << uh.get(k, 1, ifinite, jfinite) <<" " 
+             << uh.get(k, 2, ifinite, jfinite)<< " " 
+             << nodes.get(iSplus, jSplus) << " " 
+             << uh.get(k, 0, iSplus, jSplus) << " " 
+             << uh.get(k, 1, iSplus, jSplus) <<" " 
+             << uh.get(k, 2, iSplus, jSplus)<< endl;
           fs.close();
         }
           

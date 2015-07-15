@@ -88,7 +88,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
         //nodes = rho
         //horizon
-        if(nodes.get(i, j)==params.hyperb.Sminus) {
+        if(nodes.get(i, j)==Sminus) {
           Omega = 0.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -115,17 +115,17 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             Bmatrices.set(k, i, j, B);
           }
           //inner hyperboloidal layer
-        } else if ((nodes.get(i, j) > params.hyperb.Sminus)
-                   && (nodes.get(i,j) < params.hyperb.Rminus)) {
-          transition(nodes.get(i, j), params.hyperb.Rminus, 
-                     params.hyperb.Sminus, fT, fTp, fTpp);
-          Omega = 1.0 - nodes.get(i, j) / params.hyperb.Sminus * fT;
-          Omegap = -(fT + nodes.get(i, j) * fTp) / params.hyperb.Sminus;
+        } else if ((nodes.get(i, j) > Sminus)
+                   && (nodes.get(i,j) < Rminus)) {
+          transition(nodes.get(i, j), Rminus, 
+                     Sminus, fT, fTp, fTpp);
+          Omega = 1.0 - nodes.get(i, j) / Sminus * fT;
+          Omegap = -(fT + nodes.get(i, j) * fTp) / Sminus;
           eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp 
-            / params.hyperb.Sminus;
+            / Sminus;
           eLp = nodes.get(i, j) 
             * (2.0 * fTp + nodes.get(i, j) * fTpp)
-            / params.hyperb.Sminus;
+            / Sminus;
           H = -1.0 + pow(Omega, 2.0) / eL;
           Hp = (2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
             / pow(eL, 2.0);
@@ -154,8 +154,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
              Bmatrices.set(k, i, j, B);
           }
           //central tortoise region
-        } else if ((nodes.get(i,j) >= params.hyperb.Rminus) 
-                   && (nodes.get(i,j) <= params.hyperb.Rplus)){
+        } else if ((nodes.get(i,j) >= Rminus) 
+                   && (nodes.get(i,j) <= Rplus)){
           Omega = 1.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -183,14 +183,14 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             Bmatrices.set(k, i, j, B);
           }
           //outer hyperboloidal region
-        } else if ((nodes.get(i, j) > params.hyperb.Rplus) 
-                   && (nodes.get(i, j) < params.hyperb.Splus)) { 
-          transition(nodes.get(i,j), params.hyperb.Rplus, params.hyperb.Splus, fT, fTp, fTpp);
-          Omega = 1.0 - nodes.get(i, j) / params.hyperb.Splus * fT;
-          Omegap = -(fT + nodes.get(i, j) * fTp) / params.hyperb.Splus;
-          eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / params.hyperb.Splus; 
+        } else if ((nodes.get(i, j) > Rplus) 
+                   && (nodes.get(i, j) < Splus)) { 
+          transition(nodes.get(i,j), Rplus, Splus, fT, fTp, fTpp);
+          Omega = 1.0 - nodes.get(i, j) / Splus * fT;
+          Omegap = -(fT + nodes.get(i, j) * fTp) / Splus;
+          eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / Splus; 
           eLp = nodes.get(i, j) 
-            * (2.0 * fTp + nodes.get(i, j) * fTpp) / params.hyperb.Splus;
+            * (2.0 * fTp + nodes.get(i, j) * fTpp) / Splus;
           H = 1.0 - pow(Omega, 2.0) / eL;
           Hp = -(2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
             / pow(eL, 2.0);
@@ -219,7 +219,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             Bmatrices.set(k, i, j, B);
           }
           //scri-plus
-        } else if (nodes.get(i,j) == params.hyperb.Splus) {
+        } else if (nodes.get(i,j) == Splus) {
           Omega = 0.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -242,8 +242,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             Array2D<double> B(3,3,0.0);
             B[0][2]=-1.0;
             B[2][0]=-2.0*lmmodes.ll[k]*(lmmodes.ll[k]+1.0)
-              /(params.hyperb.Rplus - params.hyperb.Splus) 
-              / params.hyperb.Splus;
+              /(Rplus - Splus) 
+              / Splus;
             Bmatrices.set(k,i,j,B);
           }
         }

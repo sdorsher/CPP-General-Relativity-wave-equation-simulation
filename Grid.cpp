@@ -69,3 +69,21 @@ int Grid::numberElements()
 {
   return NumElem;
 }
+
+void Grid::find_extract_radii(double rfinite, double rSplus, int& ifinite, 
+                              int& iSplus, int& jfinite, int& jSplus){
+  for(int elem=0; elem<NumElem; elem++){
+    for(int node =0; node<=order; node++){
+      cout << elem << " " << node << " " << nodeLocs.get(elem,node)-rfinite << endl;
+      if(fabs(nodeLocs.get(elem,node)-rfinite)<1.0e-5)
+        { 
+          ifinite = elem;
+          jfinite = node;
+        } else if (fabs(nodeLocs.get(elem, node) - rSplus) < 1.0e-5)
+        {
+          iSplus = elem;
+          jSplus = node;
+        }
+    }
+  }
+}

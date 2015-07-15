@@ -7,6 +7,7 @@
 
 using namespace std;
 
+double rstar_of_r(double r,double mass);
 double Lambert(double z);
 double rschw(double z, double mass);
 double invert_tortoise(double rstar, double mass);

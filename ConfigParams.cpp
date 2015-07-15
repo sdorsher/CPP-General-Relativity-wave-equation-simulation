@@ -44,6 +44,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   } else {
     schw.mass = getConfigFromFile<double>(configFileName, "schw", "mass");
     schw.sigma = getConfigFromFile<double>(configFileName, "schw", "sigma");
+    schw.p_orb = getConfigFromFile<double>(configFileName, "schw", "p_orb");
   }
 
   //Read in parameters associated with the modes
@@ -51,19 +52,21 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 
   //Read in parameters associated with the grid
     grid.pdenum=getConfigFromFile<int>(configFileName, "grid", "pdenum");
+
     grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
     grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
     grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
     grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
     grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
-                                            "readfromfile");
-    
+                                             "readfromfile");
+    grid.outputradius = getConfigFromFile<double>(configFileName, "grid", 
+                                                  "outputradius");
+   
   //Read in parameters associated with hyperboloidal coordinates
     hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
     hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
     hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
     hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
-    hyperb.outputelement = getConfigFromFile<int>(configFileName, "hyperb", "outputelement");
 
   
   //Read in parameters associated with time evolution
