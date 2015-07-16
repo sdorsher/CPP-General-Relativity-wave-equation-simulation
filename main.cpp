@@ -42,9 +42,10 @@ int main()
     - round(0.175 * params.grid.numelems) * deltar;
   Rplus = rstar_orb 
     + round(0.125 * params.grid.numelems) * deltar;
+  cout << "Sminus Rminus Rplus Splus" << endl;
   cout << Sminus << " " << Rminus << " " 
        << Rplus <<" " << Splus << " " << endl;
-  
+  cout << endl;
 
   
 
@@ -73,15 +74,14 @@ int main()
                                         params.schw.mass), Splus, 
                              ifinite,iSplus, jfinite, jSplus);
 
-
-  cout << params.schw.p_orb<< " " << params.grid.outputradius << endl;
-  cout << ifinite << " " << jfinite << " " << iSplus << " " << jSplus << endl;
+  cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
+  cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
+  cout << "Output indices for finite and scri-plus radii" << endl;
+  cout << ifinite << " " << jfinite << " " << iSplus << " " << jSplus << endl << endl;
 
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
-  cout << nodes.get(ifinite,jfinite) << " " <<
-    nodes.get(iSplus,jSplus) << endl;
-
+  
   //setup the modes
   Modes lmmodes(params.modes.lmax);
 
@@ -89,7 +89,6 @@ int main()
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
 
-  cout << params.grid.pdenum  <<  endl;
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   TwoDVectorGridFunction<double> uh(lmmodes.ntotal,
@@ -136,15 +135,13 @@ int main()
     deltat = (params.time.tmax - params.time.t0) / nt; 
     //Make deltat go into tmax an integer number of times
   }
-  cout << dt0 << " " << deltat << endl;
+  cout << "set and actual time step, based on courant factor" << endl;
+  cout << dt0 << " " << deltat << endl << endl;
 
   //Initialize loop variables to determine when output
   double output = deltat / 2.0;
   int outputcount = 0;
      
-
-  cout << params.file.outputradiusfixed << " "<< params.file.outputtimefixed 
-       << " " << params.grid.outputradius<<endl;
 
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if(output > 0.0){
@@ -240,9 +237,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
       for (int n = 0; n < uh.modesDim(); n++) {
         double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
-        //if(!params.blackhole.usesource) {
-          uh.set(n,2,i,j,modeval);
-          //}
+        uh.set(n,2,i,j,modeval);
         uh.set(n,1,i,j,0.0);
       }
     }
