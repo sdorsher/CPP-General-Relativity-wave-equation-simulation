@@ -81,7 +81,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
                                                 "comparisoncount");
     time.usefixedtimestep=getConfigFromFile<bool>(configFileName, "time",
                                                 "usefixedtimestep");
-    
+    time.outputevery=getConfigFromFile<int>(configFileName, "time",
+                                                  "outputevery");
+
     //Read in filename parameters
 
     file.outputtimefixed =getConfigFromFile<bool>(configFileName, "file",

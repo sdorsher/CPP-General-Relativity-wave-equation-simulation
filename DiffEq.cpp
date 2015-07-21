@@ -50,6 +50,24 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
   setupABmatrices(thegrid, lmmodes);
 
 
+  /*  ofstream fs;
+  fs.open("ABcoeffs.txt");
+  for(int i= 0; i<params.grid.numelems; i++){
+    for(int j =0; j <= params.grid.elemorder; j++){
+      Array2D<double> A = Amatrices.get(i,j);
+      Array2D<double> tA = trimmedAmatrices.get(i,j);
+      Array2D<double> B = Bmatrices.get(0,i,j);
+      fs << thegrid.gridNodeLocations().get(i,j) << " " 
+         << -A[2][1] << " " << -A[2][2] << " " << -B[2][1] << " " 
+         << -B[2][2] <<" " << -B[2][0] << " "
+         << -tA[1][0] << " " << -tA[1][1]<< endl;
+    }
+  }
+  fs.close();
+ 
+
+  cout << "ABcoeffs output to file" << endl <<endl;
+  */
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
     CharacteristicFlux left(Amatrices.get(i, 0), trimmedAmatrices.get(i,0));
@@ -85,10 +103,31 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         }
 
        } else if (params.metric.schwarschild) {
+        
+        int region;
+        if (nodes.get(i,j)==Sminus) {region = 0;}
+        else if ((nodes.get(i,j)>Sminus)&&(nodes.get(i,j)<Rminus)) {region=1;}
+        else if ((nodes.get(i,j)>=Rminus)&&(nodes.get(i,j)<=Rplus)) {region=2;}
+        else if ((nodes.get(i,j)>Rplus)&&(nodes.get(i,j)<Splus)){region=3;}
+        else if (nodes.get(i,j)==Splus) {region=4;}
+        
+        /*        if(j==0){
+          if ((nodes.get(i,j+1)>=Rminus)&&(nodes.get(i,j+1)<=Rplus)){region=2;}
+          else if((nodes.get(i,j+1)>Rplus)&&(nodes.get(i,j+1)<Splus)){region=3;}
+        }
+        
+        if(j==params.grid.elemorder) {
+          if ((nodes.get(i,j-1)>Sminus)&&(nodes.get(i,j-1)<Rminus)){region=1;}
+          else if((nodes.get(i,j-1)>=Rminus)&&(nodes.get(i,j-1)<=Rplus)){region=2;}
+      }
+        */
+        
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
         //nodes = rho
         //horizon
-        if(nodes.get(i, j)==Sminus) {
+        switch (region){
+        case 0:
+          {
           Omega = 0.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -114,9 +153,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             B[0][2] = -1.0;
             Bmatrices.set(k, i, j, B);
           }
+          break;
+          }
+       case 1:
+         {
           //inner hyperboloidal layer
-        } else if ((nodes.get(i, j) > Sminus)
-                   && (nodes.get(i,j) < Rminus)) {
           transition(nodes.get(i, j), Rminus, 
                      Sminus, fT, fTp, fTpp);
           Omega = 1.0 - nodes.get(i, j) / Sminus * fT;
@@ -153,9 +194,13 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
                *( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
              Bmatrices.set(k, i, j, B);
           }
-          //central tortoise region
-        } else if ((nodes.get(i,j) >= Rminus) 
-                   && (nodes.get(i,j) <= Rplus)){
+
+          break;
+         }
+         case 2:
+           {
+
+           //central tortoise region
           Omega = 1.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -182,9 +227,12 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
               * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
             Bmatrices.set(k, i, j, B);
           }
-          //outer hyperboloidal region
-        } else if ((nodes.get(i, j) > Rplus) 
-                   && (nodes.get(i, j) < Splus)) { 
+          break;
+           }
+           case 3:
+             {
+
+             //outer hyperboloidal region
           transition(nodes.get(i,j), Rplus, Splus, fT, fTp, fTpp);
           Omega = 1.0 - nodes.get(i, j) / Splus * fT;
           Omegap = -(fT + nodes.get(i, j) * fTp) / Splus;
@@ -218,8 +266,12 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
               * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
             Bmatrices.set(k, i, j, B);
           }
+          break;
+             }
+        case 4:
+          {
+
           //scri-plus
-        } else if (nodes.get(i,j) == Splus) {
           Omega = 0.0;
           Omegap = 0.0;
           eL = 1.0;
@@ -246,7 +298,14 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
               / Splus;
             Bmatrices.set(k,i,j,B);
           }
-        }
+            break;
+          }
+          default:
+            {
+              throw logic_error("AB matrix region not defined");
+            break;
+            }
+        }//end switch case
       }//end inner for            
     }//end outer for
   }//end if schw
@@ -255,7 +314,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 
 vector<TNT::Array2D<double>> 
 DiffEq::characteristicflux(int modenum, Grid& thegrid,
-                           TwoDVectorGridFunction<double>& uh)
+                           TwoDVectorGridFunction<double>& uh, bool output)
 {
   //We can loop over characteristicFlux in an external function because
   //in general, neither the RHS of the differential equation nor du mixes
@@ -273,10 +332,12 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
 
     //Dimension of the components of the differential equation with 
     //spatial derivatives (dimension of the trimmed A matrices)
+    //two for schwarszchild
     int DdimL = AleftBoundaries[elemnum].getDdim();
     int DdimR = ArightBoundaries[elemnum].getDdim();
     
     //vmin and vmax are min and max indices in vector dimension (psi, rho, pi)
+    //one and two respectively for schwarzschild
     int vmaxL = AleftBoundaries[elemnum].getAdim() - 1;
     int vminL = vmaxL - DdimL + 1; //neglect zero rows at top of A matrix
     int vmaxR = ArightBoundaries[elemnum].getAdim() - 1;
@@ -320,10 +381,12 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     Array2D<double> lambdaL= AleftBoundaries[elemnum].getLambda();
     Array2D<double> lambdaR= ArightBoundaries[elemnum].getLambda();
 
+    
     //lambda minus contains outward moving wave components
     //lambda plus contains inward moving wave components
     //Might be an incorrect summary. Trust the math, not the words
     //See pg 35 of Hesthaven and Warburten
+
 
     GridFunction<double> nodes = thegrid.gridNodeLocations();
     for(int j = 0; j < DdimL; j++) {
@@ -357,19 +420,50 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
     Array1D<double> nfluxR = matmult(SR, nfluxR1 + nfluxR2);
 
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
-    Array2D<double> AtrimmedR= AleftBoundaries[elemnum].getAtrimmed();
+    Array2D<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
     Array2D<double> duelem(AtrimmedR.dim1(), 2, 0.0);
+
     
     //This gets multiplied by lift matrix to calculate flux
     Array1D<double> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<double> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
 
+    Array1D<double> fL = matmult(AtrimmedL,uintL);
+    Array1D<double> fR = matmult(AtrimmedR,uintR);
+
+    if(output){
+      ofstream fs3;
+      fs3.open("f.txt",ios::app);
+      fs3 << nodes.get(elemnum, indL)<< " " << fL[0] << " " << fL[1] << " " <<
+        nodes.get(elemnum, indR)<<" " << fR[0] << " " << fR[1] << endl;
+      fs3.close();
+    }
+    
     //create a 2D array with one column corresponding to the left
     //boundary and one column corresponding to the right boundary
     //of du for the the various components of u. 
     insert_1D_into_2D(duelem, duL, 0, false);
     insert_1D_into_2D(duelem, duR, 1, false);
 
+    if(output)
+      {
+        ofstream fs;
+        ofstream fs2;
+        ofstream fs3;
+        ofstream fs4;
+        fs.open("du.txt",ios::app);
+        fs2.open("uR.txt",ios::app);
+        fs3.open("uL.txt",ios::app);
+        fs4.open("nflux.txt",ios::app);
+        fs << nodes.get(elemnum,0) <<" " << duL[0] << " " << duL[1] << " " << duR[0] << " " << duR[1] << endl;
+        fs2 << nodes.get(elemnum,indR) << " " <<  uintR[0] << " " << uextR[0] << " " << uintR[1] << " " << uextR[1] << endl;
+        fs3 << nodes.get(elemnum,indL) << " " <<  uintL[0] << " " << uextL[0] << " " << uintL[1] << " " << uextL[1] << endl;
+        fs4 << nodes.get(elemnum,0) << " " << nfluxL[0] << " " << nfluxL[1] << " " << nfluxR[0] << " " << nfluxR[1] << endl;
+        fs.close();
+        fs2.close();
+        fs3.close();
+        fs4.close();
+      }
     du[elemnum] = duelem;
   }
   return du;
@@ -378,7 +472,7 @@ DiffEq::characteristicflux(int modenum, Grid& thegrid,
 void DiffEq::RHS(int modenum, Grid& thegrid,
                  TwoDVectorGridFunction<double>& uh, 
                  TwoDVectorGridFunction<double>& RHStdvgf, double t, 
-                 vector<Array2D<double>>& du )
+                 vector<Array2D<double>>& du , bool output)
 {
 
   //We can loop over RHS in an external function independent of mode 
@@ -482,13 +576,13 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<double>& uh,
                      TwoDVectorGridFunction<double>& RHStdvgf, 
-                     double t)
+                     double t, bool output)
 {
 
   for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
     vector<Array2D<double>> du;
-    du = move(characteristicflux(modenum, thegrid, uh));
-    RHS(modenum, thegrid, uh, RHStdvgf, t, du);
+    du = move(characteristicflux(modenum, thegrid, uh, output));
+    RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
   }
 }
 

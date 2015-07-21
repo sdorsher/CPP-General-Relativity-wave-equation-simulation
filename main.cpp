@@ -42,6 +42,9 @@ int main()
     - round(0.175 * params.grid.numelems) * deltar;
   Rplus = rstar_orb 
     + round(0.125 * params.grid.numelems) * deltar;
+  cout << "R_star orbit" << endl;
+  cout << rstar_orb << endl << endl;
+
   cout << "Sminus Rminus Rplus Splus" << endl;
   cout << Sminus << " " << Rminus << " " 
        << Rplus <<" " << Splus << " " << endl;
@@ -139,34 +142,33 @@ int main()
   cout << dt0 << " " << deltat << endl << endl;
 
   //Initialize loop variables to determine when output
-  double output = deltat / 2.0;
-  int outputcount = 0;
-     
-
+  //double output = deltat / 2.0;
+  int outputcount =0;
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
-    if(output > 0.0){
+    //    if(output > 0.0){
+    if (outputcount%params.time.outputevery == 0){
+      RHSOUTPUT=true;
       //Output in gnuplot format
       for(int k = 0; k < uh.modesDim(); k++) {
-        if(params.file.outputtimefixed)
-          {
-            ofstream fs;
-            
-            string solnfilestring;
-            ostringstream oss;
-            oss << params.file.pdesolution << "." << k << ".txt";
-            fs.open(oss.str(), ios::app);
-            fs << endl << endl;
-            fs << " #time = " << t << endl;
-            for (int i = 0; i < uh.gridDim(); i++){
-              for(int j = 0; j < uh.pointsDim(); j++){
-                //Print out at select time steps
-                fs << nodes.get(i, j) << " "
-                   << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
-                   << uh.get(k, 2, i, j)<< endl;
-              }
+        if(params.file.outputtimefixed) {
+          ofstream fs;
+          
+          string solnfilestring;
+          ostringstream oss;
+          oss << params.file.pdesolution << "." << k << ".txt";
+          fs.open(oss.str(), ios::app);
+          fs << endl << endl;
+          fs << " #time = " << t << endl;
+          for (int i = 0; i < uh.gridDim(); i++){
+            for(int j = 0; j < uh.pointsDim(); j++){
+              //Print out at select time steps
+              fs << nodes.get(i, j) << " "
+                 << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
+                 << uh.get(k, 2, i, j)<< endl;
             }
-            fs.close();
           }
+            fs.close();
+        }
         if(params.file.outputradiusfixed){
           ofstream fs;
           ostringstream oss;
@@ -183,11 +185,14 @@ int main()
              << uh.get(k, 2, iSplus, jSplus)<< endl;
           fs.close();
         }
-          
-        
-      }
+      }//end for
+    }else{
+      RHSOUTPUT=false;
+    }
+    
       //Output the difference in the waveforms between the 
       //oscillation initially and after one period
+      /*
       if(outputcount == params.time.comparisoncount){
         cout << t << endl;
         ofstream fs2;
@@ -199,11 +204,11 @@ int main()
           }
         }
         fs2.close();
-        
+      */
         //Append the L2 error to that file, measured after one period
-        ofstream fsconvergence;
+        /*ofstream fsconvergence;
         fsconvergence.open(params.file.L2error,ios::app);
-          
+        
         double L2;
         L2=LTwoerror(thegrid, uh0, uh);
         cout << "Order, deltat, num elems, L2 norm" << endl;
@@ -212,26 +217,28 @@ int main()
         fsconvergence << params.grid.elemorder << " " << deltat 
                       << " " << params.grid.numelems << " " << L2 << endl;
         fsconvergence.close();
-      }
-      output -= params.time.outputinterval; 
-      outputcount++;
-    }
+       
+        }*/
+    
 
-
+    //    cout << "outputcount = " <<outputcount << endl;
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
+    //Initial conditions, numerical fluxes, boundary conditions handled inside 
+    //Evolution.cpp, in RHS.
     
     //Increment the count to determine whether or not to output
-    output += deltat;
-  }
-  //Initial conditions, numerical fluxes, boundary conditions handled inside 
-  //Evolution.cpp, in RHS.
+    outputcount++;
+    
+  }//end for t 
 }
 
 
 void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
   GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
   rho=grd.gridNodeLocations();
+  ofstream fs;
+  fs.open("initialdata.txt");
   for(int i = 0; i < uh.gridDim(); i++) {
     for (int j = 0; j < uh.pointsDim(); j++) {
       for (int n = 0; n < uh.modesDim(); n++) {
@@ -239,9 +246,11 @@ void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
         uh.set(n,0,i,j,0.0);
         uh.set(n,2,i,j,modeval);
         uh.set(n,1,i,j,0.0);
+        fs << rho.get(i,j) << " " << uh.get(0,2,i,j) << endl;
       }
     }
   }
+  fs.close();
 }
   
 

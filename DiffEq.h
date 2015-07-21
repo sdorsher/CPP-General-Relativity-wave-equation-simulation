@@ -39,17 +39,17 @@ class DiffEq
   //Returns du, for the characteristic flux.
   vector<TNT::Array2D<double>> characteristicflux(int modenum, Grid& thegrid,
                                                   TwoDVectorGridFunction<double>& 
-                                                  uh);
+                                                  uh, bool output);
   //Returns the right hand side of the differential equation
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<double>& uh, 
            TwoDVectorGridFunction<double>& RHSvgf, 
-           double t, vector<Array2D<double>>& du );
+           double t, vector<Array2D<double>>& du , bool output);
 
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<double>& uh,
                TwoDVectorGridFunction<double>& RHStdgf, 
-               double t); 
+               double t, bool output); 
 };
 
 #endif

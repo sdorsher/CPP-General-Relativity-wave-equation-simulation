@@ -69,6 +69,8 @@ struct TimeParams{
   int comparisoncount; //use the wave data to evaluate the L2 norm after 
                        //this integer number of output intervals
   bool usefixedtimestep; 
+  int outputevery; // output every N iterations
+
 };
 
 struct FileParams

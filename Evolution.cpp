@@ -38,14 +38,32 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   //  vector<Array2D<double>> du;
 
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t);
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false);
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
+
   
   //steps 2-5
   for(int i=2; i<=5; i++){
-    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat);
+    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false);
     k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
   }
+
+  /*  if(RHSOUTPUT){
+    ofstream fs;
+    fs.open("urhs.txt", ios::app);
+    fs << endl << endl;
+    fs << " #time = " << t << endl;
+    for(int j=0; j< RHStdvgf.gridDim(); j++){
+      for(int i=0; i< RHStdvgf.pointsDim(); i++){
+        fs << thegrid.gridNodeLocations().get(j,i) << " ";
+        for(int k = 0; k< RHStdvgf.vectorDim(); k++){
+          fs << RHStdvgf.get(0,k,j,i) << " ";
+        }
+        fs << endl;
+      }
+    }
+    fs.close();
+    }*/
 }
