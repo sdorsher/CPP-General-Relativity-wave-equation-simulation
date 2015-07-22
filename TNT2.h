@@ -168,6 +168,32 @@ namespace TNT
       }
       cout << endl << endl;
     }
+
+  //prints an Array1D
+  template <typename T>
+    void output1Dcomplex(const TNT::Array1D<complex<T>>& matr)
+    {
+      for(int i=0;i<matr.dim();i++){
+        cout << "( ";
+	  cout << matr[i].real() << "+" << matr[i].imag()<< "i" <<" "; 
+        cout << ")\n";
+      }
+      cout << endl<< endl;
+    }
+  
+  //prints an Array2D
+  template <typename T>
+    void output2Dcomplex(const TNT::Array2D<complex<T>>& matr)
+    {
+      for(int i=0;i<matr.dim1();i++){
+        cout << "( ";
+        for(int j=0;j<matr.dim2();j++){
+	  cout << matr[i][j].real() << "+" << matr[i][j].imag()<< "i" <<" "; 
+	}
+        cout << ")\n";
+      }
+      cout << endl << endl;
+    }
 };
 
 #endif 
