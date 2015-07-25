@@ -10,8 +10,10 @@
 #include "Modes.h"
 #include "HyperboloidalCoords.h"
 #include <cfloat>
+#include "namespaces.h"
 
 using namespace TNT;
+using namespace layers;
 
 //User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0

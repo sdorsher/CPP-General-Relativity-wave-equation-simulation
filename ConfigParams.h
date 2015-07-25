@@ -36,6 +36,13 @@ struct SchwParams{
   double mass;
   double sigma;
   double p_orb; //location of orbit
+  double ecc; //eccentricity of orbit
+};
+
+struct WindowParams{
+  int noffset;
+  double tsigma;
+  int torder;
 };
 
 struct ModeParams{
@@ -98,6 +105,7 @@ struct ConfigParams {
   TimeParams time;
   FileParams file;
   SchwParams schw;
+  WindowParams window;
 
   ConfigParams(const std::string& configFileName);
 

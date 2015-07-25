@@ -5,13 +5,14 @@ ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf
 #IGEN = -I/home/sdorsher
 #ITNT = -I/home/sdorsher/tnt
 LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
+ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
+LGSL = -L/opt/local/lib/ -lgsl
 
-
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o $(LCONF) -o dg1D
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o $(LCONF) $(LGSL) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
@@ -47,5 +48,10 @@ HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h
 Modes.o: Modes.cpp Modes.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c Modes.cpp
 
+namespaces.o: namespaces.cpp namespaces.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c namespaces.cpp
+
+orbit.o: orbit.cpp orbit.h ConfigParams.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c orbit.cpp
 clean:
 	rm -f *.o dg1D

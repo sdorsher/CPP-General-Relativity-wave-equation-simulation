@@ -9,6 +9,7 @@
 #include "tnt_array1D_extn.h"
 #include "jama/jama_eig.h"
 #include "jama/jama_lu.h" //is this right? inverse, right?
+#include <complex>
 
 
 using namespace std;

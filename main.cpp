@@ -12,9 +12,13 @@
 #include "DiffEq.h"
 #include "TwoDVectorGridFunction.h"
 #include "Modes.h"
+#include "namespaces.h"
+#include "orbit.h"
 
 
 using namespace std;
+using namespace layers;
+using namespace orbit;
 
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
@@ -34,23 +38,38 @@ int main()
   //modify such that hyperboloidal and tortoise boundaries
   // occur at element boundaries
 
+  double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
+  double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
+  double xip = 0.5*(rmin+rmax);
   Sminus = params.hyperb.Sminus;
-  double rstar_orb = rstar_of_r(params.schw.p_orb, params.schw.mass);
+  double rstar_orb = rstar_of_r(xip, params.schw.mass);
+
   double deltar = (rstar_orb - Sminus)* 2.0/params.grid.numelems; 
   Splus = rstar_orb +round(0.5* params.grid.numelems) *deltar;
   Rminus = rstar_orb 
     - round(0.175 * params.grid.numelems) * deltar;
   Rplus = rstar_orb 
     + round(0.125 * params.grid.numelems) * deltar;
+  Wminus = Rminus + params.window.noffset * deltar;
+  Wplus = Rplus - params.window.noffset * deltar;
+
   cout << "R_star orbit" << endl;
   cout << rstar_orb << endl << endl;
 
-  cout << "Sminus Rminus Rplus Splus" << endl;
+  cout << "Sminus Rminus Rplus Splus Wminus Wplus" << endl;
   cout << Sminus << " " << Rminus << " " 
-       << Rplus <<" " << Splus << " " << endl;
+       << Rplus <<" " << Splus << " " 
+       << Wminus << " " << Wplus << endl;
   cout << endl;
 
-  
+  //initialize orbit
+  initialize_orbit();
+
+  cout << "p =" << p << endl;
+  cout << "e =" << e << endl;
+  cout << "chi =" << chi << endl;
+  cout << "phi = " << phi << endl;
+  cout << endl;
 
   double lowlim, uplim; 
 
@@ -147,7 +166,6 @@ int main()
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     //    if(output > 0.0){
     if (outputcount%params.time.outputevery == 0){
-      RHSOUTPUT=true;
       //Output in gnuplot format
       for(int k = 0; k < uh.modesDim(); k++) {
         if(params.file.outputtimefixed) {
@@ -187,7 +205,6 @@ int main()
         }
       }//end for
     }else{
-      RHSOUTPUT=false;
     }
     
       //Output the difference in the waveforms between the 
