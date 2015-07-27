@@ -14,11 +14,13 @@
 #include "Modes.h"
 #include "namespaces.h"
 #include "orbit.h"
-
+#include "source_interface.h"
 
 using namespace std;
 using namespace layers;
 using namespace orbit;
+using namespace window;
+using namespace source_interface;
 
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
@@ -37,6 +39,9 @@ int main()
   //inclusion in the file
   //modify such that hyperboloidal and tortoise boundaries
   // occur at element boundaries
+
+  //setup the modes
+  Modes lmmodes(params.modes.lmax);
 
   double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
   double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
@@ -64,13 +69,29 @@ int main()
 
   //initialize orbit
   initialize_orbit();
-
   cout << "p =" << p << endl;
   cout << "e =" << e << endl;
   cout << "chi =" << chi << endl;
   cout << "phi = " << phi << endl;
   cout << endl;
 
+ 
+  if(params.opts.useSource) {
+    init_source( lmmodes, params.schw.mass);
+  }
+  R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
+  R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
+  w1 = params.schw.p_orb-(invert_tortoise(2.0*deltar, params.schw.mass)
+                          +2.0*params.schw.mass)-R1;
+  w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
+  nmodes = lmmodes.ntotal;
+
+ 
+  if(params.opts.useSource) {
+    set_window(R1, 2.0, 1.0, 1.5, R2, 8.0, 1.0, 1.5, lmmodes.ntotal);
+  }
+  
+  
   double lowlim, uplim; 
 
   //setup the grid and the reference element
@@ -104,9 +125,6 @@ int main()
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
   
-  //setup the modes
-  Modes lmmodes(params.modes.lmax);
-
 
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);

@@ -6,6 +6,12 @@ const ConfigParams params("params.cfg");
 ConfigParams::ConfigParams(const std::string& configFileName)
 { //Use template function that uses libconfig commands to read in global
   //parameters into a params structure, for example, params.waveq.pdenum
+  
+  //read in options
+  opts.useSource = getConfigFromFile<bool>(configFileName, "options", 
+                                                 "useSource");
+  opts.turn_on_source_slowly = getConfigFromFile<bool>(configFileName, "options", "turn_on_source_slowly");
+
 
   //Read parameters associated with the metric
   metric.flatspacetime = getConfigFromFile<bool>(configFileName, "metric", 

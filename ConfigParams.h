@@ -9,6 +9,11 @@
 using namespace std;
 using namespace libconfig;
 
+struct OptionsParams{
+  bool useSource;
+  bool turn_on_source_slowly;
+};
+
 struct MetricParams{
   bool flatspacetime;
   bool schwarschild;
@@ -95,6 +100,7 @@ struct FileParams
 
 //main structure to be used as global variable
 struct ConfigParams {
+  OptionsParams opts;
   MetricParams metric;
   WaveEqParams waveeq;
   SinusoidParams sine;
