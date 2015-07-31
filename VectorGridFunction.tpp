@@ -259,6 +259,17 @@ VectorGridFunction<T> operator*(T A, VectorGridFunction<T> vgf)
   }
   return vgfprod;
 }
+//Scalar multiplication operator for VectorGridFunctions.
+template <typename T>
+VectorGridFunction<complex<T>> operator*(T A, VectorGridFunction<complex<T>> vgf)
+//for easy multiplication in rk4 routine
+{
+  VectorGridFunction<complex<T>> vgfprod(0, vgf.gridDim(), vgf.pointsDim());
+  for(int i = 0; i < vgf.vectorDim(); i++){
+    vgfprod.append(A * vgf.get(i));
+  }
+  return vgfprod;
+}
 
   
 

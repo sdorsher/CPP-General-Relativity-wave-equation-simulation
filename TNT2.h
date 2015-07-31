@@ -1,3 +1,4 @@
+
 #ifndef TNT2_H
 #define TNT2_H
 
@@ -15,6 +16,60 @@
 using namespace std;
 namespace TNT
 {
+template <class T>
+Array2D<complex<T>> matmult(const Array2D<complex<T>> &A, const Array2D<T> &B)
+{
+    if (A.dim2() != B.dim1())
+        return Array2D<complex<T>>();
+
+    int M = A.dim1();
+    int N = A.dim2();
+    int K = B.dim2();
+
+    Array2D<complex<T>> C(M,K);
+
+    for (int i=0; i<M; i++)
+        for (int j=0; j<K; j++)
+        {
+            complex<T> sum = 0;
+
+            for (int k=0; k<N; k++)
+                sum += A[i][k] * B [k][j];
+
+            C[i][j] = sum;
+        }
+
+    return C;
+
+
+}
+template <class T>
+Array2D<complex<T>> matmult(const Array2D<T> &A, const Array2D<complex<T>> &B)
+{
+    if (A.dim2() != B.dim1())
+        return Array2D<complex<T>>();
+
+    int M = A.dim1();
+    int N = A.dim2();
+    int K = B.dim2();
+
+    Array2D<complex<T>> C(M,K);
+
+    for (int i=0; i<M; i++)
+        for (int j=0; j<K; j++)
+        {
+            complex<T> sum = 0;
+
+            for (int k=0; k<N; k++)
+                sum += A[i][k] * B [k][j];
+
+            C[i][j] = sum;
+        }
+
+    return C;
+
+
+}
 
   //Multiplies A B^T to yield the transpose of the result. 
   template <class T>
@@ -195,6 +250,47 @@ namespace TNT
       }
       cout << endl << endl;
     }
-};
 
+  //Multiplies a 2D matrix by a 1D column vector to the right.
+  template <typename T>
+    TNT::Array1D<complex<T>> matmult(const TNT::Array2D<T>& A, const TNT::Array1D<complex<T>>& B)
+    {
+      if(A.dim2()!=B.dim1()){
+        throw std::invalid_argument("Mismatched matrix dimensions.");
+      }
+    
+      TNT::Array1D<complex<T>> ans(A.dim1());
+    
+      for(int i=0; i<A.dim1(); i++){
+        ans[i]=0;
+        for(int j=0; j<A.dim2(); j++){
+          ans[i]+=A[i][j]*B[j];
+        }
+      }
+      return ans;
+    }
+
+  //Multiplies a 1D row vector by a 2D matrix
+  template <typename T>
+    TNT::Array1D<complex<T>> matmult(const TNT::Array1D<complex<T>>& A, const TNT::Array2D<T>& B)
+    {//really using the transpose of A, produces a column vector when it 
+      //should produce a row vector
+      if(A.dim1()!=B.dim1()){
+        throw std::invalid_argument("Mismatched matrix dimensions.");
+      }
+    
+      TNT::Array1D<complex<T>> ans(B.dim2());
+    
+      for(int j=0; j<B.dim2(); j++){
+        ans[j]=0;
+        for(int i=0; i<B.dim1(); i++){
+          ans[j]+=A[i]*B[i][j];
+        }
+      }
+      return ans;
+    }
+  
+  
+};
+  
 #endif 

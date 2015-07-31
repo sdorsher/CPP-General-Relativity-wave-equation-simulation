@@ -1,6 +1,7 @@
 #ifndef TNT_ARRAY2D_EXTN_H
 #define TNT_ARRAY2D_EXTN_H
 #include <cmath>
+#include <complex>
 
 #include "tnt/tnt_array2d.h"
 //include "../tnt/tnt_array2d_utils.h"
@@ -58,7 +59,7 @@ namespace TNT
     {
       int n=A.dim1();
       int m=A.dim2();
-      Array2D<T> C(n,m);
+      Array2D<complex<T>> C(n,m);
       for(int k=0; k<n; k++){
         for(int j=0; j<m; j++){
           C[k][j]=A[k][j]+B;
@@ -67,6 +68,36 @@ namespace TNT
       return C;
     }
 
+
+  //Adds an array to a scalar
+  template <class T>
+    Array2D<complex<T>> operator+(const Array2D<complex<T>> &A, const T B)
+    {
+      int n=A.dim1();
+      int m=A.dim2();
+      Array2D<complex<T>> C(n,m);
+      for(int k=0; k<n; k++){
+        for(int j=0; j<m; j++){
+          C[k][j]=A[k][j]+B;
+        }
+      }
+      return C;
+    }
+  
+  //Adds a scalar to an array
+  template <class T>
+    Array2D<complex<T>> operator+(const T B, const Array2D<complex<T>> &A)
+    {
+      int n=A.dim1();
+      int m=A.dim2();
+      Array2D<complex<T>> C(n,m);
+      for(int k=0; k<n; k++){
+        for(int j=0; j<m; j++){
+          C[k][j]=A[k][j]+B;
+        }
+      }
+      return C;
+    }
   //Multiplies a scalar by an array
   template <class T>
     Array2D<T> operator*(const T B, const Array2D<T> &A)
@@ -82,9 +113,40 @@ namespace TNT
       return C;
     }
 
+
   //Multiplies an array by a scalar
   template <class T>
     Array2D<T> operator*(const Array2D<T> &A, const T B)
+    {
+      int n=A.dim1();
+      int m=A.dim2();
+      Array2D<T> C(n,m);
+      for(int k=0; k<n; k++){
+	  for(int j=0;j<m;j++){
+            C[k][j]=A[k][j]*B;
+          }
+      }
+      return C;
+    }
+  //Multiplies a scalar by an array
+  template <class T>
+    Array2D<complex<T>> operator*(const T B, const Array2D<complex<T>> &A)
+    {
+      int n=A.dim1();
+      int m=A.dim2();
+      Array2D<complex<T>> C(n,m);
+      for(int k=0; k<n; k++){
+        for(int j=0; j<m; j++){
+          C[k][j]=A[k][j]*B;
+        }
+      }
+      return C;
+    }
+
+  
+  //Multiplies an array by a scalar
+  template <class T>
+    Array2D<complex<T>> operator*(const Array2D<complex<T>> &A, const T B)
     {
       int n=A.dim1();
       int m=A.dim2();

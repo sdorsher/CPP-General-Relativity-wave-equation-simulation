@@ -10,7 +10,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   //read in options
   opts.useSource = getConfigFromFile<bool>(configFileName, "options", 
                                                  "useSource");
-  opts.turn_on_source_slowly = getConfigFromFile<bool>(configFileName, "options", "turn_on_source_slowly");
+  opts.turn_on_source_smoothly = getConfigFromFile<bool>(configFileName, "options", "turn_on_source_smoothly");
 
 
   //Read parameters associated with the metric
@@ -54,8 +54,8 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     schw.ecc = getConfigFromFile<double>(configFileName, "schw", "ecc");
 
     window.noffset = getConfigFromFile<int>(configFileName, "window", "noffset");
-    window.tsigma = getConfigFromFile<double>(configFileName, "window", "tsigma");
-    window.torder = getConfigFromFile<int>(configFileName, "window", "torder");
+    timewindow.tsigma = getConfigFromFile<double>(configFileName, "timewindow", "tsigma");
+    timewindow.torder = getConfigFromFile<int>(configFileName, "timewindow", "torder");
 
   //Read in parameters associated with hyperboloidal coordinates
     hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");

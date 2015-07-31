@@ -7,14 +7,14 @@
 #include "DiffEq.h"
 #include <fstream>
 #include "ConfigParams.h"
-
+#include <complex>
 
 //Low storage fourth order Runga Kutta routine.
 //See pg 64 of Hesthaven and Warburton.
 
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
-                   TwoDVectorGridFunction<double>& uh, 
-                   TwoDVectorGridFunction<double>& RHSvgf, 
+                   TwoDVectorGridFunction<complex<double>>& uh, 
+                   TwoDVectorGridFunction<complex<double>>& RHSvgf, 
                    double t, double deltat);
 
 #endif

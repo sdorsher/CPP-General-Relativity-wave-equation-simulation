@@ -11,7 +11,7 @@ using namespace libconfig;
 
 struct OptionsParams{
   bool useSource;
-  bool turn_on_source_slowly;
+  bool turn_on_source_smoothly;
 };
 
 struct MetricParams{
@@ -46,6 +46,9 @@ struct SchwParams{
 
 struct WindowParams{
   int noffset;
+};
+
+struct TimeWindowParams{
   double tsigma;
   int torder;
 };
@@ -112,6 +115,7 @@ struct ConfigParams {
   FileParams file;
   SchwParams schw;
   WindowParams window;
+  TimeWindowParams timewindow;
 
   ConfigParams(const std::string& configFileName);
 

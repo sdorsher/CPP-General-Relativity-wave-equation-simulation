@@ -8,50 +8,59 @@ LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
 ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
 LGSL = -L/opt/local/lib/ -lgsl
 
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o $(LCONF) $(LGSL) -o dg1D
+#dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o numerics.o source_interface.o
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o namespaces.o numerics.o source_interface.o
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o $(LCONF) $(LGSL) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h numerics.h
 	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c ReferenceElement.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c ReferenceElement.cpp
 
 #GridFunction.o: GridFunction.cpp GridFunction.h TNT2.h
-#	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c GridFunction.cpp
+#	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c GridFunction.cpp
 
 #VectorGridFunction.o: VectorGridFunction.cpp VectorGridFunction.h GridFunction.h TNT2.h
 #	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c VectorGridFunction.cpp
 
 Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c Grid.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c Grid.cpp
 
 Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c Evolution.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c globals.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c globals.cpp
 
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c ConfigParams.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c DiffEq.cpp
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h source_interface.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c CharacteristicFlux.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
 
 HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h 
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c HyperboloidalCoords.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c HyperboloidalCoords.cpp
+
+
 
 Modes.o: Modes.cpp Modes.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c Modes.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c Modes.cpp
 
 namespaces.o: namespaces.cpp namespaces.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -c namespaces.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c namespaces.cpp
 
 orbit.o: orbit.cpp orbit.h ConfigParams.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) $(LCONF) -c orbit.cpp
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c orbit.cpp
+
+numerics.o: numerics.cpp numerics.h 
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c numerics.cpp
+
+source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h
+	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
 clean:
 	rm -f *.o dg1D

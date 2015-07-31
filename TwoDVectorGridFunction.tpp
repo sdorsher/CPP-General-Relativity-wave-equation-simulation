@@ -319,6 +319,18 @@ TwoDVectorGridFunction<T> operator*(T A, TwoDVectorGridFunction<T> tdvgf)
   }
   return tdvgfprod;
 }
+//Scalar multiplication operator for TwoDVectorGridFunctions.
+template <typename T>
+TwoDVectorGridFunction<complex<T>> operator*(T A, TwoDVectorGridFunction<complex<T>> tdvgf)
+//for easy multiplication in rk4 routine
+{
+  TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.vectorDim(), tdvgf.gridDim(), 
+                                      tdvgf.pointsDim());
+  for(int i = 0; i < tdvgf.modesDim(); i++){
+   tdvgfprod.append(A * tdvgf.get(i));
+  }
+  return tdvgfprod;
+}
 
   
 

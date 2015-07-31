@@ -35,6 +35,9 @@ GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2);
 template <typename T>
 GridFunction<T> operator*(T A,GridFunction<T> gf2);
 
+template <typename T>
+GridFunction<complex<T>> operator*(T A,GridFunction<complex<T>> gf2);
+
 #include "GridFunction.tpp"
 
 #endif

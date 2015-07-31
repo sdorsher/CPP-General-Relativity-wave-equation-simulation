@@ -4,6 +4,7 @@
 #include "TNT2.h"
 #include "VectorGridFunction.h"
 #include <fstream>
+#include <complex>
 
 //See .cpp file for explanations of functions
 template <class T>
@@ -43,10 +44,13 @@ class TwoDVectorGridFunction
 };
 
 template <typename T>
-VectorGridFunction<T> operator+(VectorGridFunction<T>, VectorGridFunction<T>);
+TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T>, TwoDVectorGridFunction<T>);
 
 template <typename T>
-VectorGridFunction<T> operator*(T, VectorGridFunction<T>);
+TwoDVectorGridFunction<T> operator*(T, TwoDVectorGridFunction<T>);
+
+template <typename T>
+TwoDVectorGridFunction<complex<T>> operator*(T, TwoDVectorGridFunction<complex<T>>);
 
 #include "TwoDVectorGridFunction.tpp"
 

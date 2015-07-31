@@ -1,6 +1,7 @@
 #ifndef DIFFEQ_H
 #define DIFFEQ_H
 
+#include "source_interface.h"
 #include "GridFunction.h"
 #include <cmath>
 #include "ConfigParams.h"
@@ -11,9 +12,11 @@
 #include "HyperboloidalCoords.h"
 #include <cfloat>
 #include "namespaces.h"
+#include <complex>
 
 using namespace TNT;
 using namespace layers;
+using namespace source_interface;
 
 //User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0
@@ -39,18 +42,18 @@ class DiffEq
   Array2D<double> getAtrimmed(int gridindex, int pointsindex);
 
   //Returns du, for the characteristic flux.
-  vector<TNT::Array2D<double>> characteristicflux(int modenum, Grid& thegrid,
-                                                  TwoDVectorGridFunction<double>& 
+  vector<TNT::Array2D<complex<double>>> characteristicflux(int modenum, Grid& thegrid,
+                                                  TwoDVectorGridFunction<complex<double>>& 
                                                   uh, bool output);
   //Returns the right hand side of the differential equation
   void RHS(int modenum, Grid& thegrid,
-           TwoDVectorGridFunction<double>& uh, 
-           TwoDVectorGridFunction<double>& RHSvgf, 
-           double t, vector<Array2D<double>>& du , bool output);
+           TwoDVectorGridFunction<complex<double>>& uh, 
+           TwoDVectorGridFunction<complex<double>>& RHSvgf, 
+           double t, vector<Array2D<complex<double>>>& du , bool output);
 
   void modeRHS(Grid& thegrid,
-               TwoDVectorGridFunction<double>& uh,
-               TwoDVectorGridFunction<double>& RHStdgf, 
+               TwoDVectorGridFunction<complex<double>>& uh,
+               TwoDVectorGridFunction<complex<double>>& RHStdgf, 
                double t, bool output); 
 };
 

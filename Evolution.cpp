@@ -8,8 +8,8 @@
 //See page 63 of Hesthaven and Warburn for this routine
 
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
-                   TwoDVectorGridFunction<double>& uh, 
-                   TwoDVectorGridFunction<double>& RHStdvgf, 
+                   TwoDVectorGridFunction<complex<double>>& uh, 
+                   TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
                    double t, double deltat)
 {
   vector<double> rk4a{0.0, 
@@ -30,7 +30,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   
   int nsteps=5;
   
-  TwoDVectorGridFunction<double> k(RHStdvgf.modesDim(),
+  TwoDVectorGridFunction<complex<double>> k(RHStdvgf.modesDim(),
                                    RHStdvgf.vectorDim(), RHStdvgf.gridDim(),
                                    RHStdvgf.pointsDim());
 

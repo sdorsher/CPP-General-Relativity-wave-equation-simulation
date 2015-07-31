@@ -1,6 +1,7 @@
 #ifndef TNT_ARRAY1D_EXTN_H
 #define TNT_ARRAY1D_EXTN_H
 #include <cmath>
+#include <complex>
 
 #include "tnt/tnt_array1d.h"
 //include "../tnt/tnt_array1d_utils.h"
@@ -42,6 +43,29 @@ namespace TNT
       }
       return C;
     }
+  //Adds a sacalar to an array
+  template <class T>
+    Array1D<complex<T>> operator+(const Array1D<complex<T>> &A, const T B)
+    {
+      int n=A.dim();
+      Array1D<complex<T>> C(n);
+      for(int k=0; k<n; k++){
+        C[k]=A[k]+B;
+      }
+      return C;
+    }
+  
+  //Adds a scalar to an array
+  template <class T>
+    Array1D<complex<T>> operator+(const T B, const Array1D<complex<T>> &A)
+    {
+      int n=A.dim();
+      Array1D<complex<T>> C(n);
+      for(int k=0; k<n; k++){
+        C[k]=A[k]+B;
+      }
+      return C;
+    }
 
   //Multiplies a scalar times an array
   template <class T>
@@ -49,6 +73,17 @@ namespace TNT
     {
       int n=A.dim();
       Array1D<T> C(n);
+      for(int k=0; k<n; k++){
+        C[k]=A[k]*B;
+      }
+      return C;
+    }
+  //Multiplies a scalar times a complex array
+  template <class T>
+    Array1D<complex<T>> operator*(const T B, const Array1D<complex<T>> &A)
+    {
+      int n=A.dim();
+      Array1D<complex<T>> C(n);
       for(int k=0; k<n; k++){
         C[k]=A[k]*B;
       }

@@ -2,14 +2,18 @@
 
 //du/dt + A du/dx + Bu = 0
 
-Grid::Grid(int elemorder, int numelements, double lowerlim, 
+Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
            double upperlim):
   order{elemorder},
   NumElem{numelements},
   nodeLocs{0,elemorder + 1}, 
   refelem{elemorder},
   rschw{numelements,elemorder+1},
-  rstar{numelements,elemorder+1}
+  rstar{numelements,elemorder+1},
+  source{nummodes, numelements,elemorder+1,{0.0,0.0}},
+  window{numelements,elemorder+1},
+  dwindow{numelements,elemorder+1},
+  d2window{numelements,elemorder+1}
 
 {
 

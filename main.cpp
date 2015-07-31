@@ -14,6 +14,7 @@
 #include "Modes.h"
 #include "namespaces.h"
 #include "orbit.h"
+#include <complex>
 #include "source_interface.h"
 
 using namespace std;
@@ -23,14 +24,14 @@ using namespace window;
 using namespace source_interface;
 
 //Initial condition options
-void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd);
-void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd);
-void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd);
+void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
+void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
 
 
 //Characterization of convergence, error using L2 norm
-double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0, 
-                 TwoDVectorGridFunction<double>& uhend);
+double LTwoError(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0, 
+                 TwoDVectorGridFunction<complex<double>>& uhend);
 
 int main()
 {
@@ -104,7 +105,7 @@ int main()
     uplim = Splus;
   }
  
-  Grid thegrid(params.grid.elemorder, params.grid.numelems,
+  Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
                 lowlim, uplim);
 
   cout << "grid established " << endl;
@@ -131,18 +132,18 @@ int main()
 
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
-  TwoDVectorGridFunction<double> uh(lmmodes.ntotal,
+  TwoDVectorGridFunction<complex<double>> uh(lmmodes.ntotal,
                                    params.grid.pdenum,
                                 params.grid.numelems,
                                 params.grid.elemorder+1,
                                 0.0); 
-  TwoDVectorGridFunction<double> uh0(lmmodes.ntotal,
+  TwoDVectorGridFunction<complex<double>> uh0(lmmodes.ntotal,
                                     params.grid.pdenum,
                                  params.grid.numelems,
                                  params.grid.elemorder + 1,
                                  0.0);
   //Solution to PDE, possibly a vector 
-  TwoDVectorGridFunction<double> RHSvgf(lmmodes.ntotal,
+  TwoDVectorGridFunction<complex<double>> RHSvgf(lmmodes.ntotal,
                                        params.grid.pdenum,
                                     params.grid.numelems,
                                     params.grid.elemorder + 1,
@@ -256,6 +257,11 @@ int main()
         }*/
     
 
+    if(params.opts.useSource) {
+      //    fill_source_all(thegrid,0.0);
+    }
+    //HERE
+
     //    cout << "outputcount = " <<outputcount << endl;
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
@@ -267,9 +273,9 @@ int main()
     
   }//end for t 
 }
+                         
 
-
-void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd) {
   GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
   rho=grd.gridNodeLocations();
   ofstream fs;
@@ -279,17 +285,32 @@ void initialSchwarzchild(TwoDVectorGridFunction<double>& uh, Grid grd) {
       for (int n = 0; n < uh.modesDim(); n++) {
         double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
-        uh.set(n,2,i,j,modeval);
+        if(!params.opts.useSource){
+          uh.set(n,2,i,j,modeval);
+        }
+        
         uh.set(n,1,i,j,0.0);
         fs << rho.get(i,j) << " " << uh.get(0,2,i,j) << endl;
+
       }
+
+      if(params.opts.useSource){
+        double * r = &grd.gridNodeLocations().get(i)[0];
+        double * win = &grd.window.get(i)[0];
+        double * dwin = &grd.dwindow.get(i)[0];
+        double * d2win = &grd.d2window.get(i)[0];
+        calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
+      } 
+      double dxmin = fabs(grd.gridNodeLocations().get(0,0)
+                          -grd.gridNodeLocations().get(0,2));
     }
+    
   }
   fs.close();
 }
   
 
-void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd){
+void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
@@ -311,7 +332,7 @@ void initialSinusoid(TwoDVectorGridFunction<double>& uh, Grid grd){
     }
   }
 }
-void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd){
+void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
   
@@ -333,8 +354,8 @@ void initialGaussian(TwoDVectorGridFunction<double>& uh, Grid grd){
   }
 }
 
-double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0, 
-                 TwoDVectorGridFunction<double>& uhend)
+  double LTwoerror(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0, 
+                   TwoDVectorGridFunction<complex<double>>& uhend)
 {
   //FIX THIS SO IT DEALS WITH SUM OF MODES
   //The square root of the integral of the squared difference
@@ -346,8 +367,9 @@ double LTwoerror(Grid thegrid, TwoDVectorGridFunction<double>& uh0,
   nodes = thegrid.gridNodeLocations();
   for(int i = 0; i < uh0.gridDim(); i++){
     for(int j = 0; j < uh0.pointsDim(); j++){
-      double added = weights[j] * pow(uh0.get(0, 0, i, j)
-                                      - uhend.get(0, 0, i, j), 2.0)
+      double added = weights[j] 
+        * pow(abs(uh0.get(0, 0, i, j)
+                  - uhend.get(0, 0, i, j)), 2.0)
         / thegrid.jacobian(i);
       L2 += added;
     }

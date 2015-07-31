@@ -164,3 +164,13 @@ GridFunction<T> operator*(T A, GridFunction<T> gf)
   }
   return gfout;
 }
+
+template <typename T>
+GridFunction<complex<T>> operator*(T A, GridFunction<complex<T>> gf)
+{
+  GridFunction<complex<T>> gfout(0, gf.pointsDim());
+  for(int i = 0; i < gf.gridDim(); i++) {
+    gfout.append(A * gf.get(i));
+  }
+  return gfout;
+}

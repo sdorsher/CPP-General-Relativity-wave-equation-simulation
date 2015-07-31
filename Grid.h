@@ -7,6 +7,7 @@
 #include <fstream>
 #include "VectorGridFunction.h"
 #include "TwoDVectorGridFunction.h"
+#include <complex>
 
 // du/dt + A du/dx + Bu = 0
 // See DiffDeq.cpp for A,B definition
@@ -30,7 +31,11 @@ class Grid
  public:
   GridFunction<double> rschw;
   GridFunction<double> rstar;
-  Grid(int elemorder, int numelements, double lowerlim, 
+  VectorGridFunction<complex<double>> source;
+  GridFunction<double> window;
+  GridFunction<double> dwindow;
+  GridFunction<double> d2window;
+  Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
        double upperlim);
   ReferenceElement refelem; //member variable: the reference element
 
