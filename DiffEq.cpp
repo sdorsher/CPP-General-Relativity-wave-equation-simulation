@@ -578,10 +578,11 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
           }//-sign in B because it is on the left hand side of the 
           if(params.opts.useSource){
             tot += thegrid.source.get(modenum, elemnum, nodenum);
-            RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
-            
+                       
             //equation in the definition supplied in DiffEq.cpp
           }
+          RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
+
         }
     }
   }
@@ -597,7 +598,9 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
     double max_speed = 1.0;
-    fill_source_all(thegrid, t, uh.modesDim());
+    if(params.opts.useSource) {
+      fill_source_all(thegrid, t, uh.modesDim());
+    }
     vector<Array2D<complex<double>>> du;
     du = move(characteristicflux(modenum, thegrid, uh, output));
     RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
