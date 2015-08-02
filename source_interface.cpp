@@ -136,8 +136,10 @@ namespace source_interface
         }
       }
       for (int k=0; k<nummodes; k++) {
-        thegrid.source.set(k,thegrid.numberElements(),thegrid.nodeOrder(), 0.0);
+        thegrid.source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
+                           {0.0,0.0});
       }
+
     }
 
 }

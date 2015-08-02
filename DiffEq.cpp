@@ -312,11 +312,13 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 }//end function setab
 
 
-vector<TNT::Array2D<complex<double>>> DiffEq::characteristicflux(int modenum, 
-                                                                 Grid& thegrid,
-                                                                 TwoDVectorGridFunction<complex<double>>& uh, 
-                                                                 bool output)
+vector<TNT::Array2D<complex<double>>> 
+DiffEq::characteristicflux(int modenum, 
+                           Grid& thegrid,
+                           TwoDVectorGridFunction<complex<double>>& uh, 
+                           bool output)
 {
+
   //We can loop over characteristicFlux in an external function because
   //in general, neither the RHS of the differential equation nor du mixes
   //spherical harmonic modes. 
@@ -501,12 +503,15 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       RHSBpernode = matmult(Bmatrices.get(modenum, elemnum, nodenum),
                             uh.getVectorAsArray1D(modenum,elemnum, nodenum, 
                                                   0, vmaxAB, 0));
+
       //Insert that result into the rows of a larger matrix
       insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
       
+
     }//This can be sped up by skipping the insert step and reading directly 
     //from per node
-    
+
+
     //A contribution:
     Array2D<complex<double>> RHSA1(uh.pointsDim(), ArightBoundaries[elemnum].getDdim());
     
@@ -571,9 +576,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
           } else {
             tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
           }//-sign in B because it is on the left hand side of the 
-
           if(params.opts.useSource){
-            tot += thegrid.source.get(modenum, vecnum, elemnum);
+            tot += thegrid.source.get(modenum, elemnum, nodenum);
             RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
             
             //equation in the definition supplied in DiffEq.cpp

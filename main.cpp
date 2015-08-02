@@ -200,8 +200,9 @@ int main()
             for(int j = 0; j < uh.pointsDim(); j++){
               //Print out at select time steps
               fs << nodes.get(i, j) << " "
-                 << uh.get(k, 0, i, j) << " " << uh.get(k, 1, i, j) <<" " 
-                 << uh.get(k, 2, i, j)<< endl;
+                 << uh.get(k, 0, i, j).real() << " " 
+                 << uh.get(k, 1, i, j).real() <<" " 
+                 << uh.get(k, 2, i, j).real()<< endl;
             }
           }
             fs.close();
@@ -213,13 +214,13 @@ int main()
           fs.open(oss.str(), ios::app);
           fs << nodes.get(ifinite, jfinite) << " " 
              << t << " "
-             << uh.get(k, 0, ifinite, jfinite) << " " 
-             << uh.get(k, 1, ifinite, jfinite) <<" " 
-             << uh.get(k, 2, ifinite, jfinite)<< " " 
+             << uh.get(k, 0, ifinite, jfinite).real() << " " 
+             << uh.get(k, 1, ifinite, jfinite).real() <<" " 
+             << uh.get(k, 2, ifinite, jfinite).real()<< " " 
              << nodes.get(iSplus, jSplus) << " " 
-             << uh.get(k, 0, iSplus, jSplus) << " " 
-             << uh.get(k, 1, iSplus, jSplus) <<" " 
-             << uh.get(k, 2, iSplus, jSplus)<< endl;
+             << uh.get(k, 0, iSplus, jSplus).real() << " " 
+             << uh.get(k, 1, iSplus, jSplus).real() <<" " 
+             << uh.get(k, 2, iSplus, jSplus).real()<< endl;
           fs.close();
         }
       }//end for

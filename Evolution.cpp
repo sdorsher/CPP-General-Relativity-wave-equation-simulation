@@ -37,12 +37,13 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   //step 0
   //  vector<Array2D<double>> du;
 
+
   //step 1
   theequation.modeRHS(thegrid, uh, RHStdvgf, t,false);
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
 
-  
+
   //steps 2-5
   for(int i=2; i<=5; i++){
     theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false);
