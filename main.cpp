@@ -89,7 +89,7 @@ int main()
 
  
   if(params.opts.useSource) {
-    set_window(R1, 2.0, 1.0, 1.5, R2, 8.0, 1.0, 1.5, lmmodes.ntotal);
+    set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
   }
   
   

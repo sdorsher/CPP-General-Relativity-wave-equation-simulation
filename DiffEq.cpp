@@ -50,24 +50,28 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
   setupABmatrices(thegrid, lmmodes);
 
 
-  /*  ofstream fs;
+   ofstream fs;
   fs.open("ABcoeffs.txt");
   for(int i= 0; i<params.grid.numelems; i++){
     for(int j =0; j <= params.grid.elemorder; j++){
       Array2D<double> A = Amatrices.get(i,j);
       Array2D<double> tA = trimmedAmatrices.get(i,j);
-      Array2D<double> B = Bmatrices.get(0,i,j);
+      Array2D<double> B0 = Bmatrices.get(0,i,j);
+      Array2D<double> B1 = Bmatrices.get(1,i,j);
+      Array2D<double> B2 = Bmatrices.get(2,i,j);
+      Array2D<double> B3 = Bmatrices.get(3,i,j);
       fs << thegrid.gridNodeLocations().get(i,j) << " " 
-         << -A[2][1] << " " << -A[2][2] << " " << -B[2][1] << " " 
-         << -B[2][2] <<" " << -B[2][0] << " "
-         << -tA[1][0] << " " << -tA[1][1]<< endl;
+         << -A[2][1] << " " << -A[2][2] << " " << -B0[2][1] << " " 
+         << -B0[2][2] <<" " << -B0[2][0] << " "
+         << -B1[2][0] << " " << -B2[2][0] << " " << -B3[2][0] << endl;
+        //         << -tA[1][0] << " " << -tA[1][1]<< endl;
     }
   }
   fs.close();
  
 
   cout << "ABcoeffs output to file" << endl <<endl;
-  */
+ 
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
     CharacteristicFlux left(Amatrices.get(i, 0), trimmedAmatrices.get(i,0));
@@ -293,9 +297,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           for(int k= 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3,3,0.0);
             B[0][2]=-1.0;
-            B[2][0]=-2.0*lmmodes.ll[k]*(lmmodes.ll[k]+1.0)
-              /(Rplus - Splus) 
-              / Splus;
+            B[2][0]=-lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
             Bmatrices.set(k,i,j,B);
           }
             break;
