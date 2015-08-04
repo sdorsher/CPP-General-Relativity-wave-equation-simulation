@@ -297,7 +297,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           for(int k= 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3,3,0.0);
             B[0][2]=-1.0;
-            B[2][0]=-lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
+            B[2][0]=lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
             Bmatrices.set(k,i,j,B);
           }
             break;
