@@ -88,37 +88,39 @@ int main()
   w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
   nmodes = lmmodes.ntotal;
 
- 
+  cout << "R1 R2 w1 w2" << endl;
+  cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
+  
   if(params.opts.useSource) {
     set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
   }
   
   
   double lowlim, uplim; 
-
+  
   //setup the grid and the reference element
   if (params.metric.flatspacetime) {
     lowlim = params.grid.lowerlim;
     uplim = params.grid.upperlim;
-
+    
    } else if (params.metric.schwarschild) {
     lowlim = Sminus;
     uplim = Splus;
   }
  
   Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
-                lowlim, uplim);
+               lowlim, uplim);
 
   cout << "grid established " << endl;
   
 
- //find the indices associated with the radii to extract the solution at
+  //find the indices associated with the radii to extract the solution at
   
   int ifinite, iSplus, jfinite, jSplus;
   thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
                                         params.schw.mass), Splus, 
                              ifinite,iSplus, jfinite, jSplus);
-
+  
   cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
   cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
   cout << "Output indices for finite and scri-plus radii" << endl;
@@ -127,7 +129,7 @@ int main()
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
   
-
+  
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
 
@@ -135,23 +137,23 @@ int main()
   //Initialization to either zero or value read from file
   TwoDVectorGridFunction<complex<double>> uh(lmmodes.ntotal,
                                    params.grid.pdenum,
-                                params.grid.numelems,
-                                params.grid.elemorder+1,
+                                             params.grid.numelems,
+                                             params.grid.elemorder+1,
                                 0.0); 
   TwoDVectorGridFunction<complex<double>> uh0(lmmodes.ntotal,
-                                    params.grid.pdenum,
-                                 params.grid.numelems,
-                                 params.grid.elemorder + 1,
-                                 0.0);
+                                              params.grid.pdenum,
+                                              params.grid.numelems,
+                                              params.grid.elemorder + 1,
+                                              0.0);
   //Solution to PDE, possibly a vector 
-  TwoDVectorGridFunction<complex<double>> RHSvgf(lmmodes.ntotal,
+  TwoDVectorGridFunction<complex<double>> RHStdvgf(lmmodes.ntotal,
                                        params.grid.pdenum,
-                                    params.grid.numelems,
-                                    params.grid.elemorder + 1,
+                                                 params.grid.numelems,
+                                                 params.grid.elemorder + 1,
                                     0.0); //right hand side of PDE
+  
 
-
-  //Setup initial conditions
+  //Setup initial conditions and initialize window
   if(params.waveeq.issinusoid){
     initialSinusoid(uh, thegrid);
   } else if(params.waveeq.isgaussian) {
@@ -160,7 +162,18 @@ int main()
     initialSchwarzchild(uh, thegrid);
     //need to write initial swcharzchild
   }
-
+          
+  //output window function
+  ofstream fs;
+  fs.open("window.txt");
+  for(int i=0; i<params.grid.numelems; i++) {
+    for(int j = 0; j<params.grid.elemorder+1; j++) {
+      fs << thegrid.gridNodeLocations().get(i,j) << " " 
+         << thegrid.window.get(i,j) << " " << thegrid.dwindow.get(i,j) << " "
+         << thegrid.d2window.get(i,j) << endl;
+    }
+  }
+  cout << "window output" << endl;
 
   uh0 = uh;
 
@@ -180,6 +193,39 @@ int main()
   cout << "set and actual time step, based on courant factor" << endl;
   cout << dt0 << " " << deltat << endl << endl;
 
+
+  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
+
+  for(int k = 0; k< uh.modesDim(); k++){
+    ofstream fs5;
+    ofstream fs6;
+    ostringstream oss5;
+    ostringstream oss6;
+    oss5 << "source" << "." << k << ".txt";
+    oss6 << "rhs" << "." << k << ".txt";
+    fs5.open(oss5.str(), ios::app);
+    fs6.open(oss6.str(), ios::app);
+    for (int i = 0; i < uh.gridDim(); i++){
+      for(int j = 0; j < uh.pointsDim(); j++){
+        //Print out at select time steps
+        fs5 << thegrid.rschw.get(i, j) << " "
+          << thegrid.source.get(k, i, j).real() << " " 
+            << thegrid.source.get(k, i, j).imag() << endl; 
+        fs6 << thegrid.gridNodeLocations().get(i,j) << " "
+            << RHStdvgf.get(k,0,i,j).real() << " "
+            << RHStdvgf.get(k,1,i,j).real() << " "
+            << RHStdvgf.get(k,2,i,j).real() << " "
+            << RHStdvgf.get(k,0,i,j).imag() << " "
+            << RHStdvgf.get(k,1,i,j).imag() << " "
+            << RHStdvgf.get(k,2,i,j).imag() << endl;
+      }
+    }
+    fs5.close();
+    fs6.close();
+  }
+
+
+
   //Initialize loop variables to determine when output
   //double output = deltat / 2.0;
   int outputcount =0;
@@ -189,6 +235,8 @@ int main()
       //Output in gnuplot format
       for(int k = 0; k < uh.modesDim(); k++) {
         if(params.file.outputtimefixed) {
+
+          
           ofstream fs;
           
           string solnfilestring;
@@ -207,7 +255,11 @@ int main()
             }
           }
             fs.close();
+
+
         }
+
+
         if(params.file.outputradiusfixed){
           ofstream fs;
           ostringstream oss;
@@ -259,14 +311,9 @@ int main()
         }*/
     
 
-    if(params.opts.useSource) {
-      //    fill_source_all(thegrid,0.0);
-    }
-    //HERE
-
     //    cout << "outputcount = " <<outputcount << endl;
     //Increment the timestep
-    rk4lowStorage(thegrid, theequation, uh, RHSvgf, t, deltat);
+    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
     
@@ -297,7 +344,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd) 
       }
 
       if(params.opts.useSource){
-        double * r = &grd.gridNodeLocations().get(i)[0];
+        double * r = &grd.rschw.get(i)[0];
         double * win = &grd.window.get(i)[0];
         double * dwin = &grd.dwindow.get(i)[0];
         double * d2win = &grd.d2window.get(i)[0];
@@ -327,6 +374,7 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
                                                      + params.sine.phase);
         double rho = -params.waveeq.speed * pivar;
         //travelling wave
+        //are rho and pi backward?
         uh.set(k, 0, i, j, psi);
         uh.set(k, 1, i, j, rho);
         uh.set(k, 2, i, j, pivar);

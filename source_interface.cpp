@@ -96,7 +96,7 @@ namespace source_interface
       for(int i = 0; i<thegrid.numberElements(); i++){
         for(int k=0; k<nummodes; k++) {
           for(int j=0; j<thegrid.nodeOrder()+1; j++) {
-            eval_source(k,thegrid.gridNodeLocations().get(i,j),src);
+            eval_source(k,thegrid.rschw.get(i,j),src);
             if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
               src = {0.0,0.0};
             }
@@ -123,10 +123,14 @@ namespace source_interface
       }else{
         tfac = 1.0; dtfac_dt = 0.0; d2tfac_dt2 = 0.0;
       }
+      //      cout << "tfac = " << tfac << endl;
+      // cout << "dtfac_dt = " << dtfac_dt << endl;
+      //cout << "d2tfac_dt2 = " << d2tfac_dt2 << endl;
+      
       set_time_window(tfac,dtfac_dt, d2tfac_dt2, nummodes);
       
       for(int i=0; i<thegrid.numberElements(); i++) {
-        double *r = &thegrid.gridNodeLocations().get(i)[0];
+        double *r = &thegrid.rschw.get(i)[0];
         double * win = &thegrid.window.get(i)[0];
         double * dwin = &thegrid.dwindow.get(i)[0];
         double * d2win = &thegrid.d2window.get(i)[0];
