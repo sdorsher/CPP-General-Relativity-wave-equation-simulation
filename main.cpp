@@ -23,6 +23,7 @@ using namespace orbit;
 using namespace window;
 using namespace source_interface;
 
+
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);

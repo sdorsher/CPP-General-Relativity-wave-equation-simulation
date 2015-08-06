@@ -123,15 +123,18 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 //types of data
 template <typename T>
 T ConfigParams::getConfigFromFile( const std::string& configFileName, 
-                                   const std::string& structkey, 
-                                   const std::string& key)
+                                  const char *structkey, 
+                                  const char *key)
 {
   T value;
   Config cfg;
   cfg.readFile("params.cfg");
   const Setting& root=cfg.getRoot();
-  const Setting &structparams=root[structkey];
+  const Setting& structparams=root[structkey];
   structparams.lookupValue(key,value);
+  /*ostringstream lookupkey;
+  lookupkey << structkey << "." << key;
+  root.lookupValue(lookupkey.str(),value);*/
   return value;
 
   /*

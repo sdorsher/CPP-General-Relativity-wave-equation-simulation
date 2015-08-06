@@ -13,6 +13,9 @@
 #include "Grid.h"
 
 namespace source_interface {
+
+  using namespace std;
+  
   static std::vector<EffectiveSource*> effsource;
 
   void init_source ( const Modes& lmmodes, const double &M );

@@ -8,6 +8,8 @@
 
 namespace TNT
 {
+
+  using namespace std;
   //Takes the transpose of the array
   template<class T>
     Array2D<T> transpose(const Array2D<T> &A)

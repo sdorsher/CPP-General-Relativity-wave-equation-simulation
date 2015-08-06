@@ -17,6 +17,7 @@
 using namespace TNT;
 using namespace layers;
 using namespace source_interface;
+using namespace std;
 
 //User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0

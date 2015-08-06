@@ -8,6 +8,8 @@
 
 namespace TNT
 {
+
+  using namespace std;
   //Takes the square root of each element
   template <class T>
     Array1D<T> sqrt(const Array1D<T> &A)
@@ -44,7 +46,7 @@ namespace TNT
       return C;
     }
   //Adds a sacalar to an array
-  template <class T>
+  template <typename T>
     Array1D<complex<T>> operator+(const Array1D<complex<T>> &A, const T B)
     {
       int n=A.dim();

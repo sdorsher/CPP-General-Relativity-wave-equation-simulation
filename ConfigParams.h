@@ -5,6 +5,8 @@
 #include <libconfig.h++>
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <sstream>
 
 using namespace std;
 using namespace libconfig;
@@ -121,7 +123,7 @@ struct ConfigParams {
 
   template <typename T>
   T getConfigFromFile( const std::string& configFileName, 
-                       const std::string& structkey, const std::string& key);
+                       const char *structkey, const char *key);
 };
 
 extern const ConfigParams params; //global params variable
