@@ -32,6 +32,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   */
   
   vector<double> rk4a;
+  rk4a.resize(5);
   rk4a[0]= 0.0; 
   rk4a[1]=-567301805773.0/1357537059087.0;
   rk4a[2]=-2404267990393.0/2016746695238.0;
@@ -39,6 +40,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   rk4a[4]=-1275806237668.0/842570457699.0;
 
   vector<double> rk4b;
+  rk4b.resize(5);
   rk4b[0]=1432997174477.0/9575080441755.0;
   rk4b[0]=5161836677717.0/13612068292357.0;
   rk4b[0]=1720146321549.0/2090206949498.0;
@@ -46,6 +48,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   rk4b[0]=2277821191437.0/14882151754819.0;
 
   vector<double> rk4c;
+  rk4c.resize(5);
   rk4c[0]=0.0;
   rk4c[1]=1432997174477.0/9575080441755.0; 
   rk4c[2]=2526269341429.0/6820363962896.0; 
