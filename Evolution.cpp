@@ -13,7 +13,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
                    double t, double deltat)
 {
 
-  /*
+  
   vector<double> rk4a{0.0, 
       -567301805773.0/1357537059087.0,
       -2404267990393.0/2016746695238.0,
@@ -29,8 +29,8 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
       2526269341429.0/6820363962896.0, 
       2006345519317.0/3224310063776.0, 
       2802321613138.0/2924317926251.0};
-  */
   
+  /*
   vector<double> rk4a;
   rk4a.resize(5);
   rk4a[0]= 0.0; 
@@ -54,7 +54,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   rk4c[2]=2526269341429.0/6820363962896.0; 
   rk4c[3]=2006345519317.0/3224310063776.0; 
   rk4c[4]=2802321613138.0/2924317926251.0;
-
+  */
   int nsteps=5;
   
   TwoDVectorGridFunction<complex<double>> k(RHStdvgf.modesDim(),

@@ -196,35 +196,7 @@ int main()
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
 
-  for(int k = 0; k< uh.modesDim(); k++){
-    ofstream fs5;
-    ofstream fs6;
-    ostringstream oss5;
-    ostringstream oss6;
-    oss5 << "source" << "." << k << ".txt";
-    oss6 << "rhs" << "." << k << ".txt";
-    fs5.open(oss5.str(), ios::app);
-    fs6.open(oss6.str(), ios::app);
-    for (int i = 0; i < uh.gridDim(); i++){
-      for(int j = 0; j < uh.pointsDim(); j++){
-        //Print out at select time steps
-        fs5 << thegrid.rschw.get(i, j) << " "
-          << thegrid.source.get(k, i, j).real() << " " 
-            << thegrid.source.get(k, i, j).imag() << endl; 
-        fs6 << thegrid.gridNodeLocations().get(i,j) << " "
-            << RHStdvgf.get(k,0,i,j).real() << " "
-            << RHStdvgf.get(k,1,i,j).real() << " "
-            << RHStdvgf.get(k,2,i,j).real() << " "
-            << RHStdvgf.get(k,0,i,j).imag() << " "
-            << RHStdvgf.get(k,1,i,j).imag() << " "
-            << RHStdvgf.get(k,2,i,j).imag() << endl;
-      }
-    }
-    fs5.close();
-    fs6.close();
-  }
-
-
+  
 
   //Initialize loop variables to determine when output
   //double output = deltat / 2.0;
@@ -256,11 +228,49 @@ int main()
           }
             fs.close();
 
+	    //HERE
+	    //	    for(int k = 0; k< uh.modesDim(); k++){
+	    ofstream fs5;
+	    ofstream fs6;
+	    ostringstream oss5;
+	    ostringstream oss6;
+	    oss5 << "source" << "." << k << ".txt";
+	    oss6 << "rhs" << "." << k << ".txt";
+	    fs5.open(oss5.str(), ios::app);
+	    fs6.open(oss6.str(), ios::app);
+	    fs5 << endl << endl;
+	    fs5 << " #time = " << t << endl;
+	    fs6 << endl << endl;
+	    fs6 << " #time = " << t << endl;
+	    for (int i = 0; i < uh.gridDim(); i++){
+	      for(int j = 0; j < uh.pointsDim(); j++){
+		//Print out at select time steps
+		fs5 << thegrid.gridNodeLocations().get(i, j) << " "
+		    << thegrid.source.get(k, i, j).real() << " " 
+		    << thegrid.source.get(k, i, j).imag() << endl; 
+		fs6 << thegrid.gridNodeLocations().get(i,j) << " "
+		    << RHStdvgf.get(k,0,i,j).real() << " "
+		    << RHStdvgf.get(k,1,i,j).real() << " "
+		    << RHStdvgf.get(k,2,i,j).real() << " "
+		    << RHStdvgf.get(k,0,i,j).imag() << " "
+		    << RHStdvgf.get(k,1,i,j).imag() << " "
+		    << RHStdvgf.get(k,2,i,j).imag() << endl;
+	      }
+	    }
+	    fs5.close();
+	    fs6.close();
+	    //	}
+	
 
-        }
+
+	
+	}
+      
 
 
-        if(params.file.outputradiusfixed){
+
+
+	if(params.file.outputradiusfixed){
           ofstream fs;
           ostringstream oss;
           oss << params.file.fixedradiusfilename << "." << k << ".txt";
