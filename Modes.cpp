@@ -28,6 +28,10 @@ void Modes::set_lm_mode_info(int lmax) {
   ntotal = nmodes_of_l(lmax);
   ll.resize(ntotal);
   mm.resize(ntotal);
+  psil.resize(lmax+1);
+  psitl.resize(lmax+1);
+  psiphil.resize(lmax+1);
+  psirl.resize(lmax+1);
   int n = 0;
   for(int l=0; l<=lmax; l++){
     for(int m = l%2; m<=l; m+=2){
@@ -36,4 +40,49 @@ void Modes::set_lm_mode_info(int lmax) {
       n++;
     }
   }
+}
+
+void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,int index1,int index2)
+{
+  double m_fold_factor, y_lm, omega, ecosfac, radius;
+  complex<double> phase, phifactor;
+  complex<double> zi{0.,1.0};
+
+
+  for(int i=0; i<psil.size(); i++){
+    psil.at(i)= 0.0;
+    psitl.at(i)=0.0;
+    psiphil.at(i)=0.0;
+    psirl.at(i)=0.0;
+  }
+  ecosfac = 1.0 + e*cos(chi);
+  radius = (params.schw.mass*p)/ecosfac;
+  for (int i=0; i<mm.size(); i++){
+    if(mm.at(i)==0) {
+      m_fold_factor = 1.0;
+    } else {
+      m_fold_factor = 2.0;
+    }
+    phifactor = zi*mm.at(i);
+    phase = {cos(mm.at(i)*phi), sin(mm.at(i)*phi)};
+    y_lm = gsl_sf_legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
+    psil.at(ll.at(i))= psil.at(ll.at(i))
+      +m_fold_factor * y_lm * (phase * uh.get(i,0,index1,index2)).real();
+    psitl.at(ll.at(i))=psitl.at(ll.at(i))
+      +m_fold_factor*y_lm* (phase* uh.get(i,2,index1,index2)).real();
+    psiphil.at(ll.at(i)) = psiphil.at(ll.at(i))
+      +m_fold_factor * y_lm* (phifactor *phase * uh.get(i,0,index1,index2)).real();
+    psirl.at(ll.at(i)) = psirl.at(ll.at(i))
+      +m_fold_factor * y_lm *(phase * uh.get(i, 1, index1, index2)).real();
+  }
+
+  //convert to physical modes. the time and radial derivatives have not been checked in Fortran
+  for(int i = 0; i < psil.size(); i++){
+    psirl.at(i) = psirl.at(i)/(radius - 2.0* params.schw.mass)
+      - psil.at(i)/pow(radius, 2.0);
+    psil.at(i) = psil.at(i)/radius;
+    psitl.at(i) = psitl.at(i) /radius;
+    psiphil.at(i)= psiphil.at(i)/radius;
+  }
+
 }

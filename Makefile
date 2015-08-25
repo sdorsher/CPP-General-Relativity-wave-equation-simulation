@@ -54,7 +54,7 @@ HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h
 
 
 
-Modes.o: Modes.cpp Modes.h
+Modes.o: Modes.cpp Modes.h TwoDVectorGridFunction.h ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Modes.cpp
 
 namespaces.o: namespaces.cpp namespaces.h

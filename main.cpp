@@ -196,8 +196,9 @@ int main()
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
 
-  
+  lmmodes.sum_m_modes(uh,0.0, ifinite, jfinite);
 
+  
   //Initialize loop variables to determine when output
   //double output = deltat / 2.0;
   int outputcount =0;
@@ -227,6 +228,7 @@ int main()
             }
           }
             fs.close();
+
 
 	    //HERE
 	    //	    for(int k = 0; k< uh.modesDim(); k++){
@@ -259,23 +261,21 @@ int main()
 	    }
 	    fs5.close();
 	    fs6.close();
-	    //	}
-	
 
 
-	
+
+	    
 	}
       
 
 
 
-
 	if(params.file.outputradiusfixed){
-          ofstream fs;
-          ostringstream oss;
-          oss << params.file.fixedradiusfilename << "." << k << ".txt";
-          fs.open(oss.str(), ios::app);
-          fs << nodes.get(ifinite, jfinite) << " " 
+	  ofstream fs;
+	  ostringstream oss;
+	  oss << params.file.fixedradiusfilename << "." << k << ".txt";
+	  fs.open(oss.str(), ios::app);
+	  fs << nodes.get(ifinite, jfinite) << " " 
              << t << " "
              << uh.get(k, 0, ifinite, jfinite).real() << " " 
              << uh.get(k, 1, ifinite, jfinite).real() <<" " 
@@ -285,8 +285,45 @@ int main()
              << uh.get(k, 1, iSplus, jSplus).real() <<" " 
              << uh.get(k, 2, iSplus, jSplus).real()<< endl;
           fs.close();
-        }
-      }//end for
+	  if(k==params.modes.lmax){
+	    ofstream fs7;
+	    ofstream fs8;
+	    ofstream fs9;
+	    ofstream fs10;
+	    ostringstream oss7;
+	    ostringstream oss8;
+	    ostringstream oss9;
+	    ostringstream oss10;
+	    oss7 << "psil.txt";
+	    oss8 << "psitl.txt";
+	    oss9 << "psiphil.txt";
+	    oss10 << "psirl.txt";
+	    fs7.open(oss7.str(), ios::app);
+	    fs8.open(oss8.str(), ios::app);
+	    fs9.open(oss9.str(), ios::app);
+	    fs10.open(oss10.str(), ios::app);
+
+	    fs7 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+	    fs8 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+	    fs9 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+	    fs10 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+	    for(int n = 0; n<lmmodes.psil.size(); n++){
+	      fs7 << lmmodes.psil.at(n) << " ";
+	      fs8 << lmmodes.psitl.at(n) << " ";
+	      fs9 << lmmodes.psiphil.at(n) << " ";
+	      fs10 << lmmodes.psirl.at(n) << " " ;
+	    }
+	    fs7 << endl;
+	    fs8 << endl;
+	    fs9 << endl;
+	    fs10 << endl;
+	    fs7.close();
+	    fs8.close();
+	    fs9.close();
+	    fs10.close();
+	  }//end if k == lmax
+	}// end if output type
+      }//end for k
     }else{
     }
     
@@ -327,6 +364,7 @@ int main()
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
     
+    lmmodes.sum_m_modes(uh, t, ifinite,jfinite);
     //Increment the count to determine whether or not to output
     outputcount++;
     

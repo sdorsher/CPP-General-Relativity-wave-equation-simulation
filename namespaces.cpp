@@ -1,15 +1,19 @@
 #include "namespaces.h"
 
 namespace orbit{
-  double p,  e, chi, phi;
+  double p; //simulatus rectum
+  double e; //eccentricity -- zero for circular orbits
+  double chi; //angular parameter for radial oscillations
+  double phi; //angular parameter for angular oscillations
+  double dchidt, dphidt, reschi, resphi;
 }
 
 namespace layers{
-  double Splus;
-  double Sminus;
-  double Rplus;
-  double Rminus;
-  double Wplus;
+  double Splus; //position of Scri plus in hyperboloidal coordinates
+  double Sminus; //position of the horizon in hyperbolidal coordinates
+  double Rplus; // position of the transition in either coordinate
+  double Rminus; // position of the transition in either coordinate
+  double Wplus; //boundaries of the window function in tortoise coordinates
   double Wminus;
 }
 namespace window
