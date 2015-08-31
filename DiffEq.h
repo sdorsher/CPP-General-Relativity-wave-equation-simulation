@@ -1,7 +1,6 @@
 #ifndef DIFFEQ_H
 #define DIFFEQ_H
 
-#include "source_interface.h"
 #include "GridFunction.h"
 #include <cmath>
 #include "ConfigParams.h"
@@ -13,6 +12,7 @@
 #include <cfloat>
 #include "namespaces.h"
 #include <complex>
+#include "source_interface.h"
 
 using namespace TNT;
 using namespace layers;
@@ -33,6 +33,11 @@ class DiffEq
   GridFunction<Array2D<double>> trimmedAmatrices;
   void setupABmatrices(Grid& thegrid, Modes& lmmodes);
 
+ public:
+  VectorGridFunction<complex<double>> source;
+  GridFunction<double> window;
+  GridFunction<double> dwindow;
+  GridFunction<double> d2window;
 
  public:
   DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal);

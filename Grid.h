@@ -31,10 +31,10 @@ class Grid
  public:
   GridFunction<double> rschw;
   GridFunction<double> rstar;
-  VectorGridFunction<complex<double>> source;
-  GridFunction<double> window;
-  GridFunction<double> dwindow;
-  GridFunction<double> d2window;
+  //  VectorGridFunction<complex<double>> source;
+  // GridFunction<double> window;
+  //  GridFunction<double> dwindow;
+  //  GridFunction<double> d2window;
   Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
        double upperlim);
   ReferenceElement refelem; //member variable: the reference element

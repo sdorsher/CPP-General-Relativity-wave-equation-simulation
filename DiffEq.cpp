@@ -42,9 +42,14 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
   Amatrices{params.grid.numelems, params.grid.elemorder + 1},
   Bmatrices{nmodetotal, params.grid.numelems, 
       params.grid.elemorder + 1},
-  trimmedAmatrices{params.grid.numelems, params.grid.elemorder + 1}
-{
+  trimmedAmatrices{params.grid.numelems, params.grid.elemorder + 1},
+  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}},
+  window{params.grid.numelems, params.grid.elemorder+1},
+  dwindow{params.grid.numelems, params.grid.elemorder+1},
+  d2window{params.grid.numelems, params.grid.elemorder+1}
 
+  {
+    
   //set up the A and B matrices
 
   setupABmatrices(thegrid, lmmodes);
@@ -579,7 +584,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
             tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
           }//-sign in B because it is on the left hand side of the 
           if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
-            tot += thegrid.source.get(modenum, elemnum, nodenum);
+            tot += source.get(modenum, elemnum, nodenum);
                        
             //equation in the definition supplied in DiffEq.cpp
           }
@@ -592,7 +597,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
-                     TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
+                     TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output)
 {
 
@@ -601,7 +606,8 @@ void DiffEq::modeRHS(Grid& thegrid,
   for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
     double max_speed = 1.0;
     if(params.opts.useSource) {
-      fill_source_all(thegrid, t, uh.modesDim());
+      fill_source_all(thegrid, t, uh.modesDim(), source, window,
+		      dwindow, d2window);
     }
     vector<Array2D<complex<double>>> du;
     du = move(characteristicflux(modenum, thegrid, uh, output));

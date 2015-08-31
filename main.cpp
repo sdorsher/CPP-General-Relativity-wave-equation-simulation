@@ -25,9 +25,9 @@ using namespace source_interface;
 
 
 //Initial condition options
-void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
-void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
-void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd);
+void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
+void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn);
 
 
 //Characterization of convergence, error using L2 norm
@@ -159,7 +159,7 @@ int main()
   } else if(params.waveeq.isgaussian) {
     initialGaussian(uh, thegrid);
   } else if(params.metric.schwarschild) {
-    initialSchwarzchild(uh, thegrid);
+    initialSchwarzchild(uh, thegrid, theequation);
     //need to write initial swcharzchild
   }
           
@@ -169,8 +169,8 @@ int main()
   for(int i=0; i<params.grid.numelems; i++) {
     for(int j = 0; j<params.grid.elemorder+1; j++) {
       fs << thegrid.gridNodeLocations().get(i,j) << " " 
-         << thegrid.window.get(i,j) << " " << thegrid.dwindow.get(i,j) << " "
-         << thegrid.d2window.get(i,j) << endl;
+         << theequation.window.get(i,j) << " " << theequation.dwindow.get(i,j) << " "
+         << theequation.d2window.get(i,j) << endl;
     }
   }
   cout << "window output" << endl;
@@ -248,8 +248,8 @@ int main()
 	      for(int j = 0; j < uh.pointsDim(); j++){
 		//Print out at select time steps
 		fs5 << thegrid.gridNodeLocations().get(i, j) << " "
-		    << thegrid.source.get(k, i, j).real() << " " 
-		    << thegrid.source.get(k, i, j).imag() << endl; 
+		    << theequation.source.get(k, i, j).real() << " " 
+		    << theequation.source.get(k, i, j).imag() << endl; 
 		fs6 << thegrid.gridNodeLocations().get(i,j) << " "
 		    << RHStdvgf.get(k,0,i,j).real() << " "
 		    << RHStdvgf.get(k,1,i,j).real() << " "
@@ -372,7 +372,7 @@ int main()
 }
                          
 
-void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd) {
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn) {
   GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
   rho=grd.gridNodeLocations();
   ofstream fs;
@@ -393,9 +393,9 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd) 
 
       if(params.opts.useSource){
         double * r = &grd.rschw.get(i)[0];
-        double * win = &grd.window.get(i)[0];
-        double * dwin = &grd.dwindow.get(i)[0];
-        double * d2win = &grd.d2window.get(i)[0];
+        double * win = &eqn.window.get(i)[0];
+        double * dwin = &eqn.dwindow.get(i)[0];
+        double * d2win = &eqn.d2window.get(i)[0];
         calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
       } 
       double dxmin = fabs(grd.gridNodeLocations().get(0,0)
@@ -407,7 +407,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid grd) 
 }
   
 
-void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
+void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
@@ -430,7 +430,7 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
     }
   }
 }
-void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid grd){
+void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
   

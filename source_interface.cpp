@@ -83,7 +83,11 @@ namespace source_interface
       *dphidtre = std::real(dphidt);
       *dphidtim = std::imag(dphidt);
     }
-    void fill_source(Grid& thegrid, double& time, int& nummodes)
+  void fill_source(Grid& thegrid, double& time, int& nummodes,
+		   VectorGridFunction<complex<double>>& source,
+		   GridFunction<double>& window,
+		   GridFunction<double>& dwindow,
+		   GridFunction<double>& d2window)
     {
 
       using namespace orbit;
@@ -100,14 +104,19 @@ namespace source_interface
             if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
               src = {0.0,0.0};
             }
-            thegrid.source.set(i,j,k,src);
+            source.set(i,j,k,src);
           }
         }
       }
     }
 
-    void fill_source_all(Grid thegrid, double time, int nummodes){
-
+  void fill_source_all(Grid& thegrid, double time, int nummodes,
+		       VectorGridFunction<complex<double>>& source,
+		       GridFunction<double>& window,
+		       GridFunction<double>& dwindow,
+		       GridFunction<double>& d2window)
+  {
+  
       using namespace orbit;
 
       double tfac, dtfac_dt, d2tfac_dt2;
@@ -131,16 +140,16 @@ namespace source_interface
       
       for(int i=0; i<thegrid.numberElements(); i++) {
         double *r = &thegrid.rschw.get(i)[0];
-        double * win = &thegrid.window.get(i)[0];
-        double * dwin = &thegrid.dwindow.get(i)[0];
-        double * d2win = &thegrid.d2window.get(i)[0];
+        double * win = &window.get(i)[0];
+        double * dwin = &dwindow.get(i)[0];
+        double * d2win = &d2window.get(i)[0];
         for(int k=0; k<nummodes; k++) {
-          complex<double> * src = &thegrid.source.get(k,i)[0];
+          complex<double> * src = &source.get(k,i)[0];
           eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
         }
       }
       for (int k=0; k<nummodes; k++) {
-        thegrid.source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
+        source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
                            {0.0,0.0});
       }
 

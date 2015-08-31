@@ -9,8 +9,8 @@ ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
 LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
 #ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
 ESRC = /home/sdorsher/scalar1deffectivesource
-#LGSL = -L/opt/local/lib/ -lgsl
-LGSL = -L/usr/local/packages/gsl-1.16-intel/lib -lgsl -lgslcblas
+#LGSL = -L/usr/local/packages/gsl-1.16-intel/lib -lgsl -lgslcblas
+LGSL = `pkg-config --libs gsl`
 LCPP = -lstdc++
 FLGS = -g -lm -std=c++11 -O3
 
@@ -43,7 +43,7 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h source_interface.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h
@@ -66,7 +66,7 @@ orbit.o: orbit.cpp orbit.h ConfigParams.h
 numerics.o: numerics.cpp numerics.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c numerics.cpp
 
-source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h
+source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
 clean:
 	rm -f *.o dg1D

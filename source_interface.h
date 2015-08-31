@@ -11,6 +11,8 @@
 #include "namespaces.h"
 #include "orbit.h"
 #include "Grid.h"
+#include "GridFunction.h"
+#include "VectorGridFunction.h"
 
 namespace source_interface {
 
@@ -52,9 +54,17 @@ namespace source_interface {
     void dPhi_dt ( const int* mode, const double* r,
                    double* dphidtre, double* dphidtim );
 
-    void fill_source(Grid& thegrid, double& time, int& nummodes);
+    void fill_source(Grid& thegrid, double& time, int& nummodes,
+		     VectorGridFunction<complex<double>>& source,
+		     GridFunction<double>& window,
+		     GridFunction<double>& dwindow,
+		     GridFunction<double>& d2window);
 
-    void fill_source_all(Grid thegrid, double time, int nummodes);
+    void fill_source_all(Grid& thegrid, double time, int nummodes,
+		     VectorGridFunction<complex<double>>& source,
+		     GridFunction<double>& window,
+		     GridFunction<double>& dwindow,
+		     GridFunction<double>& d2window);
 }
 
 

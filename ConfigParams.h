@@ -12,34 +12,35 @@ using namespace std;
 using namespace libconfig;
 
 struct OptionsParams{
-  bool useSource;
-  bool turn_on_source_smoothly;
+  bool useSource; //use the effective source
+  bool turn_on_source_smoothly; //use a window function in time to turn on
+  //the effective source smoothly
 };
 
 struct MetricParams{
-  bool flatspacetime;
-  bool schwarschild;
+  bool flatspacetime; //use flat space-time
+  bool schwarschild; //use a Schwarzschild background
 };
 
-struct WaveEqParams{
+struct WaveEqParams{ //set only one of issinusoid or isgaussian to true
   double speed; //speed of wave
   bool isgaussian; //true if wave is gaussian and zero time derivative
   bool issinusoid; //true if wave is sinusoidal and travelling
 };
 
-struct SinusoidParams{
+struct SinusoidParams{ //used if issinusoid is set to true
   double phase; 
   double amp;
   double wavelength; //most sensible if this is a standing wave
 };
 
-struct GaussParams{
+struct GaussParams{ //used if isgaussian is set to true
   double amp;
   double mu;
   double sigma; //sigma greater than or equal to element size works best
 };
 
-struct SchwParams{
+struct SchwParams{ //used if schwarzschild is set to true under metric
   double mass;
   double sigma;
   double p_orb; //location of orbit
