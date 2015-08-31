@@ -27,6 +27,8 @@ ConfigParams::ConfigParams(const std::string& configFileName)
                                               "isgaussian");
     waveeq.issinusoid=getConfigFromFile<bool>(configFileName, "waveeq",
                                               "issinusoid");
+    grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
+    grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
 
     //If it is gaussian, read parameters associated with gaussian 
     //initial conditions
@@ -63,6 +65,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
     hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
 
+    grid.lowerlim=hyperb.Sminus;
+    grid.upperlim=grid.upperlim=hyperb.Splus;
+
   }
 
   
@@ -72,8 +77,6 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   //Read in parameters associated with the grid
     grid.pdenum=getConfigFromFile<int>(configFileName, "grid", "pdenum");
 
-    grid.lowerlim=getConfigFromFile<double>(configFileName, "grid", "lowerlim");
-    grid.upperlim=getConfigFromFile<double>(configFileName, "grid", "upperlim");
     grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
     grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");
     grid.readfromfile=getConfigFromFile<bool>(configFileName, "grid",
