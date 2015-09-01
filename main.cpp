@@ -16,6 +16,7 @@
 #include "orbit.h"
 #include <complex>
 #include "source_interface.h"
+#include "WriteFile.h"
 
 using namespace std;
 using namespace layers;
@@ -203,126 +204,36 @@ int main()
   //double output = deltat / 2.0;
   int outputcount =0;
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
-    //    if(output > 0.0){
     if (outputcount%params.time.outputevery == 0){
       //Output in gnuplot format
       for(int k = 0; k < uh.modesDim(); k++) {
         if(params.file.outputtimefixed) {
 
-          
-          ofstream fs;
-          
-          string solnfilestring;
-          ostringstream oss;
-          oss << params.file.pdesolution << "." << k << ".txt";
-          fs.open(oss.str(), ios::app);
-          fs << endl << endl;
-          fs << " #time = " << t << endl;
-          for (int i = 0; i < uh.gridDim(); i++){
-            for(int j = 0; j < uh.pointsDim(); j++){
-              //Print out at select time steps
-              fs << nodes.get(i, j) << " "
-                 << uh.get(k, 0, i, j).real() << " " 
-                 << uh.get(k, 1, i, j).real() <<" " 
-                 << uh.get(k, 2, i, j).real()<< endl;
-            }
-          }
-            fs.close();
 
-
-	    //HERE
-	    //	    for(int k = 0; k< uh.modesDim(); k++){
-	    ofstream fs5;
-	    ofstream fs6;
-	    ostringstream oss5;
-	    ostringstream oss6;
-	    oss5 << "source" << "." << k << ".txt";
-	    oss6 << "rhs" << "." << k << ".txt";
-	    fs5.open(oss5.str(), ios::app);
-	    fs6.open(oss6.str(), ios::app);
-	    fs5 << endl << endl;
-	    fs5 << " #time = " << t << endl;
-	    fs6 << endl << endl;
-	    fs6 << " #time = " << t << endl;
-	    for (int i = 0; i < uh.gridDim(); i++){
-	      for(int j = 0; j < uh.pointsDim(); j++){
-		//Print out at select time steps
-		fs5 << thegrid.gridNodeLocations().get(i, j) << " "
-		    << theequation.source.get(k, i, j).real() << " " 
-		    << theequation.source.get(k, i, j).imag() << endl; 
-		fs6 << thegrid.gridNodeLocations().get(i,j) << " "
-		    << RHStdvgf.get(k,0,i,j).real() << " "
-		    << RHStdvgf.get(k,1,i,j).real() << " "
-		    << RHStdvgf.get(k,2,i,j).real() << " "
-		    << RHStdvgf.get(k,0,i,j).imag() << " "
-		    << RHStdvgf.get(k,1,i,j).imag() << " "
-		    << RHStdvgf.get(k,2,i,j).imag() << endl;
-	      }
-	    }
-	    fs5.close();
-	    fs6.close();
-
-
-
+	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,
+			   params.file.pdesolution,1);
+	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,"source",2);
+	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,"rhs",3);
+	  
+	  
 	    
 	}
       
-
-
-
 	if(params.file.outputradiusfixed){
-	  ofstream fs;
-	  ostringstream oss;
-	  oss << params.file.fixedradiusfilename << "." << k << ".txt";
-	  fs.open(oss.str(), ios::app);
-	  fs << nodes.get(ifinite, jfinite) << " " 
-             << t << " "
-             << uh.get(k, 0, ifinite, jfinite).real() << " " 
-             << uh.get(k, 1, ifinite, jfinite).real() <<" " 
-             << uh.get(k, 2, ifinite, jfinite).real()<< " " 
-             << nodes.get(iSplus, jSplus) << " " 
-             << uh.get(k, 0, iSplus, jSplus).real() << " " 
-             << uh.get(k, 1, iSplus, jSplus).real() <<" " 
-             << uh.get(k, 2, iSplus, jSplus).real()<< endl;
-          fs.close();
+	  write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,append,filename,type);
+	  write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
-	    ofstream fs7;
-	    ofstream fs8;
-	    ofstream fs9;
-	    ofstream fs10;
-	    ostringstream oss7;
-	    ostringstream oss8;
-	    ostringstream oss9;
-	    ostringstream oss10;
-	    oss7 << "psil.txt";
-	    oss8 << "psitl.txt";
-	    oss9 << "psiphil.txt";
-	    oss10 << "psirl.txt";
-	    fs7.open(oss7.str(), ios::app);
-	    fs8.open(oss8.str(), ios::app);
-	    fs9.open(oss9.str(), ios::app);
-	    fs10.open(oss10.str(), ios::app);
-
-	    fs7 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
-	    fs8 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
-	    fs9 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
-	    fs10 << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
-	    for(int n = 0; n<lmmodes.psil.size(); n++){
-	      fs7 << lmmodes.psil.at(n) << " ";
-	      fs8 << lmmodes.psitl.at(n) << " ";
-	      fs9 << lmmodes.psiphil.at(n) << " ";
-	      fs10 << lmmodes.psirl.at(n) << " " ;
-	    }
-	    fs7 << endl;
-	    fs8 << endl;
-	    fs9 << endl;
-	    fs10 << endl;
-	    fs7.close();
-	    fs8.close();
-	    fs9.close();
-	    fs10.close();
-	  }//end if k == lmax
-	}// end if output type
+	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+			     "psil",2);
+	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+			     "psitl",3);
+	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+			     "psiphil",4);
+	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+			     "psirl",5);
+	  }//end if k==lmax
+	}//end if outputradiusfixed
       }//end for k
     }else{
     }

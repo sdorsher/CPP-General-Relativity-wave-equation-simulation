@@ -19,7 +19,7 @@ dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o Dif
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h numerics.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h numerics.h WriteFile.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
@@ -68,5 +68,9 @@ numerics.o: numerics.cpp numerics.h
 
 source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
+
+WriteFile.o: WriteFile.cpp WriteFile.h TwoDVectorGridFunction.h Grid.h DiffEq.h
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c WriteFile.cpp
+
 clean:
 	rm -f *.o dg1D
