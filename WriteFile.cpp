@@ -1,8 +1,9 @@
 #include "WriteFile.h"
 
-void write_fixed_time(int& k, TwoDVectorGridFunction<double>& uh,
-		      TwoDVectorGridFunction<double>& RHStdvgf,
-		      Grid& thegrid, DiffEq& theequation, bool& append, string& filename,
+void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFunction<complex<double>>& uh,
+		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
+		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
+                      string filename,
 		      int type)
 
 
@@ -40,8 +41,6 @@ void write_fixed_time(int& k, TwoDVectorGridFunction<double>& uh,
 	    << theequation.source.get(k, i, j).imag() << endl; 
       }
     }
-    fs5.close();
-    fs6.close();
     break;
   case 3:
    for (int i = 0; i < uh.gridDim(); i++){
@@ -62,11 +61,12 @@ void write_fixed_time(int& k, TwoDVectorGridFunction<double>& uh,
   fs.close();
 }
 
-
-void write_fixed_radius(int& k, TwoDVectorGridFunction<double>& uh,
-			TwoDVectorGridFunction<double>& RHStdvgf,
-		      Grid& thegrid, DiffEq& theequation, bool& append, string& filename,
-		      int type)
+                      
+void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
+                        TwoDVectorGridFunction<complex<double>>& RHStdvgf,
+                        Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
+                        string filename,
+                        int type)
 {
   ofstream fs;
   ostringstream oss;
@@ -80,15 +80,15 @@ void write_fixed_radius(int& k, TwoDVectorGridFunction<double>& uh,
     {
     case 1:
       //	  oss << params.file.fixedradiusfilename << "." << k << ".txt";
-      fs << nodes.get(ifinite, jfinite) << " " 
+      fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite) << " " 
 	 << t << " "
-	 << uh.get(k, 0, ifinite, jfinite).real() << " " 
-	 << uh.get(k, 1, ifinite, jfinite).real() <<" " 
-	 << uh.get(k, 2, ifinite, jfinite).real()<< " " 
-	 << nodes.get(iSplus, jSplus) << " " 
-	 << uh.get(k, 0, iSplus, jSplus).real() << " " 
-	 << uh.get(k, 1, iSplus, jSplus).real() <<" " 
-	 << uh.get(k, 2, iSplus, jSplus).real()<< endl;
+	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
+	 << uh.get(k, 1, ijoutput.ifinite, ijoutput.jfinite).real() <<" " 
+	 << uh.get(k, 2, ijoutput.ifinite, ijoutput.jfinite).real()<< " " 
+	 << thegrid.gridNodeLocations().get(ijoutput.iSplus, ijoutput.jSplus) << " " 
+	 << uh.get(k, 0, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
+	 << uh.get(k, 1, ijoutput.iSplus, ijoutput.jSplus).real() <<" " 
+	 << uh.get(k, 2, ijoutput.iSplus, ijoutput.jSplus).real()<< endl;
       break;
     case 2:
       //	  if(k==params.modes.lmax){

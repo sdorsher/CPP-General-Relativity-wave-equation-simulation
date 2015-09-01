@@ -13,6 +13,9 @@
 // See DiffDeq.cpp for A,B definition
 // A is trimmed by cutting out the rows that are all zero.
 
+struct OutputIndices
+{int ifinite, jfinite, iSplus, jSplus;};
+
 class Grid
 {
  private:
@@ -39,8 +42,7 @@ class Grid
        double upperlim);
   ReferenceElement refelem; //member variable: the reference element
 
-  void find_extract_radii(double rfinite, double rSplus, int& ifinite, 
-                              int& iSplus, int& jfinite, int& jSplus);
+  void find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput);
   int numberElements();//Returns number of elements, calculated from input file
   GridFunction<double> gridNodeLocations();  //Returns physical node location
   vector<double> gridBoundaries(); //Returns the boundaries of the elements

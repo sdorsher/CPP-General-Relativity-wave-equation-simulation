@@ -1,22 +1,31 @@
 CXX = gcc
 #CXX = icpc
-#IGEN = -I/Users/sdorsher/Documents/Diener -I/home/sdorsher
-IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
-#ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf/codes/dorsher/libtnt/libtnt-1.2.6/src/ -I /home/knarf/codes/dorsher/libjama/libjama-1.2.4/src
 
-ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
-#LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
-LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
-#ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
-ESRC = /home/sdorsher/scalar1deffectivesource
-#LGSL = -L/usr/local/packages/gsl-1.16-intel/lib -lgsl -lgslcblas
-LGSL = `pkg-config --libs gsl`
+#Spine
+#IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
+#ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
+#LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
+#ESRC = /home/sdorsher/scalar1deffectivesource
+#LGSL = `pkg-config --libs gsl`
+
+#Steven's Mac
 LCPP = -lstdc++
 FLGS = -g -lm -std=c++11 -O3
 
+IGEN = -I/Users/sdorsher/Documents/Diener -I/home/sdorsher
+ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf/codes/dorsher/libtnt/libtnt-1.2.6/src/ -I /home/knarf/codes/dorsher/libjama/libjama-1.2.4/src
+LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
+ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
+#LGSL=?
+
+
+#LGSL = -L/usr/local/packages/gsl-1.16-intel/lib -lgsl -lgslcblas
+
+
+
 #dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o numerics.o source_interface.o
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o namespaces.o numerics.o source_interface.o
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o namespaces.o numerics.o source_interface.o WriteFile.o
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
 main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h numerics.h WriteFile.h

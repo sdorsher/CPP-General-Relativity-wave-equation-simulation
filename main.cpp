@@ -25,6 +25,10 @@ using namespace window;
 using namespace source_interface;
 
 
+// struct OutputIndices
+// { int ifinite, jfinite, iSplus, jSplus};
+
+
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
@@ -117,15 +121,18 @@ int main()
 
   //find the indices associated with the radii to extract the solution at
   
-  int ifinite, iSplus, jfinite, jSplus;
+  OutputIndices ijoutput;
+
+  //  int ifinite, iSplus, jfinite, jSplus;
   thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
                                         params.schw.mass), Splus, 
-                             ifinite,iSplus, jfinite, jSplus);
+                             ijoutput);
   
   cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
   cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
   cout << "Output indices for finite and scri-plus radii" << endl;
-  cout << ifinite << " " << jfinite << " " << iSplus << " " << jSplus << endl << endl;
+  cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
+       << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
 
   GridFunction<double> nodes = thegrid.gridNodeLocations();
   
@@ -197,7 +204,7 @@ int main()
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
 
-  lmmodes.sum_m_modes(uh,0.0, ifinite, jfinite);
+  lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
 
   
   //Initialize loop variables to determine when output
@@ -210,27 +217,26 @@ int main()
         if(params.file.outputtimefixed) {
 
 
-	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
 			   params.file.pdesolution,1);
-	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,"source",2);
-	  write_fixed_time(k,uh,RHStdvgf,thegrid,theequation,true,"rhs",3);
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,"source",2);
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,"rhs",3);
 	  
 	  
 	    
 	}
       
 	if(params.file.outputradiusfixed){
-	  write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,append,filename,type);
-	  write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes, true,
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
-	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
 			     "psil",2);
-	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
 			     "psitl",3);
-	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
 			     "psiphil",4);
-	    write_fixed_radius(k,uh,RHStdvgf,thegrid,theequation,true,
+	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
 			     "psirl",5);
 	  }//end if k==lmax
 	}//end if outputradiusfixed
@@ -275,7 +281,7 @@ int main()
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
     
-    lmmodes.sum_m_modes(uh, t, ifinite,jfinite);
+    lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite);
     //Increment the count to determine whether or not to output
     outputcount++;
     
