@@ -230,14 +230,14 @@ int main()
 	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes, true,
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
-	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
-			     "psil",2);
-	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
-			     "psitl",3);
-	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
-			     "psiphil",4);
-	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
-			     "psirl",5);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+			     "psil",1);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+			     "psitl",2);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+			     "psiphil",3);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+			     "psirl",4);
 	  }//end if k==lmax
 	}//end if outputradiusfixed
       }//end for k

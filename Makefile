@@ -2,20 +2,23 @@ CXX = gcc
 #CXX = icpc
 
 #Spine
-#IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
-#ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
-#LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
-#ESRC = /home/sdorsher/scalar1deffectivesource
-#LGSL = `pkg-config --libs gsl`
+IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
+ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
+LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
+ESRC = /home/sdorsher/scalar1deffectivesource
+LGSL = `pkg-config --libs gsl`
 
-#Steven's Mac
+
+#Both
 LCPP = -lstdc++
 FLGS = -g -lm -std=c++11 -O3
 
-IGEN = -I/Users/sdorsher/Documents/Diener -I/home/sdorsher
-ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf/codes/dorsher/libtnt/libtnt-1.2.6/src/ -I /home/knarf/codes/dorsher/libjama/libjama-1.2.4/src
-LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
-ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
+
+#Steven's Mac
+#IGEN = -I/Users/sdorsher/Documents/Diener -I/home/sdorsher
+#ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf/codes/dorsher/libtnt/libtnt-1.2.6/src/ -I /home/knarf/codes/dorsher/libjama/libjama-1.2.4/src
+#LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
+#ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
 #LGSL=?
 
 
