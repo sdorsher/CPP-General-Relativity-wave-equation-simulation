@@ -31,10 +31,10 @@ class TwoDVectorGridFunction
   void set(int TDVGFvcoord, int VGFcoord,GridFunction<T> value);
   void set(int TDVGFvcoord, int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
   void setVector(int TDVGFvcoord, int GFcoord, int GFacoord, vector<T> vec);
-  int modesDim(); //the dimension of the outermost vector
-  int vectorDim();//the dimension of the middle vector
-  int gridDim();//the dimension of the vector within the GridFunction
-  int pointsDim();//the dimension of the array within the GridFunction
+  int TDVGFdim(); //the dimension of the outermost vector
+  int vectorDim(); //VGFdim the dimension of the middle vector
+  int gridDim(); //GFvecDim the dimension of the vector within the GridFunction
+  int pointsDim(); //GFarrDim the dimension of the array within the GridFunction
   void append(VectorGridFunction<T> gf);
   vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
   Array1D<T> getVectorAsArray1D(int vectorCoord, int GFvcoord, int GFacoord,

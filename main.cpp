@@ -212,7 +212,7 @@ int main()
   for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
     if (outputcount%params.time.outputevery == 0){
       //Output in gnuplot format
-      for(int k = 0; k < uh.modesDim(); k++) {
+      for(int k = 0; k < uh.TDVGFdim(); k++) {
         if(params.file.outputtimefixed) {
 
 
@@ -295,7 +295,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
   fs.open("initialdata.txt");
   for(int i = 0; i < uh.gridDim(); i++) {
     for (int j = 0; j < uh.pointsDim(); j++) {
-      for (int n = 0; n < uh.modesDim(); n++) {
+      for (int n = 0; n < uh.TDVGFdim(); n++) {
         double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
         if(!params.opts.useSource){
@@ -329,7 +329,7 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
 
-  for(int k = 0; k < uh.modesDim(); k++) {
+  for(int k = 0; k < uh.TDVGFdim(); k++) {
     for(int i = 0; i < uh.gridDim(); i++){
       for (int j = 0; j < uh.pointsDim(); j++){
         double psi = params.sine.amp * sin(omega * nodes.get(i, j)
@@ -350,7 +350,7 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
   nodes=grd.gridNodeLocations();
   
-  for(int k = 0; k < uh.modesDim(); k++) {
+  for(int k = 0; k < uh.TDVGFdim(); k++) {
     for(int i = 0; i < uh.gridDim(); i++){
       for(int j = 0; j < uh.pointsDim(); j++){
         double gaussian = params.gauss.amp * exp(-pow((nodes.get(i, j)

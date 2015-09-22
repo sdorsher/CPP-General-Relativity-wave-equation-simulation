@@ -604,10 +604,10 @@ void DiffEq::modeRHS(Grid& thegrid,
 {
 
 
-  for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
+  for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     double max_speed = 1.0;
     if(params.opts.useSource) {
-      fill_source_all(thegrid, t, uh.modesDim(), source, window,
+      fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		      dwindow, d2window);
     }
     vector<Array2D<complex<double>>> du;

@@ -47,7 +47,7 @@ TwoDVectorGridFunction<T>::TwoDVectorGridFunction(int outerVecSize,
 
 //Get dimension of outer vector.
 template <class T>
-int TwoDVectorGridFunction<T>::modesDim()
+int TwoDVectorGridFunction<T>::TDVGFdim()
 {
   return TDVGFvectorDim;
 }
@@ -301,7 +301,7 @@ TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T> tdvgf1,
   }
   TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.vectorDim(), tdvgf1.gridDim(), 
                                  tdvgf1.pointsDim());
-  for(int i = 0; i < tdvgf1.modesDim(); i++){
+  for(int i = 0; i < tdvgf1.TDVGFdim(); i++){
     tdvgfsum.append(tdvgf1.get(i) + tdvgf2.get(i));
   }
   return tdvgfsum;
@@ -314,7 +314,7 @@ TwoDVectorGridFunction<T> operator*(T A, TwoDVectorGridFunction<T> tdvgf)
 {
   TwoDVectorGridFunction<T> tdvgfprod(0, tdvgf.vectorDim(), tdvgf.gridDim(), 
                                       tdvgf.pointsDim());
-  for(int i = 0; i < tdvgf.modesDim(); i++){
+  for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));
   }
   return tdvgfprod;
@@ -326,7 +326,7 @@ TwoDVectorGridFunction<complex<T>> operator*(T A, TwoDVectorGridFunction<complex
 {
   TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.vectorDim(), tdvgf.gridDim(), 
                                       tdvgf.pointsDim());
-  for(int i = 0; i < tdvgf.modesDim(); i++){
+  for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));
   }
   return tdvgfprod;

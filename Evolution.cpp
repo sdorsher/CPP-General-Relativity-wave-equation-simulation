@@ -57,7 +57,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   */
   int nsteps=5;
   
-  TwoDVectorGridFunction<complex<double>> k(RHStdvgf.modesDim(),
+  TwoDVectorGridFunction<complex<double>> k(RHStdvgf.TDVGFdim(),
                                    RHStdvgf.vectorDim(), RHStdvgf.gridDim(),
                                    RHStdvgf.pointsDim());
 
