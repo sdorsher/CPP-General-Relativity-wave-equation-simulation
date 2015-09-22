@@ -91,12 +91,8 @@ ConfigParams::ConfigParams(const std::string& configFileName)
                                               "courantfac");
     time.t0=getConfigFromFile<double>(configFileName, "time", "t0");
     time.tmax=getConfigFromFile<double>(configFileName, "time", "tmax");
-    time.outputinterval=getConfigFromFile<double>(configFileName, "time",
-                                                  "outputinterval");
     time.comparisoncount=getConfigFromFile<int>(configFileName, "time", 
                                                 "comparisoncount");
-    time.usefixedtimestep=getConfigFromFile<bool>(configFileName, "time",
-                                                "usefixedtimestep");
     time.outputevery=getConfigFromFile<int>(configFileName, "time",
                                                   "outputevery");
 

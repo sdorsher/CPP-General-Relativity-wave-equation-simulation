@@ -14,8 +14,8 @@ class TwoDVectorGridFunction
   vector<VectorGridFunction<T>> data;
   int TDVGFvectorDim; //outermost vector dimension
   int VGFvectorDim; //middle vector dimension
-  int GFarrayDim; //array dimension
   int GFvectorDim; //inner vector dimension
+  int GFarrayDim; //array dimension
 
  public:
   TwoDVectorGridFunction(int TDVGFvecSize, int VGFvecSize, int GFvecSize, 
@@ -43,12 +43,16 @@ class TwoDVectorGridFunction
                                   int stopvec, int dimension);
 };
 
+
+//Adds two TwoDVectorGridFunctions and returns a third
 template <typename T>
 TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T>, TwoDVectorGridFunction<T>);
 
+//Multiplies a real and a TwoDVectorGridFunctions and returns a TwoDVectorGridFunction
 template <typename T>
 TwoDVectorGridFunction<T> operator*(T, TwoDVectorGridFunction<T>);
 
+//Multiplies a real and a complex TwoDVectorGridFunctions and returns a complex TwoDVectorGridFunction
 template <typename T>
 TwoDVectorGridFunction<complex<T>> operator*(T, TwoDVectorGridFunction<complex<T>>);
 

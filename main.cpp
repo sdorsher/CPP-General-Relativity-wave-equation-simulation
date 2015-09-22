@@ -192,12 +192,7 @@ int main()
   int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
 
   double deltat;
-  if(params.time.usefixedtimestep){
-    deltat = params.time.dt;
-  } else {
-    deltat = (params.time.tmax - params.time.t0) / nt; 
-    //Make deltat go into tmax an integer number of times
-  }
+  deltat = (params.time.tmax - params.time.t0) / nt; 
   cout << "set and actual time step, based on courant factor" << endl;
   cout << dt0 << " " << deltat << endl << endl;
 

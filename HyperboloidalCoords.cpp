@@ -92,11 +92,15 @@ void transition(double rho, double R, double S, double& fT, double& fTp,
   cotx = 1.0 / tanx;
   fac = es / PI * (tanx - q2 * cotx);
   tanhfac = tanh(fac);
-  fT = half + half * tanhfac;
+  fT = half + half * tanhfac; //transition function
   cscx2 = 1.0 / pow(sin(x),2.0);
   secx2 = 1.0 / pow(cos(x),2.0);
   sechfac2 = 1.0 / pow(cosh(fac),2.0);
+
+  //derivative of transition function wrt coordinate rho
   fTp = 0.25 * es * (q2 * cscx2 + secx2) * sechfac2 / (S - R);
+
+  //second derivative of transition function wrt rho
   fTpp = -0.25 * es * sechfac2 * 
     (PI * (q2 * cotx * cscx2 - secx2 * tanx) 
      + es * pow((q2 * cscx2 + secx2), 2.0) * tanhfac) / pow((S - R),2.);

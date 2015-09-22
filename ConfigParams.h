@@ -29,35 +29,36 @@ struct WaveEqParams{ //set only one of issinusoid or isgaussian to true
 };
 
 struct SinusoidParams{ //used if issinusoid is set to true
-  double phase; 
-  double amp;
+  double phase; //phase of sinusoid
+  double amp; //amplitude of sinusoid
   double wavelength; //most sensible if this is a standing wave
 };
 
 struct GaussParams{ //used if isgaussian is set to true
-  double amp;
-  double mu;
+  double amp; //amplitude of gaussian
+  double mu; //mean of gaussian
   double sigma; //sigma greater than or equal to element size works best
 };
 
 struct SchwParams{ //used if schwarzschild is set to true under metric
-  double mass;
-  double sigma;
+  double mass; //mass of black hole
+  double sigma; //width of initial scalar field perturbation if effective source is not used
   double p_orb; //location of orbit
   double ecc; //eccentricity of orbit
 };
 
 struct WindowParams{
-  int noffset;
+  int noffset; //Offset of end of window around particle from end of tortoise region.
+  //The window ends inside the tortoise region. This is given in units of grid points.
 };
 
 struct TimeWindowParams{
-  double tsigma;
-  int torder;
+  double tsigma; //Width of time window.
+  int torder; //Order of time window.
 };
 
 struct ModeParams{
-  int lmax;
+  int lmax; //Maximum l mode to be computed.
 };
 
 struct GridParams{
@@ -67,7 +68,7 @@ struct GridParams{
   int numelems; //number of elements in grid
   int elemorder; //order of each element (all are the same)
   bool readfromfile; //broken right now, true or false
-  double outputradius;
+  double outputradius; //Radius at which to output data
 };
 
 struct HyperbParams{ //hyperboloidal coordinate parameters
@@ -83,10 +84,8 @@ struct TimeParams{
                      //if time step is not fixed
   double t0; //initial time
   double tmax; //end time
-  double outputinterval; //output with this time step
   int comparisoncount; //use the wave data to evaluate the L2 norm after 
                        //this integer number of output intervals
-  bool usefixedtimestep; 
   int outputevery; // output every N iterations
 
 };
@@ -98,9 +97,9 @@ struct FileParams
                          //one oscillation
   string L2error; //order, timestep, number of elements, L2error
   string initialconditions; //initial conditions as a function of position
-  bool outputtimefixed; 
-  bool outputradiusfixed; 
-  string fixedradiusfilename;
+  bool outputtimefixed; //output at a fixed time: true or false
+  bool outputradiusfixed; //output at a fixed radius: true or false
+  string fixedradiusfilename; //name of file for outputing at a fixed radius
 
 };
 
@@ -119,14 +118,18 @@ struct ConfigParams {
   SchwParams schw;
   WindowParams window;
   TimeWindowParams timewindow;
-
+  // use these as, for example, params.schw.mass
+  
   ConfigParams(const std::string& configFileName);
 
+  //this function reads in parameters of a specified template type
+  // from a file using libconfig
   template <typename T>
   T getConfigFromFile( const std::string& configFileName, 
                        const char *structkey, const char *key);
 };
 
+//the global variable params, available if "ConfigParams.h" is included
 extern const ConfigParams params; //global params variable
 
 #endif

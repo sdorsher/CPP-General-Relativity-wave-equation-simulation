@@ -13,6 +13,9 @@
 // See DiffDeq.cpp for A,B definition
 // A is trimmed by cutting out the rows that are all zero.
 
+
+//Indices of the grid (i) and of the nodes (j) where data will be output
+// at a finite radius and at Splus. Based on params.grid.outputradius
 struct OutputIndices
 {int ifinite, jfinite, iSplus, jSplus;};
 
@@ -21,7 +24,7 @@ class Grid
  private:
   int NumElem; //N. Number of elements in grid.
   int order;  //Np. Element order
-  vector<double> elementBoundaries; //(N+1)
+  vector<double> elementBoundaries; //length N+1
   vector<double> drdx; //jacobian
   GridFunction<double> nodeLocs; //N by Np. Physical node locations.
   void calcjacobian();
@@ -32,16 +35,14 @@ class Grid
   //to make multiple orders possible
 
  public:
-  GridFunction<double> rschw;
-  GridFunction<double> rstar;
-  //  VectorGridFunction<complex<double>> source;
-  // GridFunction<double> window;
-  //  GridFunction<double> dwindow;
-  //  GridFunction<double> d2window;
+  GridFunction<double> rschw;//schwartzschild coordinate
+  GridFunction<double> rstar; //tortoise coordinate
+
   Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
        double upperlim);
   ReferenceElement refelem; //member variable: the reference element
 
+  //find the radii at which to output the data (returns grid and node indices)
   void find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput);
   int numberElements();//Returns number of elements, calculated from input file
   GridFunction<double> gridNodeLocations();  //Returns physical node location

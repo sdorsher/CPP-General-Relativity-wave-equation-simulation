@@ -9,93 +9,66 @@
 #include "tnt_array2D_extn.h"
 #include "tnt_array1D_extn.h"
 #include "jama/jama_eig.h"
-#include "jama/jama_lu.h" //is this right? inverse, right?
+#include "jama/jama_lu.h" 
 #include <complex>
 
 
 using namespace std;
 namespace TNT
 {
-template <class T>
-Array2D<complex<T>> matmult(const Array2D<complex<T>> &A, const Array2D<T> &B)
-{
-    if (A.dim2() != B.dim1())
-        return Array2D<complex<T>>();
 
-    int M = A.dim1();
-    int N = A.dim2();
-    int K = B.dim2();
-
-    Array2D<complex<T>> C(M,K);
-
-    for (int i=0; i<M; i++)
-        for (int j=0; j<K; j++)
-        {
-            complex<T> sum = 0;
-
-            for (int k=0; k<N; k++)
-                sum += A[i][k] * B [k][j];
-
-            C[i][j] = sum;
-        }
-
-    return C;
-
-
-}
-template <class T>
-Array2D<complex<T>> matmult(const Array2D<T> &A, const Array2D<complex<T>> &B)
-{
-    if (A.dim2() != B.dim1())
-        return Array2D<complex<T>>();
-
-    int M = A.dim1();
-    int N = A.dim2();
-    int K = B.dim2();
-
-    Array2D<complex<T>> C(M,K);
-
-    for (int i=0; i<M; i++)
-        for (int j=0; j<K; j++)
-        {
-            complex<T> sum = 0;
-
-            for (int k=0; k<N; k++)
-                sum += A[i][k] * B [k][j];
-
-            C[i][j] = sum;
-        }
-
-    return C;
-
-
-}
-
-  //Multiplies A B^T to yield the transpose of the result. 
+  //multiplies a complex Array2D by a complex Array2D
   template <class T>
-    Array2D<T> TmatmultT(const Array2D<T> &A, const Array2D<T> &B)
+    Array2D<complex<T>> matmult(const Array2D<complex<T>> &A, const Array2D<T> &B)
     {
-      if (A.dim2() != B.dim2())
-        throw invalid_argument("Mismatched matrix dimensions in matmultT");
-
+      if (A.dim2() != B.dim1())
+        return Array2D<complex<T>>();
+      
       int M = A.dim1();
       int N = A.dim2();
-      int K = B.dim1();
+      int K = B.dim2();
+      
+      Array2D<complex<T>> C(M,K);
+    
+      for (int i=0; i<M; i++)
+        for (int j=0; j<K; j++){
+	  complex<T> sum = 0;
+	  
+	  for (int k=0; k<N; k++)
+	    sum += A[i][k] * B [k][j];
+	    
+	  C[i][j] = sum;
+	}
+      
+      return C;
+    }
 
-      Array2D<T> C(K,M);
+  //Multiplies a real Array2D by a complex Array2D to the right
+  template <class T>
+    Array2D<complex<T>> matmult(const Array2D<T> &A, const Array2D<complex<T>> &B)
+    {
+      if (A.dim2() != B.dim1())
+        return Array2D<complex<T>>();
+      
+      int M = A.dim1();
+      int N = A.dim2();
+      int K = B.dim2();
+    
+      Array2D<complex<T>> C(M,K);
       
       for (int i=0; i<M; i++)
         for (int j=0; j<K; j++){
-          T sum = 0;
-          
-          for (int k=0; k<N; k++)
-            sum += A[i][k] * B [j][k];
-
-          C[j][i] = sum;
+	  complex<T> sum = 0;
+	  
+	  for (int k=0; k<N; k++)
+	    sum += A[i][k] * B [k][j];
+	  
+	  C[i][j] = sum;
         }
+      
       return C;
     }
-  
+
   //Multiplies a 2D matrix by a 1D column vector to the right.
   template <typename T>
     TNT::Array1D<T> matmult(const TNT::Array2D<T>& A, const TNT::Array1D<T>& B)

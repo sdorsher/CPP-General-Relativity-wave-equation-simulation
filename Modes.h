@@ -26,7 +26,7 @@ class Modes {
 
   
  private:
-  int n_of_l(int l);
+  int n_of_l(int l); //number of modes with l to be included in computation
   int nmodes_of_l(int lmax);
   void set_lm_mode_info(int lmax);
 };
