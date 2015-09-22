@@ -107,7 +107,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         tA[1][0] = -1.0;
         trimmedAmatrices.set(i, j, tA);
         //vector dimension of B is actually number of modes
-        for(int k = 0; k < Bmatrices.vectorDim(); k++) {
+        for(int k = 0; k < Bmatrices.VGFdim(); k++) {
           Array2D<double> B(3, 3, 0.0);
           B[0][1] = -1.0;
           Bmatrices.set(k, i, j, B);
@@ -577,7 +577,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       
     //Sum the contributions from B, derivative, and flux, 
     //accounting for different matrix dimensions
-    for(int vecnum = 0; vecnum < RHStdvgf.vectorDim(); vecnum++){
+    for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
         for(int nodenum = 0; nodenum < RHStdvgf.pointsDim(); nodenum++){
           complex<double> tot;
           if(vecnum<vminA){

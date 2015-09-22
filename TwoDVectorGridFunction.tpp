@@ -54,7 +54,7 @@ int TwoDVectorGridFunction<T>::TDVGFdim()
 
 //Get dimension of middle vector.
 template <class T>
-int TwoDVectorGridFunction<T>::vectorDim()
+int TwoDVectorGridFunction<T>::VGFdim()
 {
   return VGFvectorDim;
 }
@@ -296,10 +296,10 @@ template <typename T>
 TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T> tdvgf1, 
                                 TwoDVectorGridFunction<T> tdvgf2)
 {
-  if(tdvgf1.vectorDim() != tdvgf2.vectorDim()){
+  if(tdvgf1.VGFdim() != tdvgf2.VGFdim()){
     throw invalid_argument("Second dimension vector dimension mismatch in + operation");
   }
-  TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.vectorDim(), tdvgf1.gridDim(), 
+  TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.VGFdim(), tdvgf1.gridDim(), 
                                  tdvgf1.pointsDim());
   for(int i = 0; i < tdvgf1.TDVGFdim(); i++){
     tdvgfsum.append(tdvgf1.get(i) + tdvgf2.get(i));
@@ -312,7 +312,7 @@ template <typename T>
 TwoDVectorGridFunction<T> operator*(T A, TwoDVectorGridFunction<T> tdvgf)
 //for easy multiplication in rk4 routine
 {
-  TwoDVectorGridFunction<T> tdvgfprod(0, tdvgf.vectorDim(), tdvgf.gridDim(), 
+  TwoDVectorGridFunction<T> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.gridDim(), 
                                       tdvgf.pointsDim());
   for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));
@@ -324,7 +324,7 @@ template <typename T>
 TwoDVectorGridFunction<complex<T>> operator*(T A, TwoDVectorGridFunction<complex<T>> tdvgf)
 //for easy multiplication in rk4 routine
 {
-  TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.vectorDim(), tdvgf.gridDim(), 
+  TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.gridDim(), 
                                       tdvgf.pointsDim());
   for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));

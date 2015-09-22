@@ -58,7 +58,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   int nsteps=5;
   
   TwoDVectorGridFunction<complex<double>> k(RHStdvgf.TDVGFdim(),
-                                   RHStdvgf.vectorDim(), RHStdvgf.gridDim(),
+                                   RHStdvgf.VGFdim(), RHStdvgf.gridDim(),
                                    RHStdvgf.pointsDim());
 
   //step 0
@@ -86,7 +86,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
     for(int j=0; j< RHStdvgf.gridDim(); j++){
       for(int i=0; i< RHStdvgf.pointsDim(); i++){
         fs << thegrid.gridNodeLocations().get(j,i) << " ";
-        for(int k = 0; k< RHStdvgf.vectorDim(); k++){
+        for(int k = 0; k< RHStdvgf.VGFdim(); k++){
           fs << RHStdvgf.get(0,k,j,i) << " ";
         }
         fs << endl;

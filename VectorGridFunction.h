@@ -27,7 +27,7 @@ class VectorGridFunction
   void set(int VGFcoord,GridFunction<T> value);
   void set(int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
   void setVector(int GFcoord, int GFacoord, vector<T> vec);
-  int vectorDim();//the dimension of the external vector
+  int VGFdim();//the dimension of the external vector
   int gridDim();//the dimension of the vector within the GridFunction
   int pointsDim();//the dimension of the array within the GridFunction
   void append(GridFunction<T> gf);
