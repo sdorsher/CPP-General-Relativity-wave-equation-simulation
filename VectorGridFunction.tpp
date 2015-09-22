@@ -44,14 +44,14 @@ int VectorGridFunction<T>::VGFdim()
 
 //Get dimension of inner vector.
 template <class T>
-int VectorGridFunction<T>::gridDim()
+int VectorGridFunction<T>::GFvecDim()
 {
   return GFvectorDim;
 }
 
 //Get dimension of array.
 template <class T>
-int VectorGridFunction<T>::pointsDim()
+int VectorGridFunction<T>::GFarrDim()
 {
   return GFarrayDim;
 }
@@ -241,7 +241,7 @@ VectorGridFunction<T> operator+(VectorGridFunction<T> vgf1,
   if(vgf1.VGFdim() != vgf2.VGFdim()){
     throw invalid_argument("Vector dimension mismatch in + operation");
   }
-  VectorGridFunction<T> vgfsum(0, vgf1.gridDim(), vgf1.pointsDim());
+  VectorGridFunction<T> vgfsum(0, vgf1.GFvecDim(), vgf1.GFarrDim());
   for(int i = 0; i < vgf1.VGFdim(); i++){
     vgfsum.append(vgf1.get(i) + vgf2.get(i));
   }
@@ -253,7 +253,7 @@ template <typename T>
 VectorGridFunction<T> operator*(T A, VectorGridFunction<T> vgf)
 //for easy multiplication in rk4 routine
 {
-  VectorGridFunction<T> vgfprod(0, vgf.gridDim(), vgf.pointsDim());
+  VectorGridFunction<T> vgfprod(0, vgf.GFvecDim(), vgf.GFarrDim());
   for(int i = 0; i < vgf.VGFdim(); i++){
     vgfprod.append(A * vgf.get(i));
   }
@@ -264,7 +264,7 @@ template <typename T>
 VectorGridFunction<complex<T>> operator*(T A, VectorGridFunction<complex<T>> vgf)
 //for easy multiplication in rk4 routine
 {
-  VectorGridFunction<complex<T>> vgfprod(0, vgf.gridDim(), vgf.pointsDim());
+  VectorGridFunction<complex<T>> vgfprod(0, vgf.GFvecDim(), vgf.GFarrDim());
   for(int i = 0; i < vgf.VGFdim(); i++){
     vgfprod.append(A * vgf.get(i));
   }

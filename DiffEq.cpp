@@ -94,8 +94,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
   double Omega, Omegap, H, Hp, eL, eLp, fT, fTp, fTpp,rm2M;
   GridFunction<double> nodes = thegrid.gridNodeLocations();
 
-  for(int i = 0; i < nodes.gridDim(); i++){
-    for(int j = 0; j < nodes.pointsDim(); j++){
+  for(int i = 0; i < nodes.GFvecDim(); i++){
+    for(int j = 0; j < nodes.GFarrDim(); j++){
       //regular wave equation
       if(params.metric.flatspacetime){
         Array2D<double> A(3, 3, 0.0);
@@ -338,7 +338,7 @@ DiffEq::characteristicflux(int modenum,
   du.resize(NumElem);
   for(int elemnum=0; elemnum<NumElem; elemnum++){
     int indL = 0; //index of leftmost node of that element
-    int indR = uh.pointsDim()-1; //index of rightmost node of that element
+    int indR = uh.GFarrDim()-1; //index of rightmost node of that element
     double nL = -1.0; //normal to the leftmost node
     double nR = 1.0; //normal to the rightmost node
 
@@ -502,9 +502,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
     
     //The B matrix component of the RHS. 
-    Array2D<complex<double>> RHSB(uh.pointsDim(), 
+    Array2D<complex<double>> RHSB(uh.GFarrDim(), 
                                   ArightBoundaries[elemnum].getAdim());
-    for(int nodenum = 0; nodenum < uh.pointsDim(); nodenum++){
+    for(int nodenum = 0; nodenum < uh.GFarrDim(); nodenum++){
       Array1D<complex<double>> RHSBpernode;
       
       //FIX THIS. THIS CAN BE SPED UP BY NOT COPYING IN GETVECTORASARRAY1D
@@ -522,7 +522,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
 
     //A contribution:
-    Array2D<complex<double>> RHSA1(uh.pointsDim(), ArightBoundaries[elemnum].getDdim());
+    Array2D<complex<double>> RHSA1(uh.GFarrDim(), ArightBoundaries[elemnum].getDdim());
     
     //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
@@ -536,7 +536,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
     
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
-    for(int nodenum=0; nodenum < uh.pointsDim(); nodenum++)
+    for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++)
       {
         int M = trimmedAmatrices.get(elemnum,nodenum).dim1();
         int N = trimmedAmatrices.get(elemnum,nodenum).dim2();
@@ -578,7 +578,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //Sum the contributions from B, derivative, and flux, 
     //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
-        for(int nodenum = 0; nodenum < RHStdvgf.pointsDim(); nodenum++){
+        for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
           complex<double> tot;
           if(vecnum<vminA){
             tot = -RHSB[nodenum][vecnum];

@@ -22,8 +22,8 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
   switch (type){
   case 1:
 
-    for (int i = 0; i < uh.gridDim(); i++){
-      for(int j = 0; j < uh.pointsDim(); j++){
+    for (int i = 0; i < uh.GFvecDim(); i++){
+      for(int j = 0; j < uh.GFarrDim(); j++){
 	//Print out at select time steps
 	fs << thegrid.gridNodeLocations().get(i, j) << " "
 	   << uh.get(k, 0, i, j).real() << " " 
@@ -33,8 +33,8 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
     }
     break;
   case 2:
-    for (int i = 0; i < uh.gridDim(); i++){
-      for(int j = 0; j < uh.pointsDim(); j++){
+    for (int i = 0; i < uh.GFvecDim(); i++){
+      for(int j = 0; j < uh.GFarrDim(); j++){
   	//Print out at select time steps
 	fs << thegrid.gridNodeLocations().get(i, j) << " "
 	    << theequation.source.get(k, i, j).real() << " " 
@@ -43,8 +43,8 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
     }
     break;
   case 3:
-   for (int i = 0; i < uh.gridDim(); i++){
-      for(int j = 0; j < uh.pointsDim(); j++){
+   for (int i = 0; i < uh.GFvecDim(); i++){
+      for(int j = 0; j < uh.GFarrDim(); j++){
 	fs << thegrid.gridNodeLocations().get(i,j) << " "
 	    << RHStdvgf.get(k,0,i,j).real() << " "
 	    << RHStdvgf.get(k,1,i,j).real() << " "

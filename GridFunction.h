@@ -18,8 +18,8 @@ class GridFunction
   void append(TNT::Array1D<T> array);
   T get(int vcoord, int acoord);
   TNT::Array1D<T> get(int vcoord);
-  int gridDim(); //Dimension of vector
-  int pointsDim(); //Dimension of Array1D
+  int GFvecDim(); //Dimension of vector
+  int GFarrDim(); //Dimension of Array1D
   void save(string filename);
   
   // private:

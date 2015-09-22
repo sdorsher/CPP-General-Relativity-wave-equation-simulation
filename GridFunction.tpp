@@ -107,7 +107,7 @@ TNT::Array1D<T> GridFunction<T>::get(int vcoord)
 
 //Get the dimension of the vector.
 template <class T>
-int GridFunction<T>::gridDim()
+int GridFunction<T>::GFvecDim()
 {
   return GFvectorDim;
 }
@@ -115,7 +115,7 @@ int GridFunction<T>::gridDim()
 
 //Get the dimension of the array.
 template <class T>
-int GridFunction<T>::pointsDim()
+int GridFunction<T>::GFarrDim()
 {
   return GFarrayDim;
 }
@@ -142,12 +142,12 @@ void GridFunction<T>::save(string filename)
 template <typename T>
 GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2)
 {
-  if((gf1.gridDim() != gf2.gridDim()) 
-      || (gf1.pointsDim() != gf2.pointsDim())) {
+  if((gf1.GFvecDim() != gf2.GFvecDim()) 
+      || (gf1.GFarrDim() != gf2.GFarrDim())) {
     throw invalid_argument("Grid function dimension mismatch in + operator");
   } else {
-    GridFunction<T> gfout(0, gf1.pointsDim());
-    for(int i = 0; i < gf1.gridDim(); i++) {
+    GridFunction<T> gfout(0, gf1.GFarrDim());
+    for(int i = 0; i < gf1.GFvecDim(); i++) {
       gfout.append(gf1.get(i) + gf2.get(i));
     }
     return gfout;
@@ -158,8 +158,8 @@ GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2)
 template <typename T>
 GridFunction<T> operator*(T A, GridFunction<T> gf)
 {
-  GridFunction<T> gfout(0, gf.pointsDim());
-  for(int i = 0; i < gf.gridDim(); i++) {
+  GridFunction<T> gfout(0, gf.GFarrDim());
+  for(int i = 0; i < gf.GFvecDim(); i++) {
     gfout.append(A * gf.get(i));
   }
   return gfout;
@@ -168,8 +168,8 @@ GridFunction<T> operator*(T A, GridFunction<T> gf)
 template <typename T>
 GridFunction<complex<T>> operator*(T A, GridFunction<complex<T>> gf)
 {
-  GridFunction<complex<T>> gfout(0, gf.pointsDim());
-  for(int i = 0; i < gf.gridDim(); i++) {
+  GridFunction<complex<T>> gfout(0, gf.GFarrDim());
+  for(int i = 0; i < gf.GFvecDim(); i++) {
     gfout.append(A * gf.get(i));
   }
   return gfout;

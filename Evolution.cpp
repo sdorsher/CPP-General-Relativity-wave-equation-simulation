@@ -58,8 +58,8 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   int nsteps=5;
   
   TwoDVectorGridFunction<complex<double>> k(RHStdvgf.TDVGFdim(),
-                                   RHStdvgf.VGFdim(), RHStdvgf.gridDim(),
-                                   RHStdvgf.pointsDim());
+                                   RHStdvgf.VGFdim(), RHStdvgf.GFvecDim(),
+                                   RHStdvgf.GFarrDim());
 
   //step 0
   //  vector<Array2D<double>> du;
@@ -83,8 +83,8 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
     fs.open("urhs.txt", ios::app);
     fs << endl << endl;
     fs << " #time = " << t << endl;
-    for(int j=0; j< RHStdvgf.gridDim(); j++){
-      for(int i=0; i< RHStdvgf.pointsDim(); i++){
+    for(int j=0; j< RHStdvgf.GFvecDim(); j++){
+      for(int i=0; i< RHStdvgf.GFarrDim(); i++){
         fs << thegrid.gridNodeLocations().get(j,i) << " ";
         for(int k = 0; k< RHStdvgf.VGFdim(); k++){
           fs << RHStdvgf.get(0,k,j,i) << " ";

@@ -28,8 +28,8 @@ class VectorGridFunction
   void set(int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
   void setVector(int GFcoord, int GFacoord, vector<T> vec);
   int VGFdim();//the dimension of the external vector
-  int gridDim();//the dimension of the vector within the GridFunction
-  int pointsDim();//the dimension of the array within the GridFunction
+  int GFvecDim();//the dimension of the vector within the GridFunction
+  int GFarrDim();//the dimension of the array within the GridFunction
   void append(GridFunction<T> gf);
   void save(string filenames); //vector of filenames to print to
   vector<T> getVector(int GFvcoord, int GFacoord);

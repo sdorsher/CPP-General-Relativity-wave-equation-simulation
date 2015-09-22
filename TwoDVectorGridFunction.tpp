@@ -61,14 +61,14 @@ int TwoDVectorGridFunction<T>::VGFdim()
 
 //Get dimension of inner vector.
 template <class T>
-int TwoDVectorGridFunction<T>::gridDim()
+int TwoDVectorGridFunction<T>::GFvecDim()
 {
   return GFvectorDim;
 }
 
 //Get dimension of array.
 template <class T>
-int TwoDVectorGridFunction<T>::pointsDim()
+int TwoDVectorGridFunction<T>::GFarrDim()
 {
   return GFarrayDim;
 }
@@ -299,8 +299,8 @@ TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T> tdvgf1,
   if(tdvgf1.VGFdim() != tdvgf2.VGFdim()){
     throw invalid_argument("Second dimension vector dimension mismatch in + operation");
   }
-  TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.VGFdim(), tdvgf1.gridDim(), 
-                                 tdvgf1.pointsDim());
+  TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.VGFdim(), tdvgf1.GFvecDim(), 
+                                 tdvgf1.GFarrDim());
   for(int i = 0; i < tdvgf1.TDVGFdim(); i++){
     tdvgfsum.append(tdvgf1.get(i) + tdvgf2.get(i));
   }
@@ -312,8 +312,8 @@ template <typename T>
 TwoDVectorGridFunction<T> operator*(T A, TwoDVectorGridFunction<T> tdvgf)
 //for easy multiplication in rk4 routine
 {
-  TwoDVectorGridFunction<T> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.gridDim(), 
-                                      tdvgf.pointsDim());
+  TwoDVectorGridFunction<T> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.GFvecDim(), 
+                                      tdvgf.GFarrDim());
   for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));
   }
@@ -324,8 +324,8 @@ template <typename T>
 TwoDVectorGridFunction<complex<T>> operator*(T A, TwoDVectorGridFunction<complex<T>> tdvgf)
 //for easy multiplication in rk4 routine
 {
-  TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.gridDim(), 
-                                      tdvgf.pointsDim());
+  TwoDVectorGridFunction<complex<T>> tdvgfprod(0, tdvgf.VGFdim(), tdvgf.GFvecDim(), 
+                                      tdvgf.GFarrDim());
   for(int i = 0; i < tdvgf.TDVGFdim(); i++){
    tdvgfprod.append(A * tdvgf.get(i));
   }

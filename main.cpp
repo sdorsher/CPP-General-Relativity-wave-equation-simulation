@@ -250,8 +250,8 @@ int main()
         cout << t << endl;
         ofstream fs2;
         fs2.open(params.file.oneperioderror);
-        for(int i = 0; i < uh.gridDim(); i++){
-          for (int j = 0; j < uh.pointsDim(); j++){
+        for(int i = 0; i < uh.GFvecDim(); i++){
+          for (int j = 0; j < uh.GFarrDim(); j++){
             fs2 << thegrid.gridNodeLocations().get(i, j) << " " 
                 << uh.get(0, 0, i, j) - uh0.get(0, 0, i, j) << endl;
           }
@@ -289,12 +289,12 @@ int main()
                          
 
 void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn) {
-  GridFunction<double> rho(uh.gridDim(), uh.pointsDim(), false);
+  GridFunction<double> rho(uh.GFvecDim(), uh.GFarrDim(), false);
   rho=grd.gridNodeLocations();
   ofstream fs;
   fs.open("initialdata.txt");
-  for(int i = 0; i < uh.gridDim(); i++) {
-    for (int j = 0; j < uh.pointsDim(); j++) {
+  for(int i = 0; i < uh.GFvecDim(); i++) {
+    for (int j = 0; j < uh.GFarrDim(); j++) {
       for (int n = 0; n < uh.TDVGFdim(); n++) {
         double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
         uh.set(n,0,i,j,0.0);
@@ -326,12 +326,12 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
-  GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
+  GridFunction<double> nodes(uh.GFvecDim(), uh.GFarrDim(), false);
   nodes=grd.gridNodeLocations();
 
   for(int k = 0; k < uh.TDVGFdim(); k++) {
-    for(int i = 0; i < uh.gridDim(); i++){
-      for (int j = 0; j < uh.pointsDim(); j++){
+    for(int i = 0; i < uh.GFvecDim(); i++){
+      for (int j = 0; j < uh.GFarrDim(); j++){
         double psi = params.sine.amp * sin(omega * nodes.get(i, j)
                                            + params.sine.phase);
         double pivar = omega * params.sine.amp * cos(omega * nodes.get(i, j)
@@ -347,12 +347,12 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   }
 }
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
-  GridFunction<double> nodes(uh.gridDim(), uh.pointsDim(), false);
+  GridFunction<double> nodes(uh.GFvecDim(), uh.GFarrDim(), false);
   nodes=grd.gridNodeLocations();
   
   for(int k = 0; k < uh.TDVGFdim(); k++) {
-    for(int i = 0; i < uh.gridDim(); i++){
-      for(int j = 0; j < uh.pointsDim(); j++){
+    for(int i = 0; i < uh.GFvecDim(); i++){
+      for(int j = 0; j < uh.GFarrDim(); j++){
         double gaussian = params.gauss.amp * exp(-pow((nodes.get(i, j)
                                                        - params.gauss.mu), 2.0)
                                                  / 2.0 
@@ -377,10 +377,10 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   L2 = 0.0;
   Array1D<double> weights;
   weights = thegrid.refelem.getw();
-  GridFunction<double> nodes(uh0.gridDim(), uh0.pointsDim(), false);
+  GridFunction<double> nodes(uh0.GFvecDim(), uh0.GFarrDim(), false);
   nodes = thegrid.gridNodeLocations();
-  for(int i = 0; i < uh0.gridDim(); i++){
-    for(int j = 0; j < uh0.pointsDim(); j++){
+  for(int i = 0; i < uh0.GFvecDim(); i++){
+    for(int j = 0; j < uh0.GFarrDim(); j++){
       double added = weights[j] 
         * pow(abs(uh0.get(0, 0, i, j)
                   - uhend.get(0, 0, i, j)), 2.0)

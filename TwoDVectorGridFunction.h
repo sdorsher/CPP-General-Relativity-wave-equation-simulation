@@ -33,8 +33,8 @@ class TwoDVectorGridFunction
   void setVector(int TDVGFvcoord, int GFcoord, int GFacoord, vector<T> vec);
   int TDVGFdim(); //the dimension of the outermost vector
   int VGFdim(); // the dimension of the middle vector
-  int gridDim(); //GFvecDim the dimension of the vector within the GridFunction
-  int pointsDim(); //GFarrDim the dimension of the array within the GridFunction
+  int GFvecDim(); //the dimension of the vector within the GridFunction
+  int GFarrDim(); //the dimension of the array within the GridFunction
   void append(VectorGridFunction<T> gf);
   vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
   Array1D<T> getVectorAsArray1D(int vectorCoord, int GFvcoord, int GFacoord,
