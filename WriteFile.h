@@ -7,17 +7,22 @@
 #include <string>
 #include <complex>
 
+
+//Output data at a fixed time
 void write_fixed_time(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                       string filename,
 		      int type);
 
+//Output data at a fixed radius
 void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
 			TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                         Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                         string filename,
                         int type);
+
+//Output psi, summed over the modes
 void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                         Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 

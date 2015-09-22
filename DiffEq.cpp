@@ -52,8 +52,10 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
     
   //set up the A and B matrices
 
+    
   setupABmatrices(thegrid, lmmodes);
 
+  
 
    ofstream fs;
   fs.open("ABcoeffs.txt");
@@ -602,7 +604,6 @@ void DiffEq::modeRHS(Grid& thegrid,
 {
 
 
-  
   for(int modenum = 0; modenum < uh.modesDim(); modenum++) {
     double max_speed = 1.0;
     if(params.opts.useSource) {

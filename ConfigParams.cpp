@@ -66,7 +66,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
 
     grid.lowerlim=hyperb.Sminus;
-    grid.upperlim=grid.upperlim=hyperb.Splus;
+    grid.upperlim=hyperb.Splus;
 
   }
 

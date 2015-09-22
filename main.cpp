@@ -143,22 +143,25 @@ int main()
 
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
+  //Solution to PDE, possibly a vector
   TwoDVectorGridFunction<complex<double>> uh(lmmodes.ntotal,
-                                   params.grid.pdenum,
+					     params.grid.pdenum,
                                              params.grid.numelems,
                                              params.grid.elemorder+1,
-                                0.0); 
+					     0.0);
+
+  //Initialization of initial value of calculation variables.
   TwoDVectorGridFunction<complex<double>> uh0(lmmodes.ntotal,
                                               params.grid.pdenum,
                                               params.grid.numelems,
                                               params.grid.elemorder + 1,
                                               0.0);
-  //Solution to PDE, possibly a vector 
+  //Right hand side of PDE
   TwoDVectorGridFunction<complex<double>> RHStdvgf(lmmodes.ntotal,
-                                       params.grid.pdenum,
-                                                 params.grid.numelems,
-                                                 params.grid.elemorder + 1,
-                                    0.0); //right hand side of PDE
+						   params.grid.pdenum,
+						   params.grid.numelems,
+						   params.grid.elemorder + 1,
+						   0.0); 
   
 
   //Setup initial conditions and initialize window
@@ -202,6 +205,7 @@ int main()
   lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
 
   
+  
   //Initialize loop variables to determine when output
   //double output = deltat / 2.0;
   int outputcount =0;
@@ -218,7 +222,7 @@ int main()
 	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,"rhs",3);
 	  
 	  
-	    
+	 
 	}
       
 	if(params.file.outputradiusfixed){
