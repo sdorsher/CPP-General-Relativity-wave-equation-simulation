@@ -28,7 +28,7 @@ preparation for use with the characteristic flux.
 Ignoring details about output, the rest of the program works something
 like this: main.cpp calls rk4lowstorage in Evolution.cpp with every
 time step. That, in turn, evaluates the right hand side of the the
-differential equation in Grid::characteristicFlux and Grid::RHS with
+differential equation in DiffEq::characteristicFlux and DiffEq::RHS with
 every sub-time step. This is used to advance the time step in the
 Runga Kutta routine.
 
@@ -36,3 +36,41 @@ GridFunctions and VectorGridFunctions are storage
 classes. GridFunctions store values at each point over the nodes of
 the entire grid. VectorGridFunctions store values at each point over
 the nodes of the grid for each variable in the differential equation.
+
+The Grid stores information about spatial variables and coordinates
+associated with the computational grid.
+
+ConfigParams is involved in reading in parameters to create a global
+variable, params, from params.cfg.
+
+CharacteristicFlux stores information about the the differential
+equation in characteristic form.
+
+orbit currently works for a circular orbit.
+
+namespaces stores information about a couple of namespaces. Include this in a file and
+say "using <whatever the namespace is>" to acces the namespace.
+
+Modes handles setting up and summing the spherical harmonics.
+
+The ReferenceElement calculates the lift matrix (for the flux) and the
+spatial derivative matrix needed in the right hand side. It does this
+for a reference element, which can then be scaled to a physical
+element based simply on the size of the physical element.
+
+source_interface is legacy code. It is a wrapper to interfacing with
+Barry Wardell's effective source package, slightly modified from code
+written by Peter Diener.
+
+TNT2, tnt_array1D_extn, and tnt_array2D_extn extend the TNT matrix
+manipulation library.
+
+WriteFile outputs files in specific formats.
+
+
+-----------------------
+
+To run this code it is necessary to install LibConfig (for reading in
+parameters), the Template Numerical Toolkit (TNT), and JAMA, which is
+associated with it. You will also need libgsl and read access to Barry
+Wardell's scalar1deffective source repository on BitBucket.
