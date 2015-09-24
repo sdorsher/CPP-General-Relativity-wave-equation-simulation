@@ -165,6 +165,7 @@ GridFunction<T> operator*(T A, GridFunction<T> gf)
   return gfout;
 }
 
+//Multiplication operator for a complex real scalar and a complex GridFunction
 template <typename T>
 GridFunction<complex<T>> operator*(T A, GridFunction<complex<T>> gf)
 {

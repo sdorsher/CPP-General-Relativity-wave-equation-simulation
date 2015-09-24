@@ -212,7 +212,6 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord,
   return outputvec;
 }
     
-//HERE
 //Get an Array1D from an outer vector coordinate, a middle vector coordinate,
 //and inner vector coordinate 
 //and an array coordinate, 
@@ -319,7 +318,8 @@ TwoDVectorGridFunction<T> operator*(T A, TwoDVectorGridFunction<T> tdvgf)
   }
   return tdvgfprod;
 }
-//Scalar multiplication operator for TwoDVectorGridFunctions.
+
+//Scalar multiplication operator for complex TwoDVectorGridFunctions.
 template <typename T>
 TwoDVectorGridFunction<complex<T>> operator*(T A, TwoDVectorGridFunction<complex<T>> tdvgf)
 //for easy multiplication in rk4 routine

@@ -259,7 +259,9 @@ VectorGridFunction<T> operator*(T A, VectorGridFunction<T> vgf)
   }
   return vgfprod;
 }
-//Scalar multiplication operator for VectorGridFunctions.
+
+
+//Scalar multiplication operator for complex VectorGridFunctions.
 template <typename T>
 VectorGridFunction<complex<T>> operator*(T A, VectorGridFunction<complex<T>> vgf)
 //for easy multiplication in rk4 routine
