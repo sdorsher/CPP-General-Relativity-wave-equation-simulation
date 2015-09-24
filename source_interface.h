@@ -57,7 +57,8 @@ namespace source_interface {
                       std::complex<double> &src);
 
 
-    //Evaluates the effective source for a mode, an order of the nodes, a set of node coordinates in Schwarzschild coordinates,
+    //Evaluates the effective source for a mode, an order of the nodes, a set of node
+    //coordinates in Schwarzschild coordinates,
     // and a window function and its first and second deerivative
     void eval_source_all (const int& mode,  const int& n, const double r[],
                           const double Win[], const double dWin[],
@@ -86,7 +87,8 @@ namespace source_interface {
 		     GridFunction<double>& dwindow,
 		     GridFunction<double>& d2window);
 
-    //An overarching routine that handles setting particle position, setting up the time window, evaluating the source, and
+    //An overarching routine that handles setting particle position, setting up the time
+    //window, evaluating the source, and
     // setting the source in the DiffEq object for all modes and nodes within an element.
     void fill_source_all(Grid& thegrid, double time, int nummodes,
 		     VectorGridFunction<complex<double>>& source,

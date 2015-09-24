@@ -29,12 +29,17 @@ class GridFunction
   int GFarrayDim;
 };
 
+//Adds a grid function to a grid function
 template <typename T>
 GridFunction<T> operator+(GridFunction<T> gf1,GridFunction<T> gf2);
 
+
+//Multiplies a real by a real grid function
 template <typename T>
 GridFunction<T> operator*(T A,GridFunction<T> gf2);
 
+
+//Multiplies a real by a complex grid function
 template <typename T>
 GridFunction<complex<T>> operator*(T A,GridFunction<complex<T>> gf2);
 

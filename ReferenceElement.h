@@ -24,8 +24,8 @@ class ReferenceElement
   void vandermonde1D();
   Array1D<double> gradJacobiP(double alpha, double beta,int N);//evaluated at nodes
   void gradVandermonde1D(); //evaluated at nodes for order of element
-  void Dmatrix1D();
-  void lift1D();
+  void Dmatrix1D(); //calculate derivative matrix
+  void lift1D(); //calculate lift matrix to be used in computation of flux
 
 private:
   int order; //order of element

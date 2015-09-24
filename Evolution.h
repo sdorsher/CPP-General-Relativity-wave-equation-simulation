@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 //time evolution: Fourth order runga kutta 
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 

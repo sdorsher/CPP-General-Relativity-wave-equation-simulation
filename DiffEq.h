@@ -21,7 +21,7 @@ using namespace std;
 
 //User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0
-// A is trimmed by cutting out the rows that are all zero.
+// A is trimmed by cutting out the rows that are all zero. It should be square. 
 
 
 class DiffEq
@@ -59,7 +59,7 @@ class DiffEq
   //Returns du, for the characteristic flux.
   vector<TNT::Array2D<complex<double>>> characteristicflux(int modenum,
 							   Grid& thegrid,
-				  TwoDVectorGridFunction<complex<double>>& 
+				   TwoDVectorGridFunction<complex<double>>& 
 							   uh, bool output);
   //Returns the right hand side of the differential equation including the flux
   void RHS(int modenum, Grid& thegrid,

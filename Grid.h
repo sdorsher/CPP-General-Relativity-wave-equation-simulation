@@ -9,11 +9,6 @@
 #include "TwoDVectorGridFunction.h"
 #include <complex>
 
-// du/dt + A du/dx + Bu = 0
-// See DiffDeq.cpp for A,B definition
-// A is trimmed by cutting out the rows that are all zero.
-
-
 //Indices of the grid (i) and of the nodes (j) where data will be output
 // at a finite radius and at Splus. Based on params.grid.outputradius
 struct OutputIndices
@@ -29,13 +24,8 @@ class Grid
   GridFunction<double> nodeLocs; //N by Np. Physical node locations.
   void calcjacobian();
 
-  //Thoughts for the future:
-  //vector<int> elementOrders; //N
-  //map<int,ReferenceElement> allRefelems; 
-  //to make multiple orders possible
-
  public:
-  GridFunction<double> rschw;//schwartzschild coordinate
+  GridFunction<double> rschw;//Schwarzschild coordinate
   GridFunction<double> rstar; //tortoise coordinate
 
   Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
@@ -49,7 +39,6 @@ class Grid
   vector<double> gridBoundaries(); //Returns the boundaries of the elements
   double jacobian(int elemnum); //Returns the jacobian of a specific element
   int nodeOrder(); //Returns the node order (same for all elements)
-
 };
 
 #endif

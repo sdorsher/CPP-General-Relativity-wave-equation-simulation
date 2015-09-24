@@ -37,7 +37,6 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
   A = Amatrix;
   Atrimmed = Atrim;
   Adimension = A.dim1();
-  
   Ddimension = Atrim.dim1();
 
   Array2D<double> onetemp(Ddimension, Ddimension, 0.0);
@@ -50,73 +49,37 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
   
   Array2D<double> Smatrixtemp(Ddimension, Ddimension);
   Smatrix = Smatrixtemp.copy();
-
   JAMA::Eigenvalue<double> Seigen(Atrimmed);
   Seigen.getV(Smatrix);
   JAMA::LU<double> Sinverter(Smatrix);
   Sinv=Sinverter.solve(one);
   Lamb = matmult(Sinv, matmult(Atrimmed, Smatrix));
-
 }
 
-//this function does not work because it is not generally solveable. It works 
-//for the wave equation but not in general
-/*Array2D<double> CharacteristicFlux::trimA() 
-{
-  vector<int> non_zero_row_index;
-
-  for(int i = 0; i < Adimension; i++) {//loop over rows
-    bool rownonzeros = false;
-    for( int j = 0; j < Adimension; j++) {//loop over columns 
-      rownonzeros = ((A[i][j] != 0) || rownonzeros);
-    }
-    if(rownonzeros){
-      non_zero_row_index.push_back(i); //save index of row
-    }
-  }
-
-  Ddimension=non_zero_row_index.size();
-  Array2D<double> Atrim(Ddimension, Ddimension);
-  for(int i = 0; i < Ddimension; i++) {
-    for(int j = 0; j < Ddimension; j++){
-      Atrim[i][j] = A[nonzeros[i]][nonzeros[j]]; 
-      //build Atrim out of nonzero rows
-    }
-  }
-  return Atrim;
-  }*/
-
-Array2D<double> CharacteristicFlux::getS()
-{
+Array2D<double> CharacteristicFlux::getS(){
   return Smatrix;
 }
 
-Array2D<double> CharacteristicFlux::getA()
-{
+Array2D<double> CharacteristicFlux::getA(){
   return A;
 }
 
-Array2D<double> CharacteristicFlux::getSinv()
-{
+Array2D<double> CharacteristicFlux::getSinv(){
   return Sinv;
 }
 
-Array2D<double> CharacteristicFlux::getLambda()
-{
+Array2D<double> CharacteristicFlux::getLambda(){
   return Lamb;
 }
 
-Array2D<double> CharacteristicFlux::getAtrimmed()
-{
+Array2D<double> CharacteristicFlux::getAtrimmed(){
   return Atrimmed;
 }
   
-int CharacteristicFlux::getAdim()
-{
+int CharacteristicFlux::getAdim(){
   return Adimension;
 }
 
-int CharacteristicFlux::getDdim()
-{
+int CharacteristicFlux::getDdim(){
   return Ddimension;
 }

@@ -45,7 +45,7 @@ namespace TNT
       }
       return C;
     }
-  //Adds a sacalar to an array
+  //Adds a scalar to an array
   template <typename T>
     Array1D<complex<T>> operator+(const Array1D<complex<T>> &A, const T B)
     {
