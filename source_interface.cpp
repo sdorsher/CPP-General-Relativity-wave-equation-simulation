@@ -1,5 +1,7 @@
 #include "source_interface.h"
 
+// see source_interface.h for comments on what functions do.
+
 namespace source_interface
 {
 

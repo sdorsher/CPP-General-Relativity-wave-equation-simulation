@@ -1,6 +1,10 @@
 #include "ConfigParams.h"
 #include <string>
 
+
+//see .h file for definitions of variables.
+
+
 const ConfigParams params("params.cfg");
 
 ConfigParams::ConfigParams(const std::string& configFileName)
@@ -9,8 +13,10 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   
   //read in options
   opts.useSource = getConfigFromFile<bool>(configFileName, "options", 
-                                                 "useSource");
-  opts.turn_on_source_smoothly = getConfigFromFile<bool>(configFileName, "options", "turn_on_source_smoothly");
+					   "useSource");
+  opts.turn_on_source_smoothly = getConfigFromFile<bool>(configFileName,
+							 "options",
+						    "turn_on_source_smoothly");
 
 
   //Read parameters associated with the metric
@@ -40,7 +46,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
       
     } else if(waveeq.issinusoid) { 
       //If sinusoidal initial conditions, read in parameters 
-    //associated with those
+      //associated with those
       sine.amp=getConfigFromFile<double>(configFileName, "sine", "amplitude");
       sine.phase=getConfigFromFile<double>(configFileName, "sine", "phase");
       sine.wavelength=getConfigFromFile<double>(configFileName, "sine",
@@ -49,25 +55,31 @@ ConfigParams::ConfigParams(const std::string& configFileName)
       //Currently no other options
       throw invalid_argument("No initial conditions set in parameter file.");
     }
-  } else {
+  } else { //if metric is not flat (Schwarzschild)
     schw.mass = getConfigFromFile<double>(configFileName, "schw", "mass");
     schw.sigma = getConfigFromFile<double>(configFileName, "schw", "sigma");
     schw.p_orb = getConfigFromFile<double>(configFileName, "schw", "p_orb");
     schw.ecc = getConfigFromFile<double>(configFileName, "schw", "ecc");
-
+    
     window.noffset = getConfigFromFile<int>(configFileName, "window", "noffset");
-    timewindow.tsigma = getConfigFromFile<double>(configFileName, "timewindow", "tsigma");
-    timewindow.torder = getConfigFromFile<int>(configFileName, "timewindow", "torder");
+    timewindow.tsigma = getConfigFromFile<double>(configFileName, "timewindow",
+						  "tsigma");
+    timewindow.torder = getConfigFromFile<int>(configFileName, "timewindow",
+					       "torder");
 
   //Read in parameters associated with hyperboloidal coordinates
-    hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb", "Sminus");
+    hyperb.Sminus = getConfigFromFile<double>(configFileName, "hyperb",
+					      "Sminus");
     hyperb.Splus = getConfigFromFile<double>(configFileName, "hyperb", "Splus");
     hyperb.Rplus = getConfigFromFile<double>(configFileName, "hyperb", "Rplus");
-    hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb", "Rminus");
+    hyperb.Rminus = getConfigFromFile<double>(configFileName, "hyperb",
+					      "Rminus");
 
-    grid.lowerlim=hyperb.Sminus;
+    grid.lowerlim=hyperb.Sminus; 
     grid.upperlim=hyperb.Splus;
-
+    //in this case, the boundaries on the grid should correspond to the horizon
+    //and Scri-plus
+    
   }
 
   
@@ -113,7 +125,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     file.oneperioderror=getConfigFromFile<string>(configFileName, "file",
                                                   "oneperioderror");
     file.L2error=getConfigFromFile<string>(configFileName, "file",
-                                         "L2error");
+					   "L2error");
     file.initialconditions=getConfigFromFile<string>(configFileName, "file",
                                                      "initialconditions");
 }
@@ -122,8 +134,8 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 //types of data
 template <typename T>
 T ConfigParams::getConfigFromFile( const std::string& configFileName, 
-                                  const char *structkey, 
-                                  const char *key)
+				   const char *structkey, 
+				   const char *key)
 {
   T value;
   Config cfg;
@@ -131,11 +143,8 @@ T ConfigParams::getConfigFromFile( const std::string& configFileName,
   const Setting& root=cfg.getRoot();
   const Setting& structparams=root[structkey];
   structparams.lookupValue(key,value);
-  /*ostringstream lookupkey;
-  lookupkey << structkey << "." << key;
-  root.lookupValue(lookupkey.str(),value);*/
   return value;
-
+  
   /*
 
 This function returns value for a param.cfg file with a segment in the
@@ -152,5 +161,5 @@ key2=value2;
 }
 
   */
-
+  
 }

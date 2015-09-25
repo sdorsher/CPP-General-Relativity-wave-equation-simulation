@@ -10,11 +10,6 @@ Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim,
   refelem{elemorder},
   rschw{numelements,elemorder+1},
   rstar{numelements,elemorder+1}
-  //  source{nummodes, numelements,elemorder+1,{0.0,0.0}},
-  //  window{numelements,elemorder+1},
-  //  dwindow{numelements,elemorder+1},
-  //  d2window{numelements,elemorder+1}
-
 {
 
   //assign evenly spaced element boundaries
@@ -75,11 +70,13 @@ int Grid::numberElements()
 }
 
 void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput){
+  //Find the grid and element indices that correspond the the computational
+  //coordinates rfinite and rSplus.
+
   bool foundfinite = false;
   bool foundSplus = false;
   for(int elem=0; elem<NumElem; elem++){
     for(int node =0; node<=order; node++){
-      //     cout << elem << " " << node << " " << fabs(nodeLocs.get(elem, node) - rSplus) << endl;
       if((fabs(nodeLocs.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
         ijoutput.ifinite = elem;
         ijoutput.jfinite = node;

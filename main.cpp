@@ -25,10 +25,6 @@ using namespace window;
 using namespace source_interface;
 
 
-// struct OutputIndices
-// { int ifinite, jfinite, iSplus, jSplus};
-
-
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
@@ -216,64 +212,40 @@ int main()
         if(params.file.outputtimefixed) {
 
 
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,
 			   params.file.pdesolution,1);
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,"source",2);
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,"rhs",3);
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,"source",2);
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,"rhs",3);
 	  
 	  
 	 
 	}
       
 	if(params.file.outputradiusfixed){
-	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes, true,
+	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes, true,
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
 			     "psil",1);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
 			     "psitl",2);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
 			     "psiphil",3);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,theequation,lmmodes,true,
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
 			     "psirl",4);
 	  }//end if k==lmax
 	}//end if outputradiusfixed
       }//end for k
-    }else{
-    }
+    }//no options to output at fixed radius currently
     
-      //Output the difference in the waveforms between the 
-      //oscillation initially and after one period
-      /*
-      if(outputcount == params.time.comparisoncount){
-        cout << t << endl;
-        ofstream fs2;
-        fs2.open(params.file.oneperioderror);
-        for(int i = 0; i < uh.GFvecDim(); i++){
-          for (int j = 0; j < uh.GFarrDim(); j++){
-            fs2 << thegrid.gridNodeLocations().get(i, j) << " " 
-                << uh.get(0, 0, i, j) - uh0.get(0, 0, i, j) << endl;
-          }
-        }
-        fs2.close();
-      */
-        //Append the L2 error to that file, measured after one period
-        /*ofstream fsconvergence;
-        fsconvergence.open(params.file.L2error,ios::app);
-        
-        double L2;
-        L2=LTwoerror(thegrid, uh0, uh);
-        cout << "Order, deltat, num elems, L2 norm" << endl;
-        cout << params.grid.elemorder << " " << deltat << " " 
-             << params.grid.numelems << " " << L2 << endl;
-        fsconvergence << params.grid.elemorder << " " << deltat 
-                      << " " << params.grid.numelems << " " << L2 << endl;
-        fsconvergence.close();
-       
-        }*/
-    
-
     //    cout << "outputcount = " <<outputcount << endl;
     //Increment the timestep
     rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
@@ -317,7 +289,6 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
       double dxmin = fabs(grd.gridNodeLocations().get(0,0)
                           -grd.gridNodeLocations().get(0,2));
     }
-    
   }
   fs.close();
 }
@@ -371,7 +342,7 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   double LTwoerror(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0, 
                    TwoDVectorGridFunction<complex<double>>& uhend)
 {
-  //FIX THIS SO IT DEALS WITH SUM OF MODES
+  //FIX THIS SO IT DEALS WITH SUM OF MODES and nonrepeating waveforms
   //The square root of the integral of the squared difference
   double L2;
   L2 = 0.0;

@@ -1,5 +1,7 @@
 #include "numerics.h"
 
+
+//The window in time that allows the effective source to be turned on slowly
 void time_window(const double  time, const double tsigma, const int norder, double& tfac, double & dtfac_dt, double & d2tfac_dt2) {
   //tested and confirmed
   double tfactor, expfactor;

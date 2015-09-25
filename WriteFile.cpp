@@ -1,5 +1,7 @@
 #include "WriteFile.h"
 
+
+//write a file at a fixed time step, as a function of computational coordinate
 void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFunction<complex<double>>& uh,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
@@ -20,7 +22,7 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
   fs << " #time = " << t << endl;
 
   switch (type){
-  case 1:
+  case 1: // uh
 
     for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
@@ -32,7 +34,7 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
       }
     }
     break;
-  case 2:
+  case 2: //source
     for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
   	//Print out at select time steps
@@ -42,7 +44,7 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
       }
     }
     break;
-  case 3:
+  case 3: //rh
    for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
 	fs << thegrid.gridNodeLocations().get(i,j) << " "
@@ -62,7 +64,9 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
   fs.close();
 }
 
-                      
+
+
+//write a file at a fixed radius (known output indices), as a function of time 
 void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                         Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
@@ -79,8 +83,7 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
   }
   switch(type)
     {
-    case 1:
-      //	  oss << params.file.fixedradiusfilename << "." << k << ".txt";
+    case 1: //uh
       fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite) << " " 
 	 << t << " "
 	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
@@ -98,7 +101,7 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
   fs.close();
 }
 
-
+//write a file for psi summed over modes, possibly with some derivative. 
 void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                         Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
@@ -115,7 +118,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
   }
   switch(type)
     {
-    case 1:
+    case 1: //psi
       //	  if(k==params.modes.lmax){
       //	    oss7 << "psil.txt";
       fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
@@ -124,7 +127,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       }
       fs << endl;
       break;
-    case 2:
+    case 2: //dpsi/dt
       //oss8 << "psitl.txt";
       fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
       for(int n = 0; n<lmmodes.psitl.size(); n++){
@@ -132,7 +135,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       }
       fs << endl;
       break;
-    case 3:
+    case 3: //dpsi/dphi
       //      oss9 << "psiphil.txt";
       fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
       for(int n = 0; n<lmmodes.psiphil.size(); n++){
@@ -140,7 +143,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       }
       fs << endl;
       break;
-    case 4:
+    case 4: //dpsi/dr
       //oss10 << "psirl.txt";
       fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
       for(int n = 0; n<lmmodes.psirl.size(); n++){

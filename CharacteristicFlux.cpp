@@ -50,10 +50,11 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
   Array2D<double> Smatrixtemp(Ddimension, Ddimension);
   Smatrix = Smatrixtemp.copy();
   JAMA::Eigenvalue<double> Seigen(Atrimmed);
-  Seigen.getV(Smatrix);
-  JAMA::LU<double> Sinverter(Smatrix);
-  Sinv=Sinverter.solve(one);
+  Seigen.getV(Smatrix); // get Eigenvector matrix and store it in Smatrix
+  JAMA::LU<double> Sinverter(Smatrix); 
+  Sinv=Sinverter.solve(one); //Invert the Eigenvector matrix to get Sinv
   Lamb = matmult(Sinv, matmult(Atrimmed, Smatrix));
+  //Find the characteristic matrix for the system of equations, Lamb
 }
 
 Array2D<double> CharacteristicFlux::getS(){

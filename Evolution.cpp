@@ -30,39 +30,11 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
       2006345519317.0/3224310063776.0, 
       2802321613138.0/2924317926251.0};
   
-  /*
-  vector<double> rk4a;
-  rk4a.resize(5);
-  rk4a[0]= 0.0; 
-  rk4a[1]=-567301805773.0/1357537059087.0;
-  rk4a[2]=-2404267990393.0/2016746695238.0;
-  rk4a[3]=-3550918686646.0/2091501179385.0;
-  rk4a[4]=-1275806237668.0/842570457699.0;
-
-  vector<double> rk4b;
-  rk4b.resize(5);
-  rk4b[0]=1432997174477.0/9575080441755.0;
-  rk4b[0]=5161836677717.0/13612068292357.0;
-  rk4b[0]=1720146321549.0/2090206949498.0;
-  rk4b[0]=3134564353537.0/4481467310338.0;
-  rk4b[0]=2277821191437.0/14882151754819.0;
-
-  vector<double> rk4c;
-  rk4c.resize(5);
-  rk4c[0]=0.0;
-  rk4c[1]=1432997174477.0/9575080441755.0; 
-  rk4c[2]=2526269341429.0/6820363962896.0; 
-  rk4c[3]=2006345519317.0/3224310063776.0; 
-  rk4c[4]=2802321613138.0/2924317926251.0;
-  */
   int nsteps=5;
   
   TwoDVectorGridFunction<complex<double>> k(RHStdvgf.TDVGFdim(),
                                    RHStdvgf.VGFdim(), RHStdvgf.GFvecDim(),
                                    RHStdvgf.GFarrDim());
-
-  //step 0
-  //  vector<Array2D<double>> du;
 
 
   //step 1
@@ -78,20 +50,4 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
     uh = uh + rk4b[i-1] * k;
   }
 
-  /*  if(RHSOUTPUT){
-    ofstream fs;
-    fs.open("urhs.txt", ios::app);
-    fs << endl << endl;
-    fs << " #time = " << t << endl;
-    for(int j=0; j< RHStdvgf.GFvecDim(); j++){
-      for(int i=0; i< RHStdvgf.GFarrDim(); i++){
-        fs << thegrid.gridNodeLocations().get(j,i) << " ";
-        for(int k = 0; k< RHStdvgf.VGFdim(); k++){
-          fs << RHStdvgf.get(0,k,j,i) << " ";
-        }
-        fs << endl;
-      }
-    }
-    fs.close();
-    }*/
 }

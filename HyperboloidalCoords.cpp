@@ -6,8 +6,6 @@ double rstar_of_r(double r, double mass)
   return r + 2.0*mass * log(r/(2.0*mass)-1.0);
 }
 
-
-
 /* Function to calculate Lambert's W-function
 Algorithm found at
 http://en.citizendium.org/wiki/Lambert_W_function#Numerical_calculation

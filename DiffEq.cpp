@@ -56,7 +56,7 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
   setupABmatrices(thegrid, lmmodes);
 
   
-
+  //Print out the A and B coefficients in the same format as the Fortran file
    ofstream fs;
   fs.open("ABcoeffs.txt");
   for(int i= 0; i<params.grid.numelems; i++){
@@ -71,7 +71,6 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
          << -A[2][1] << " " << -A[2][2] << " " << -B0[2][1] << " " 
          << -B0[2][2] <<" " << -B0[2][0] << " "
          << -B1[2][0] << " " << -B2[2][0] << " " << -B3[2][0] << endl;
-        //         << -tA[1][0] << " " << -tA[1][1]<< endl;
     }
   }
   fs.close();
@@ -112,7 +111,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
           B[0][1] = -1.0;
           Bmatrices.set(k, i, j, B);
         }
-
+	
        } else if (params.metric.schwarschild) {
         
         int region;
@@ -122,16 +121,6 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         else if ((nodes.get(i,j)>Rplus)&&(nodes.get(i,j)<Splus)){region=3;}
         else if (nodes.get(i,j)==Splus) {region=4;}
         
-        /*        if(j==0){
-          if ((nodes.get(i,j+1)>=Rminus)&&(nodes.get(i,j+1)<=Rplus)){region=2;}
-          else if((nodes.get(i,j+1)>Rplus)&&(nodes.get(i,j+1)<Splus)){region=3;}
-        }
-        
-        if(j==params.grid.elemorder) {
-          if ((nodes.get(i,j-1)>Sminus)&&(nodes.get(i,j-1)<Rminus)){region=1;}
-          else if((nodes.get(i,j-1)>=Rminus)&&(nodes.get(i,j-1)<=Rplus)){region=2;}
-      }
-        */
         
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
         //nodes = rho
@@ -139,181 +128,181 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
         switch (region){
         case 0:
           {
-          Omega = 0.0;
-          Omegap = 0.0;
-          eL = 1.0;
-          eLp = 0.0;
-          H = -1.0;
-          Hp = 0.0;
-          thegrid.rstar.set(i,j,DBL_MAX);
-          thegrid.rschw.set(i,j,2.0*params.schw.mass); 
-                    term1 = 0.0;
-          term2 = 1.0;
-          Array2D<double> A(3, 3, 0.0);
-          A[1][2] = -1.0;
-          A[2][1] = 0.0;
-          A[2][2] = -1.0;
-          Amatrices.set(i, j, A);
-          Array2D<double> tA(2, 2, 0.0);
-          tA[0][1] = -1.0;
-          tA[1][0] = 0.0;
-          tA[1][1] = -1.0;
-          trimmedAmatrices.set(i, j, tA);
-          for(int k = 0; k < lmmodes.ntotal; k++) {
+	    Omega = 0.0;
+	    Omegap = 0.0;
+	    eL = 1.0;
+	    eLp = 0.0;
+	    H = -1.0;
+	    Hp = 0.0;
+	    thegrid.rstar.set(i,j,DBL_MAX);
+	    thegrid.rschw.set(i,j,2.0*params.schw.mass); 
+	    term1 = 0.0;
+	    term2 = 1.0;
+	    Array2D<double> A(3, 3, 0.0);
+	    A[1][2] = -1.0;
+	    A[2][1] = 0.0;
+	    A[2][2] = -1.0;
+	    Amatrices.set(i, j, A);
+	    Array2D<double> tA(2, 2, 0.0);
+	    tA[0][1] = -1.0;
+	    tA[1][0] = 0.0;
+	    tA[1][1] = -1.0;
+	    trimmedAmatrices.set(i, j, tA);
+	    for(int k = 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3, 3, 0.0);
             B[0][2] = -1.0;
             Bmatrices.set(k, i, j, B);
+	    }
+	    break;
           }
-          break;
-          }
-       case 1:
-         {
-          //inner hyperboloidal layer
-          transition(nodes.get(i, j), Rminus, 
-                     Sminus, fT, fTp, fTpp);
-          Omega = 1.0 - nodes.get(i, j) / Sminus * fT;
-          Omegap = -(fT + nodes.get(i, j) * fTp) / Sminus;
-          eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp 
+	case 1:
+	  {
+	    //inner hyperboloidal layer
+	    transition(nodes.get(i, j), Rminus, 
+		       Sminus, fT, fTp, fTpp);
+	    Omega = 1.0 - nodes.get(i, j) / Sminus * fT;
+	    Omegap = -(fT + nodes.get(i, j) * fTp) / Sminus;
+	    eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp 
+	      / Sminus;
+	    eLp = nodes.get(i, j) 
+	      * (2.0 * fTp + nodes.get(i, j) * fTpp)
             / Sminus;
-          eLp = nodes.get(i, j) 
-            * (2.0 * fTp + nodes.get(i, j) * fTpp)
-            / Sminus;
-          H = -1.0 + pow(Omega, 2.0) / eL;
-          Hp = (2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
-            / pow(eL, 2.0);
-          thegrid.rstar.set(i, j, nodes.get(i,j) / Omega);
-          rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
-          thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
-          term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i,j),3.0));
-          term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i,j);
-          Array2D<double> A(3, 3, 0.0);
-          A[1][2] = -1.0;
-          A[2][1] = -(1.0 + H) / (1.0 - H);
-          A[2][2] = 2.0 * H / (1.0 - H);
-          Amatrices.set(i,j,A);
-          Array2D<double> tA(2, 2, 0.0);
-          tA[0][1] = -1.0;
-          tA[1][0] = -(1.0 + H) / (1.0 - H);
-          tA[1][1] = 2.0 * H / (1.0 - H);
-          trimmedAmatrices.set(i,j,tA);
-          for(int k = 0; k < lmmodes.ntotal; k++) {
-             Array2D<double> B(3, 3, 0.0);
-             B[0][2] = -1.0;
-             B[2][1] = -Hp / (1.0 - H);
-             B[2][2] = Hp / (1.0 - H);
-             B[2][0] = 1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1
+	    H = -1.0 + pow(Omega, 2.0) / eL;
+	    Hp = (2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
+	      / pow(eL, 2.0);
+	    thegrid.rstar.set(i, j, nodes.get(i,j) / Omega);
+	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
+	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i,j),3.0));
+	    term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i,j);
+	    Array2D<double> A(3, 3, 0.0);
+	    A[1][2] = -1.0;
+	    A[2][1] = -(1.0 + H) / (1.0 - H);
+	    A[2][2] = 2.0 * H / (1.0 - H);
+	    Amatrices.set(i,j,A);
+	    Array2D<double> tA(2, 2, 0.0);
+	    tA[0][1] = -1.0;
+	    tA[1][0] = -(1.0 + H) / (1.0 - H);
+	    tA[1][1] = 2.0 * H / (1.0 - H);
+	    trimmedAmatrices.set(i,j,tA);
+	    for(int k = 0; k < lmmodes.ntotal; k++) {
+	      Array2D<double> B(3, 3, 0.0);
+	      B[0][2] = -1.0;
+	      B[2][1] = -Hp / (1.0 - H);
+	      B[2][2] = Hp / (1.0 - H);
+	      B[2][0] = 1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1
                *( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-             Bmatrices.set(k, i, j, B);
-          }
-
-          break;
-         }
+	      Bmatrices.set(k, i, j, B);
+	    }
+	    
+	    break;
+	  }
          case 2:
            {
-
+	     
            //central tortoise region
-          Omega = 1.0;
-          Omegap = 0.0;
-          eL = 1.0;
-          eLp = 0.0;
-          H = 0.0;
-          Hp = 0.0;
-          thegrid.rstar.set(i, j, nodes.get(i, j));
-          rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
-          thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
-          term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j), 3.0));
-          term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
-          Array2D<double> A(3, 3, 0.0);
-          A[1][2] = -1.0;
-          A[2][1] = -1.0;
-          Amatrices.set(i, j, A);
-          Array2D<double> tA(2, 2, 0.0);
-          tA[0][1] = -1.0;
-          tA[1][0] = -1.0;
-          trimmedAmatrices.set(i, j, tA);
-          for(int k = 0; k < lmmodes.ntotal; k++) {
-            Array2D<double> B(3, 3, 0.0);
-            B[0][2] = -1.0;
-            B[2][0] = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1
-              * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-            Bmatrices.set(k, i, j, B);
-          }
-          break;
+	     Omega = 1.0;
+	     Omegap = 0.0;
+	     eL = 1.0;
+	     eLp = 0.0;
+	     H = 0.0;
+	     Hp = 0.0;
+	     thegrid.rstar.set(i, j, nodes.get(i, j));
+	     rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	     thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
+	     term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j), 3.0));
+	     term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
+	     Array2D<double> A(3, 3, 0.0);
+	     A[1][2] = -1.0;
+	     A[2][1] = -1.0;
+	     Amatrices.set(i, j, A);
+	     Array2D<double> tA(2, 2, 0.0);
+	     tA[0][1] = -1.0;
+	     tA[1][0] = -1.0;
+	     trimmedAmatrices.set(i, j, tA);
+	     for(int k = 0; k < lmmodes.ntotal; k++) {
+	       Array2D<double> B(3, 3, 0.0);
+	       B[0][2] = -1.0;
+	       B[2][0] = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1
+		 * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	       Bmatrices.set(k, i, j, B);
+	     }
+	     break;
            }
-           case 3:
-             {
-
-             //outer hyperboloidal region
-          transition(nodes.get(i,j), Rplus, Splus, fT, fTp, fTpp);
-          Omega = 1.0 - nodes.get(i, j) / Splus * fT;
-          Omegap = -(fT + nodes.get(i, j) * fTp) / Splus;
-          eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / Splus; 
-          eLp = nodes.get(i, j) 
+	case 3:
+	  {
+	    
+	    //outer hyperboloidal region
+	    transition(nodes.get(i,j), Rplus, Splus, fT, fTp, fTpp);
+	    Omega = 1.0 - nodes.get(i, j) / Splus * fT;
+	    Omegap = -(fT + nodes.get(i, j) * fTp) / Splus;
+	    eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / Splus; 
+	    eLp = nodes.get(i, j) 
             * (2.0 * fTp + nodes.get(i, j) * fTpp) / Splus;
-          H = 1.0 - pow(Omega, 2.0) / eL;
-          Hp = -(2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
-            / pow(eL, 2.0);
-          thegrid.rstar.set(i, j, nodes.get(i, j) / Omega);
-          rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
-          thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
-          term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j),3.0));
-          term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
-          Array2D<double> A(3, 3, 0.0);
-          A[1][2] = -1.0;
-          A[2][1] = -(1.0 - H) / (1.0 + H);
-          A[2][2] = 2.0 * H / (1.0 + H);
-          Amatrices.set(i, j, A);
-          Array2D<double> tA(2, 2, 0.0);
-          tA[0][1] = -1.0;
-          tA[1][0] = -(1.0 - H) / (1.0 + H);
-          tA[1][1] = 2.0 * H / (1.0 + H);
-          trimmedAmatrices.set(i, j, tA);
-          for(int k = 0; k < lmmodes.ntotal; k++) {
-            Array2D<double> B(3, 3, 0.0);
-            B[0][2] = -1.0;
-            B[2][1] = Hp / (1.0 + H);
-            B[2][2] = Hp / (1.0 + H);
-            B[2][0] = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1
-              * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-            Bmatrices.set(k, i, j, B);
-          }
-          break;
+	    H = 1.0 - pow(Omega, 2.0) / eL;
+	    Hp = -(2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
+	      / pow(eL, 2.0);
+	    thegrid.rstar.set(i, j, nodes.get(i, j) / Omega);
+	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
+	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j),3.0));
+	    term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
+	    Array2D<double> A(3, 3, 0.0);
+	    A[1][2] = -1.0;
+	    A[2][1] = -(1.0 - H) / (1.0 + H);
+	    A[2][2] = 2.0 * H / (1.0 + H);
+	    Amatrices.set(i, j, A);
+	    Array2D<double> tA(2, 2, 0.0);
+	    tA[0][1] = -1.0;
+	    tA[1][0] = -(1.0 - H) / (1.0 + H);
+	    tA[1][1] = 2.0 * H / (1.0 + H);
+	    trimmedAmatrices.set(i, j, tA);
+	    for(int k = 0; k < lmmodes.ntotal; k++) {
+	      Array2D<double> B(3, 3, 0.0);
+	      B[0][2] = -1.0;
+	      B[2][1] = Hp / (1.0 + H);
+	      B[2][2] = Hp / (1.0 + H);
+	      B[2][0] = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1
+		* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	      Bmatrices.set(k, i, j, B);
+	    }
+	    break;
              }
         case 4:
           {
-
-          //scri-plus
-          Omega = 0.0;
-          Omegap = 0.0;
-          eL = 1.0;
-          eLp = 0.0;
-          H = 1.0;
-          Hp = 0.0;
-          thegrid.rstar.set(i, j, -DBL_MAX);
-          thegrid.rschw.set(i,j, -DBL_MAX);
-          term1 = 1.0/ pow(nodes.get(i,j),2.0);
-          term2 = 0.0;
-          Array2D<double> A(3,3,0.0);
-          A[1][2]=-1.0;
-          A[2][2]=1.0;
-          Amatrices.set(i,j,A);
-          Array2D<double> tA(2,2,0.0);
-          tA[0][1]=-1.0;
-          tA[1][1]=1.0;
-          trimmedAmatrices.set(i,j,tA);
-          for(int k= 0; k < lmmodes.ntotal; k++) {
+	    
+	    //scri-plus
+	    Omega = 0.0;
+	    Omegap = 0.0;
+	    eL = 1.0;
+	    eLp = 0.0;
+	    H = 1.0;
+	    Hp = 0.0;
+	    thegrid.rstar.set(i, j, -DBL_MAX);
+	    thegrid.rschw.set(i,j, -DBL_MAX);
+	    term1 = 1.0/ pow(nodes.get(i,j),2.0);
+	    term2 = 0.0;
+	    Array2D<double> A(3,3,0.0);
+	    A[1][2]=-1.0;
+	    A[2][2]=1.0;
+	    Amatrices.set(i,j,A);
+	    Array2D<double> tA(2,2,0.0);
+	    tA[0][1]=-1.0;
+	    tA[1][1]=1.0;
+	    trimmedAmatrices.set(i,j,tA);
+	    for(int k= 0; k < lmmodes.ntotal; k++) {
             Array2D<double> B(3,3,0.0);
             B[0][2]=-1.0;
             B[2][0]=lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
             Bmatrices.set(k,i,j,B);
-          }
+	    }
             break;
           }
-          default:
-            {
+	default:
+	  {
               throw logic_error("AB matrix region not defined");
-            break;
-            }
+	      break;
+	  }
         }//end switch case
       }//end inner for            
     }//end outer for
@@ -327,13 +316,13 @@ DiffEq::characteristicflux(int modenum,
                            TwoDVectorGridFunction<complex<double>>& uh, 
                            bool output)
 {
-
+  
   //We can loop over characteristicFlux in an external function because
   //in general, neither the RHS of the differential equation nor du mixes
   //spherical harmonic modes. 
 
   int NumElem = thegrid.numberElements();
-
+  
   vector<Array2D<complex<double>>> du;
   du.resize(NumElem);
   for(int elemnum=0; elemnum<NumElem; elemnum++){
@@ -341,7 +330,7 @@ DiffEq::characteristicflux(int modenum,
     int indR = uh.GFarrDim()-1; //index of rightmost node of that element
     double nL = -1.0; //normal to the leftmost node
     double nR = 1.0; //normal to the rightmost node
-
+    
     //Dimension of the components of the differential equation with 
     //spatial derivatives (dimension of the trimmed A matrices)
     //two for schwarszchild
@@ -354,7 +343,7 @@ DiffEq::characteristicflux(int modenum,
     int vminL = vmaxL - DdimL + 1; //neglect zero rows at top of A matrix
     int vmaxR = ArightBoundaries[elemnum].getAdim() - 1;
     int vminR = vmaxR - DdimR + 1; //neglect zero rows at top of A matrix
-
+    
     Array1D<complex<double>> uintL(DdimL); //internal u at left boundary
     Array1D<complex<double>> uintR(DdimR); //internal u at right boundary
     Array1D<complex<double>> uextL(DdimL); //external u at left boundary
@@ -373,7 +362,7 @@ DiffEq::characteristicflux(int modenum,
                                     vmaxL, 0); 
       //periodic boundary conditions
     }
-
+    
     if(elemnum < NumElem - 1) {
       uextR = uh.getVectorAsArray1D(modenum, elemnum + 1, indL, vminR, 
                                     vmaxR, 0); 
@@ -389,17 +378,17 @@ DiffEq::characteristicflux(int modenum,
     Array2D<double> lambdaminusR(DdimR, DdimR, 0.0);
     Array2D<double> lambdaplusL(DdimL, DdimL, 0.0);
     Array2D<double> lambdaplusR(DdimR, DdimR, 0.0);
-
+    
     Array2D<double> lambdaL= AleftBoundaries[elemnum].getLambda();
     Array2D<double> lambdaR= ArightBoundaries[elemnum].getLambda();
-
+    
     
     //lambda minus contains outward moving wave components
     //lambda plus contains inward moving wave components
     //Might be an incorrect summary. Trust the math, not the words
     //See pg 35 of Hesthaven and Warburten
-
-
+    
+    
     GridFunction<double> nodes = thegrid.gridNodeLocations();
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
@@ -423,14 +412,18 @@ DiffEq::characteristicflux(int modenum,
     
     //Numerical fluxes at both boundaries 
     //See Hesthaven and Warburten pg 35 (n*F)
-    Array1D<complex<double>> nfluxL1 = matmult(lambdaplusL, matmult(sinvL, uintL));
-    Array1D<complex<double>> nfluxL2 =  matmult(lambdaminusL, matmult(sinvL, uextL));
+    Array1D<complex<double>> nfluxL1 = matmult(lambdaplusL,
+					       matmult(sinvL, uintL));
+    Array1D<complex<double>> nfluxL2 =  matmult(lambdaminusL,
+						matmult(sinvL, uextL));
     Array1D<complex<double>> nfluxL = matmult(SL, nfluxL1+nfluxL2);
-
-    Array1D<complex<double>> nfluxR1 = matmult(lambdaplusR, matmult(sinvR, uintR));
-    Array1D<complex<double>> nfluxR2 = matmult(lambdaminusR, matmult(sinvR, uextR));
+    Array1D<complex<double>> nfluxR1 = matmult(lambdaplusR,
+					       matmult(sinvR, uintR));
+    Array1D<complex<double>> nfluxR2 = matmult(lambdaminusR,
+					       matmult(sinvR, uextR));
     Array1D<complex<double>> nfluxR = matmult(SR, nfluxR1 + nfluxR2);
 
+    
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
     Array2D<complex<double>> duelem(AtrimmedR.dim1(), 2, {0.0,0.0});
@@ -439,7 +432,7 @@ DiffEq::characteristicflux(int modenum,
     //This gets multiplied by lift matrix to calculate flux
     Array1D<complex<double>> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<complex<double>> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
-
+    
     Array1D<complex<double>> fL = matmult(AtrimmedL,uintL);
     Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
 
@@ -457,25 +450,6 @@ DiffEq::characteristicflux(int modenum,
     insert_1D_into_2D(duelem, duL, 0, false);
     insert_1D_into_2D(duelem, duR, 1, false);
 
-    if(output)
-      {
-        ofstream fs;
-        ofstream fs2;
-        ofstream fs3;
-        ofstream fs4;
-        fs.open("du.txt",ios::app);
-        fs2.open("uR.txt",ios::app);
-        fs3.open("uL.txt",ios::app);
-        fs4.open("nflux.txt",ios::app);
-        fs << nodes.get(elemnum,0) <<" " << duL[0] << " " << duL[1] << " " << duR[0] << " " << duR[1] << endl;
-        fs2 << nodes.get(elemnum,indR) << " " <<  uintR[0] << " " << uextR[0] << " " << uintR[1] << " " << uextR[1] << endl;
-        fs3 << nodes.get(elemnum,indL) << " " <<  uintL[0] << " " << uextL[0] << " " << uintL[1] << " " << uextL[1] << endl;
-        fs4 << nodes.get(elemnum,0) << " " << nfluxL[0] << " " << nfluxL[1] << " " << nfluxR[0] << " " << nfluxR[1] << endl;
-        fs.close();
-        fs2.close();
-        fs3.close();
-        fs4.close();
-      }
     du[elemnum] = duelem;
   }
   return du;
@@ -545,12 +519,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
         
         Array2D<double> tA(M,N); 
         tA= trimmedAmatrices.get(elemnum, nodenum);
-
+	
         for (int i=0; i<M; i++){
           complex<double> sum = 0;
-            for (int k=0; k<N; k++)
-              sum += -tA[i][k] * RHSA1preA[nodenum][k];
-            RHSA1[nodenum][i] = sum;
+	  for (int k=0; k<N; k++)
+	    sum += -tA[i][k] * RHSA1preA[nodenum][k];
+	  RHSA1[nodenum][i] = sum;
         }
         //Copied and pasted from TmatmultT in TNT2 a
         //with modification of variable first matrix
@@ -573,37 +547,34 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //number of diffeq variables stored in each. sum them using a 
     //for loop while assigning values to the RHStdvgf vector grid function
     
-      Array2D<complex<double>> RHSA = RHSA1 + RHSA2;
-      
-    //Sum the contributions from B, derivative, and flux, 
-    //accounting for different matrix dimensions
+    Array2D<complex<double>> RHSA = RHSA1 + RHSA2;
+    
+      //Sum the contributions from B, derivative, and flux, 
+      //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
-        for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
-          complex<double> tot;
-          if(vecnum<vminA){
-            tot = -RHSB[nodenum][vecnum];
-          } else {
-            tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
-          }//-sign in B because it is on the left hand side of the 
-          if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
-            tot += source.get(modenum, elemnum, nodenum);
+      for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
+	complex<double> tot;
+	if(vecnum<vminA){
+	  tot = -RHSB[nodenum][vecnum];
+	} else {
+	  tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
+	}//-sign in B because it is on the left hand side of the 
+	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
+	  tot += source.get(modenum, elemnum, nodenum);
                        
-            //equation in the definition supplied in DiffEq.cpp
-          }
-          RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
-
-        }
+	  //equation in the definition supplied in DiffEq.cpp
+	}
+	RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
+      }
     }
   }
- }
+}
 
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output)
 {
-
-
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     double max_speed = 1.0;
     if(params.opts.useSource) {
