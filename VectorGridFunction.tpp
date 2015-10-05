@@ -35,28 +35,6 @@ VectorGridFunction<T>::VectorGridFunction(int outerVecSize,
   }
 }
 
-//Get dimension of outer vector.
-template <class T>
-int VectorGridFunction<T>::VGFdim()
-{
-  return VGFvectorDim;
-}
-
-//Get dimension of inner vector.
-template <class T>
-int VectorGridFunction<T>::GFvecDim()
-{
-  return GFvectorDim;
-}
-
-//Get dimension of array.
-template <class T>
-int VectorGridFunction<T>::GFarrDim()
-{
-  return GFarrayDim;
-}
-
-
 //Set the value of a specific point. 
 template <class T>
 void VectorGridFunction<T>::set(int VGFvcoord, int GFvcoord, int GFacoord,

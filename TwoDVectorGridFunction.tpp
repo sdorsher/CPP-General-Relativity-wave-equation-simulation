@@ -45,34 +45,6 @@ TwoDVectorGridFunction<T>::TwoDVectorGridFunction(int outerVecSize,
   }
 }
 
-//Get dimension of outer vector.
-template <class T>
-int TwoDVectorGridFunction<T>::TDVGFdim()
-{
-  return TDVGFvectorDim;
-}
-
-//Get dimension of middle vector.
-template <class T>
-int TwoDVectorGridFunction<T>::VGFdim()
-{
-  return VGFvectorDim;
-}
-
-//Get dimension of inner vector.
-template <class T>
-int TwoDVectorGridFunction<T>::GFvecDim()
-{
-  return GFvectorDim;
-}
-
-//Get dimension of array.
-template <class T>
-int TwoDVectorGridFunction<T>::GFarrDim()
-{
-  return GFarrayDim;
-}
-
 //Set the value of a specific point. 
 template <class T>
 void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFvcoord, 

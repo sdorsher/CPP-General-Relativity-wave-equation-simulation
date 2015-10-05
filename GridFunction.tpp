@@ -79,48 +79,6 @@ void GridFunction<T>::append(TNT::Array1D<T> array)
 }
 
 
-//Get a value at a vector and array coordinate.
-template <class T>
-T GridFunction<T>::get(int vcoord, int acoord)
-{
-  if((0>vcoord) || (vcoord>=GFvectorDim)) {
-    throw out_of_range("Grid coordinate out of range in get(int,int)");
-  } else if((0>acoord) || (acoord>=GFarrayDim)) {
-    throw out_of_range("Grid function coordinate out of range in get(int,int)");
-  } else {
-    return data.at(vcoord)[acoord];
-  }
-}
-
-
-//Get an array at a vector coordinate.
-template <class T>
-TNT::Array1D<T> GridFunction<T>::get(int vcoord)
-{
-  if((0>vcoord) || (vcoord>=GFvectorDim)) {
-    throw out_of_range("Grid coordinate out of range in get(int)");
-  } else {
-    return data.at(vcoord);
-  }
-}
-
-
-//Get the dimension of the vector.
-template <class T>
-int GridFunction<T>::GFvecDim()
-{
-  return GFvectorDim;
-}
-
-
-//Get the dimension of the array.
-template <class T>
-int GridFunction<T>::GFarrDim()
-{
-  return GFarrayDim;
-}
-
-
 //May be obsolete.
 template <class T>
 void GridFunction<T>::save(string filename)

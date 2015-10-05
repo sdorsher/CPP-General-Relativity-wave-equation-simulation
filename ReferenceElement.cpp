@@ -275,27 +275,3 @@ void ReferenceElement::lift1D()
 }
 
 
-Array2D<double> ReferenceElement::getD()
-{//Returns the derivative matrix.
-  return derivativeMatrix;
-}
-
-Array1D<double> ReferenceElement::getr()
-{//Returns the reference node locations.
-  return refNodeLocations;
-}
-
-Array1D<double> ReferenceElement::getw()
-{//Returns the reference node weights.
-  return refNodeWeights;
-}
-
-int ReferenceElement::getOrder()
-{//Returns the element order.
-  return order;
-}
-
-Array2D<double> ReferenceElement::getLift()
-{//Returns the lift matrix.
-  return lift;
-}

@@ -26,16 +26,16 @@ class TwoDVectorGridFunction
                          int GFarraySize);
   //constructor for empty arrays
   
-  VectorGridFunction<T> get(int TDVGFvcoord);
+  inline VectorGridFunction<T> get(int TDVGFvcoord);
   // get the VectorGridFunction at the outer TDVGFcoord specified
   
-  T get(int TDVGFvcoord, int VGFvcoord, int GFvcoord, int GFacoord);
+  inline T get(int TDVGFvcoord, int VGFvcoord, int GFvcoord, int GFacoord);
   // get the value at the full set of four coordinates specified
   
-  Array1D<T> get(int TDVGFvcoord, int VGFvcoord,int GFvcoord);
+  inline Array1D<T> get(int TDVGFvcoord, int VGFvcoord,int GFvcoord);
   // get the Array1D at the outer three vector coordinates specified
   
-  GridFunction<T> get(int TDVGFvcoord, int VGFvcoord);
+  inline GridFunction<T> get(int TDVGFvcoord, int VGFvcoord);
   // Get the grid function at the outer two vector coordinates specified
   
   void set(int TDGVFvcoord, int VGFvcoord, int GFvcoord, int GFacoord,T value);
@@ -79,16 +79,48 @@ class TwoDVectorGridFunction
 
 //Adds two TwoDVectorGridFunctions and returns a third
 template <typename T>
-TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T>, TwoDVectorGridFunction<T>);
+inline TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T>, TwoDVectorGridFunction<T>);
 
 //Multiplies a real and a TwoDVectorGridFunctions and returns a TwoDVectorGridFunction
 template <typename T>
-TwoDVectorGridFunction<T> operator*(T, TwoDVectorGridFunction<T>);
+inline TwoDVectorGridFunction<T> operator*(T, TwoDVectorGridFunction<T>);
 
 //Multiplies a real and a complex TwoDVectorGridFunctions and returns a complex
 //TwoDVectorGridFunction
 template <typename T>
-TwoDVectorGridFunction<complex<T>> operator*(T, TwoDVectorGridFunction<complex<T>>);
+inline TwoDVectorGridFunction<complex<T>> operator*(T, TwoDVectorGridFunction<complex<T>>);
+
+
+//Get dimension of outer vector.
+template <class T>
+inline int TwoDVectorGridFunction<T>::TDVGFdim()
+{
+  return TDVGFvectorDim;
+}
+
+//Get dimension of middle vector.
+template <class T>
+inline int TwoDVectorGridFunction<T>::VGFdim()
+{
+  return VGFvectorDim;
+}
+
+//Get dimension of inner vector.
+template <class T>
+inline int TwoDVectorGridFunction<T>::GFvecDim()
+{
+  return GFvectorDim;
+}
+
+//Get dimension of array.
+template <class T>
+inline int TwoDVectorGridFunction<T>::GFarrDim()
+{
+  return GFarrayDim;
+}
+
+
+
 
 #include "TwoDVectorGridFunction.tpp"
 

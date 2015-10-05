@@ -39,10 +39,44 @@ private:
 
  public:
   Array2D<double> getD(); //get derivative matrix
+  double getDelem(int, int); //get the derivative matrix at two indices
   Array2D<double> getLift(); //get lift matrix
   Array1D<double> getr(); //get node locations
   Array1D<double> getw(); //get weights
   int getOrder(); //get order
 };
+
+inline Array2D<double> ReferenceElement::getD()
+{//Returns the derivative matrix.
+  return derivativeMatrix;
+}
+
+
+inline double ReferenceElement::getDelem(int i, int j)
+{//Returns the derivative matrix at i j
+  return derivativeMatrix[i][j];
+}
+
+inline Array1D<double> ReferenceElement::getr()
+{//Returns the reference node locations.
+  return refNodeLocations;
+}
+
+inline Array1D<double> ReferenceElement::getw()
+{//Returns the reference node weights.
+  return refNodeWeights;
+}
+
+inline int ReferenceElement::getOrder()
+{//Returns the element order.
+  return order;
+}
+
+inline Array2D<double> ReferenceElement::getLift()
+{//Returns the lift matrix.
+  return lift;
+}
+
+
 
 #endif

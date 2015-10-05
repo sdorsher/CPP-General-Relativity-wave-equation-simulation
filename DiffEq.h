@@ -28,6 +28,10 @@ class DiffEq
 {
 
  private:
+
+  int Adim;//dimension of A matrix (assumed to be same for all)
+  int Ddim;//dimension of D matrix and Atrimmed matrix (assumed to be same for all)
+
   //Grid functions and VectorGridFunctions range over all elements and all nodes
   GridFunction<Array2D<double>> Amatrices;
   VectorGridFunction<Array2D<double>> Bmatrices;

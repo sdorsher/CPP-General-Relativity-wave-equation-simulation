@@ -24,13 +24,13 @@ class VectorGridFunction
   VectorGridFunction(int VGFvecSize, int GFvecSize, int GFarraySize);
   //Empty constructor.
 
-  T get(int VGFvcoord, int GFvcoord, int GFacoord);
+  inline T get(int VGFvcoord, int GFvcoord, int GFacoord);
   //Get value at full coordinate specification.
   
-  Array1D<T> get(int VGFvcoord,int GFvcoord);
+  inline Array1D<T> get(int VGFvcoord,int GFvcoord);
   // Get Array1D at outer two vector coordinates. 
   
-  GridFunction<T> get(int VGFvcoord);
+  inline GridFunction<T> get(int VGFvcoord);
   //Get grid function at outermost vectorcoordinate. 
   
   void set(int VGFvcoord, int GFvcoord, int GFacoord,T value);
@@ -76,6 +76,31 @@ VectorGridFunction<T> operator*(T, VectorGridFunction<T>);
 //Multiplies a real scalar by a complex VGF to return a complex VGF.
 template <typename T>
 VectorGridFunction<complex<T>> operator*(T, VectorGridFunction<complex<T>>);
+
+
+//Get dimension of outer vector.
+template <class T>
+inline int VectorGridFunction<T>::VGFdim()
+{
+  return VGFvectorDim;
+}
+
+//Get dimension of inner vector.
+template <class T>
+inline int VectorGridFunction<T>::GFvecDim()
+{
+  return GFvectorDim;
+}
+
+//Get dimension of array.
+template <class T>
+inline int VectorGridFunction<T>::GFarrDim()
+{
+  return GFarrayDim;
+}
+
+
+
 
 #include "VectorGridFunction.tpp"
 
