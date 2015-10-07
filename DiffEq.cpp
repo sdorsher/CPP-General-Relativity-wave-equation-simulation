@@ -633,7 +633,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 		    dwindow, d2window);
   }
 
-  /*  for (int k; k< source.VGFdim(); k++){
+   for (int k; k< source.VGFdim(); k++){
     ofstream fs;
     ostringstream oss;
     oss << "source" << k << ".txt";
@@ -651,7 +651,7 @@ void DiffEq::modeRHS(Grid& thegrid,
       }
     }
   }
-  */
+ 
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     vector<Array2D<complex<double>>> du;
     du = move(characteristicflux(modenum, thegrid, uh, output));

@@ -185,13 +185,18 @@ int main()
   uh0 = uh;
 
 
-  //Set time based on smallest grid spacing
-  double dt0 = nodes.get(0, 1) - nodes.get(0, 0);
+  //Set time based on smallest grid spacing. This assumes all elements
+  // are equal in size
 
-  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
-
+  double dx = nodes.get(0, 1) - nodes.get(0, 0);
+  double dt0 = fabs(dx)/thegrid.jacobian(0);
+  cout << "dx, dt = " << dx << " " << dt0 << endl;
+  //  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
+  
   double deltat;
-  deltat = (params.time.tmax - params.time.t0) / nt; 
+  double maxspeed = 1.0;
+  deltat = params.time.courantfac * dt0/maxspeed;
+  //  deltat = (params.time.tmax - params.time.t0) / nt; 
   cout << "set and actual time step, based on courant factor" << endl;
   cout << dt0 << " " << deltat << endl << endl;
 

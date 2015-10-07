@@ -94,7 +94,6 @@ namespace source_interface
 
       using namespace orbit;
       complex<double> src; 
-
       phi = phi_of_t(time);
       set_particle(p,e,chi,phi,nummodes);
       //set particle postion
@@ -125,7 +124,7 @@ namespace source_interface
 
 
       phi= phi_of_t(time);
-      
+      cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
       set_particle(p,e,chi,phi,nummodes);
       
       if(params.opts.turn_on_source_smoothly){

@@ -1,6 +1,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <cmath>
+
 extern double PI;
 
 extern int SOURCE_VECNUM;
