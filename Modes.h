@@ -7,6 +7,7 @@
 #include "TwoDVectorGridFunction.h"
 #include "gsl/gsl_sf_legendre.h"
 #include "ConfigParams.h"
+#include "orbit.h"
 
 using namespace std;
 using namespace orbit;

@@ -10,7 +10,12 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 
 
 {
+  //circular orbit, so don't need find_extract_radii
+  
+  typedef numeric_limits<double> dbl;
   ofstream fs;
+  fs.precision(dbl::max_digits10);
+  fs.precision(16);
   ostringstream oss;
   oss << filename << "." << k << ".txt";
   if(append){
@@ -73,7 +78,10 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
                         string filename,
                         int type)
 {
+  typedef numeric_limits<double> dbl;
   ofstream fs;
+  fs.precision(dbl::max_digits10);
+  fs.precision(16);
   ostringstream oss;
   oss << filename << "." << k << ".txt";
   if(append){
@@ -108,7 +116,10 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
                         string filename,
                         int type)
 {
+  typedef numeric_limits<double> dbl;
   ofstream fs;
+  fs.precision(dbl::max_digits10);
+  fs.precision(16);
   ostringstream oss;
   oss << filename << ".txt";
   if(append){

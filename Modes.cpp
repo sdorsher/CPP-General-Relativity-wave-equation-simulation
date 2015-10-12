@@ -57,6 +57,7 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
   }
   ecosfac = 1.0 + e*cos(chi);
   radius = (params.schw.mass*p)/ecosfac;
+  phi=phi_of_t(time);
   for (int i=0; i<mm.size(); i++){
     if(mm.at(i)==0) {
       m_fold_factor = 1.0;
@@ -66,6 +67,7 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
     phifactor = zi*mm.at(i);
     phase = {cos(mm.at(i)*phi), sin(mm.at(i)*phi)};
     y_lm = gsl_sf_legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
+    //y_lm = legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
     psil.at(ll.at(i))= psil.at(ll.at(i))
       +m_fold_factor * y_lm * (phase * uh.get(i,0,index1,index2)).real();
     psitl.at(ll.at(i))=psitl.at(ll.at(i))

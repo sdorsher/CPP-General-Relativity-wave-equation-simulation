@@ -579,6 +579,27 @@ void DiffEq::modeRHS(Grid& thegrid,
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);
   }
+  if (output){
+    for (int k = 0; k<source.VGFdim(); k++){
+      ofstream fs;
+      fs.precision(16);
+      ostringstream oss;
+      oss << "source" << "." << k << ".txt";
+      fs.open(oss.str(),ios::app);
+      fs << endl << endl;
+      fs << " #time = " << t << endl;
+      
+      
+      for (int i = 0; i < source.GFvecDim(); i++){
+	for(int j = 0; j < source.GFarrDim(); j++){
+	  //Print out at select time steps
+	  fs << thegrid.gridNodeLocations().get(i, j) << " "
+	     << source.get(k, i, j).real() << " " 
+	     << source.get(k, i, j).imag() <<endl;
+	}
+      }
+    }
+  }
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;

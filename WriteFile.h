@@ -6,7 +6,7 @@
 #include "DiffEq.h"
 #include <string>
 #include <complex>
-
+#include <limits>
 
 //Output data at a fixed time
 void write_fixed_time(OutputIndices& ijoutput, int& k, double t,

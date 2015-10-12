@@ -189,16 +189,14 @@ int main()
   // are equal in size
 
   double dx = nodes.get(0, 1) - nodes.get(0, 0);
-  double dt0 = fabs(dx)/thegrid.jacobian(0);
-  cout << "dx, dt = " << dx << " " << dt0 << endl;
   //  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
   
   double deltat;
   double maxspeed = 1.0;
-  deltat = params.time.courantfac * dt0/maxspeed;
+  deltat = params.time.courantfac * dx/maxspeed;
   //  deltat = (params.time.tmax - params.time.t0) / nt; 
   cout << "set and actual time step, based on courant factor" << endl;
-  cout << dt0 << " " << deltat << endl << endl;
+  cout << dx << " " << deltat << endl << endl;
 
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);

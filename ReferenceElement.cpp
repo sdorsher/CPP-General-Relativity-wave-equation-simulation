@@ -22,6 +22,8 @@ refNodeWeights(N+1)
   
   //set the node locations in the reference element
   refNodeLocations=jacobiGL(0.0,0.0,N);
+  cout<< refNodeLocations[0]-refNodeLocations[1] << endl;
+
   
   //set the weights associated with integration over the nodes
   //of the reference element
