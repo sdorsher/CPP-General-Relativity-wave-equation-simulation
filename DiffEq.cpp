@@ -433,15 +433,26 @@ DiffEq::characteristicflux(int modenum,
     Array1D<complex<double>> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<complex<double>> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
     
-    Array1D<complex<double>> fL = matmult(AtrimmedL,uintL);
-    Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
+    //    Array1D<complex<double>> fL = matmult(AtrimmedL,uintL);
+    //  Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
 
+    
     if(output){
-      ofstream fs3;
-      fs3.open("f.txt",ios::app);
-      fs3 << nodes.get(elemnum, indL)<< " " << fL[0] << " " << fL[1] << " " <<
-        nodes.get(elemnum, indR)<<" " << fR[0] << " " << fR[1] << endl;
+      ofstream fs3, fs5, fs6;
+      fs3.open("du.txt",ios::app);
+      fs3 << setprecision(16);
+      fs3 << modenum <<  " " <<  nodes.get(elemnum, indL)<< " " << duL[0].real() << " " << duL[1].real() << " " <<
+        nodes.get(elemnum, indR)<<" " << duR[0].real() << " " << duR[1].real() << endl;
       fs3.close();
+      fs6.open("uL.txt", ios::app);
+      fs6 << setprecision(16);
+      fs6 << modenum << " " << nodes.get(elemnum, indL) <<  " " << uintL[0].real() << " " << uextL[0].real() << " " << uintL[1].real() << " " << uextL[1].real()<<endl;
+      fs6.close();
+      fs5.open("uR.txt", ios::app);
+      fs5 << setprecision(16);
+      fs5 << uintR[0].real() << " " << uextR[0].real() << " " << uintR[1].real() << " " << uextR[1].real()<<endl;
+      fs5.close();
+
     }
     
     //create a 2D array with one column corresponding to the left
@@ -579,7 +590,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);
   }
-  if (output){
+  if (output&&params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;
       fs.precision(16);

@@ -190,6 +190,7 @@ int main()
 
   double dx = nodes.get(0, 1) - nodes.get(0, 0);
   //  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
+
   
   double deltat;
   double maxspeed = 1.0;
@@ -203,15 +204,64 @@ int main()
 
   lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
 
-  
+  for(int k = 0; k < uh.TDVGFdim(); k++) {
+    if(params.file.outputtimefixed) {
+
+
+      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+		       theequation,lmmodes,true,
+		       params.file.pdesolution,1);
+      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+		       theequation,lmmodes,true,"source",2);
+      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+		       theequation,lmmodes,true,"rhs",3);
+      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+		       theequation,lmmodes,true,"up",4);
+	
+    }
+    
+    if(params.file.outputradiusfixed){
+      write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes, true,
+			 params.file.fixedradiusfilename,1);
+      if(k==params.modes.lmax){
+	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 "psil",1);
+	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 "psitl",2);
+	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 "psiphil",3);
+	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 "psirl",4);
+      }//end if k==lmax
+    }//end if outputradiusfixed
+  }//end for k
   
   //Initialize loop variables to determine when output
   //double output = deltat / 2.0;
   int outputcount =0;
-  for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
+  double t= params.time.t0;
+  
+  //  for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
+  while(t<params.time.tmax){
+  
+    //Increment the time integration
+    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
+    //Initial conditions, numerical fluxes, boundary conditions handled inside 
+    //Evolution.cpp, in RHS.
+
+    //increment time
+    t+=deltat;
+    
+    
     if (outputcount%params.time.outputevery == 0){
       //Output in gnuplot format
-      for(int k = 0; k < uh.TDVGFdim(); k++) {
+    
+     for(int k = 0; k < uh.TDVGFdim(); k++) {
         if(params.file.outputtimefixed) {
 
 
@@ -222,6 +272,8 @@ int main()
 			   theequation,lmmodes,true,"source",2);
 	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"rhs",3);
+	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,"up",4);
 	  
 	  
 	 
@@ -232,6 +284,7 @@ int main()
 			     theequation,lmmodes, true,
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
+	    lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite);
 	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
 			     "psil",1);
@@ -248,18 +301,11 @@ int main()
 	}//end if outputradiusfixed
       }//end for k
     }//no options to output at fixed radius currently
-    
-    //    cout << "outputcount = " <<outputcount << endl;
-    //Increment the timestep
-    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
-    //Initial conditions, numerical fluxes, boundary conditions handled inside 
-    //Evolution.cpp, in RHS.
-    
-    lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite);
+          
     //Increment the count to determine whether or not to output
     outputcount++;
     
-  }//end for t 
+  }//end while loop
 }
                          
 

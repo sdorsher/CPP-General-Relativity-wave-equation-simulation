@@ -38,7 +38,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
 
 
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t,true);
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,true);//true
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
 

@@ -13,6 +13,7 @@
 #include "namespaces.h"
 #include <complex>
 #include "source_interface.h"
+#include <iomanip>
 
 using namespace TNT;
 using namespace layers;

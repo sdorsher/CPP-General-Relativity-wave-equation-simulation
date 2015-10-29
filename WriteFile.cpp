@@ -28,7 +28,7 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 
   switch (type){
   case 1: // uh
-
+    {
     for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
 	//Print out at select time steps
@@ -38,8 +38,10 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 	   << uh.get(k, 2, i, j).real()<< endl;
       }
     }
+    }
     break;
   case 2: //source
+    {
     for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
   	//Print out at select time steps
@@ -48,22 +50,60 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 	    << theequation.source.get(k, i, j).imag() << endl; 
       }
     }
+    }
     break;
   case 3: //rh
-   for (int i = 0; i < uh.GFvecDim(); i++){
-      for(int j = 0; j < uh.GFarrDim(); j++){
-	fs << thegrid.gridNodeLocations().get(i,j) << " "
-	    << RHStdvgf.get(k,0,i,j).real() << " "
-	    << RHStdvgf.get(k,1,i,j).real() << " "
-	    << RHStdvgf.get(k,2,i,j).real() << " "
-	    << RHStdvgf.get(k,0,i,j).imag() << " "
-	    << RHStdvgf.get(k,1,i,j).imag() << " "
-	    << RHStdvgf.get(k,2,i,j).imag() << endl;
+    {
+      for (int i = 0; i < uh.GFvecDim(); i++){
+	for(int j = 0; j < uh.GFarrDim(); j++){
+	  fs << thegrid.gridNodeLocations().get(i,j) << " "
+	     << RHStdvgf.get(k,0,i,j).real() << " "
+	     << RHStdvgf.get(k,1,i,j).real() << " "
+	     << RHStdvgf.get(k,2,i,j).real() << " "
+	     << RHStdvgf.get(k,0,i,j).imag() << " "
+	     << RHStdvgf.get(k,1,i,j).imag() << " "
+	     << RHStdvgf.get(k,2,i,j).imag() << endl;
+	}
       }
-   }
-   break;
+    }
+    break;
+  case 4: //up
+    {
+    vector<complex<double>> up;
+    up.resize(uh.VGFdim());
+    for (int i = 0; i < uh.GFvecDim(); i++){
+      for(int j = 0; j < uh.GFarrDim(); j++){
+	complex<double> mfoldfactor;
+	double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
+	if (lmmodes.mm[k]==0) {
+	  mfoldfactor={1.0,0.};
+	} else {
+	  mfoldfactor={2.0,0.};
+	}
+	complex<double> phase{cos(lmmodes.mm[k]*phi),sin(lmmodes.mm[k]*phi)};
+	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
+						      lmmodes.mm[k],0.0);
+	for(int v = 0; v< uh.VGFdim(); v++){
+	  up[v] = mfoldfactor * y_lm * phase * uh.get(k,v,i,j);
+	}
+	up[2] = up[2]/(params.schw.p_orb-2.0*params.schw.mass)-up[1]/pow(params.schw.p_orb,2.0);
+	up[0]= up[0]/params.schw.p_orb;
+	up[1]= up[1]/params.schw.p_orb;
+	fs << thegrid.gridNodeLocations().get(i, j) << " "
+	   << up[0].real() << " " 
+	   << up[1].real() <<" " 
+	   << up[2].real() << " "
+	   << up[0].imag() << " "
+	   << up[1].imag() << " "
+	   << up[2].imag() << endl;
+      }
+    }
+    }
+    break;
   default:
+    {
     throw invalid_argument("Ivalid type in write_fixed_time");
+    }
     break;
   }
   fs.close();
@@ -95,11 +135,11 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
       fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite) << " " 
 	 << t << " "
 	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
-	 << uh.get(k, 1, ijoutput.ifinite, ijoutput.jfinite).real() <<" " 
+	 << uh.get(k, 1, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
 	 << uh.get(k, 2, ijoutput.ifinite, ijoutput.jfinite).real()<< " " 
 	 << thegrid.gridNodeLocations().get(ijoutput.iSplus, ijoutput.jSplus) << " " 
 	 << uh.get(k, 0, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
-	 << uh.get(k, 1, ijoutput.iSplus, ijoutput.jSplus).real() <<" " 
+	 << uh.get(k, 1, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
 	 << uh.get(k, 2, ijoutput.iSplus, ijoutput.jSplus).real()<< endl;
       break;
     default:
