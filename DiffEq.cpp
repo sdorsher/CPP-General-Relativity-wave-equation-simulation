@@ -1,7 +1,7 @@
 #include "DiffEq.h"
 
 /*
-Flat spacetime wave equation:
+Fla spacetime wave equation:
 drho/dt = c^2 dpi/dx
 dpi/dt=drho/dx
 drho/dt=psi
@@ -311,7 +311,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 
 
 vector<TNT::Array2D<complex<double>>> 
-DiffEq::characteristicflux(int modenum, 
+DiffEq::characteristicflux(double t, int modenum, 
                            Grid& thegrid,
                            TwoDVectorGridFunction<complex<double>>& uh, 
                            bool output)
@@ -437,7 +437,7 @@ DiffEq::characteristicflux(int modenum,
     //  Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
 
     
-    if(output){
+    if((output)&&(modenum==1)){
       ofstream fs3, fs5, fs6;
       fs3.open("du.txt",ios::app);
       fs3 << setprecision(16);
@@ -446,7 +446,7 @@ DiffEq::characteristicflux(int modenum,
       fs3.close();
       fs6.open("uL.txt", ios::app);
       fs6 << setprecision(16);
-      fs6 << modenum << " " << nodes.get(elemnum, indL) <<  " " << uintL[0].real() << " " << uextL[0].real() << " " << uintL[1].real() << " " << uextL[1].real()<<endl;
+      fs6 << t << " " << modenum << " " << nodes.get(elemnum, indL) <<  " " << uintL[0].real() << " " << uextL[0].real() << " " << uintL[1].real() << " " << uextL[1].real()<<endl;
       fs6.close();
       fs5.open("uR.txt", ios::app);
       fs5 << setprecision(16);
@@ -506,6 +506,13 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //from per node
 
 
+    //NOT CHECKED
+    /*    if((output)&&(modenum==1)){
+      cout << RHSB[nodenum][0] << " " << RHSB[nodenum][1] << " " <<  RHSB[nodenum][2] << endl;
+      }*/
+    
+      
+
     //A contribution:
     Array2D<complex<double>> RHSA1(uh.GFarrDim(), ArightBoundaries[elemnum].getDdim());
     
@@ -515,11 +522,17 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
 
     //FIX THIS. THIS CAN BE SPED UP BY NOT COPYING IN GETVECTORNODEARRAY
-    Array2D<complex<double>> RHSA1preA = thegrid.jacobian(elemnum) 
-      * (matmult(thegrid.refelem.getD(),
-                 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)));
-    
-    
+    Array2D<complex<double>> RHSA1preA = move(thegrid.jacobian(elemnum) 
+					      * move((matmult(thegrid.refelem.getD(),
+							      uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)))));
+
+    //RHSA1preA is du2drho and du2dpi.
+    /*    if(modenum==1){
+      for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++){ 
+	cout << setprecision(15);
+	cout << t << " " << thegrid.gridNodeLocations().get(elemnum, nodenum) << " " << RHSA1preA[nodenum][0].real() << " " << RHSA1preA[nodenum][1].real() << endl;
+      }
+      }*/
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
     for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++)
       {
@@ -547,13 +560,13 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
     //Needs a multiplication by an A matrix before D 
     //but A is position dependent. 
+
     
     //This is the contribution due to du, or the numerical flux
-    Array2D<complex<double>> RHSA2 = thegrid.jacobian(elemnum) 
-      * matmult(thegrid.refelem.getLift(), du[elemnum]);
-    
-    
-    
+    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum) 
+					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
+
+      
     //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
     //for loop while assigning values to the RHStdvgf vector grid function
@@ -568,6 +581,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	if(vecnum<vminA){
 	  tot = -RHSB[nodenum][vecnum];
 	} else {
+	  /*if((output)&&(modenum==1)&&(vecnum==2)){
+	    cout << setprecision(15);
+	    cout << nodenum << " " << RHSA[nodenum][vecnum-vminA].real() << endl;
+	    }*/
 	  tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
 	}//-sign in B because it is on the left hand side of the 
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
@@ -614,7 +631,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;
-    du = move(characteristicflux(modenum, thegrid, uh, output));
+    du = move(characteristicflux(t, modenum, thegrid, uh, output));
     RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
   }
 }

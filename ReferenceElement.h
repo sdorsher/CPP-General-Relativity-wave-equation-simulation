@@ -4,6 +4,7 @@
 #include "tnt/tnt.h"
 #include "TNT2.h"
 #include "globals.h"
+#include <iomanip>
 
 using namespace TNT;
 

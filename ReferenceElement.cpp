@@ -31,13 +31,39 @@ refNodeWeights(N+1)
 
   //calculate the Vandermonde matrix
   vandermonde1D();
+
+  /*  for(int nn=0; nn< order+1; nn++){
+    for(int nodenum=0; nodenum < order+1; nodenum++){
+      cout << setprecision(15);
+      cout << nodenum <<  " " << vandermondeMatrix[nodenum][nn] << endl;
+    }
+    }*/
+  
+
+
   
   //calculate the gradient of the Vandermonde matrix
   gradVandermonde1D();
 
+  /*  for(int nn=0; nn< order+1; nn++){
+    for(int nodenum=0; nodenum < order+1; nodenum++){
+      cout << setprecision(15);
+      cout << nodenum <<  " " << dVdr[nodenum][nn] << endl;
+    }
+    }*/
+  
+
+  
   //calculate the derivative matrix
   Dmatrix1D();
 
+  /*  for(int nn=0; nn<order+1; nn++){
+    for(int nodenum=0; nodenum<order+1; nodenum++){
+      cout << setprecision(15);
+      cout << nodenum << " " << derivativeMatrix[nodenum][nn] << endl;
+    }
+    }*/
+    
   //construct the lift matrix for use in the calculation of the flux
   lift1D();
 }
@@ -239,12 +265,19 @@ Array1D<double> ReferenceElement::gradJacobiP(double alpha, double beta,int N)
 {
   if ((alpha < -1) || (beta < -1)) throw std::invalid_argument("alpha or beta <-1 in gradJacobiP.");
   if (N < 0) throw std::invalid_argument("N<0 in gradJacobiP");
-  
+
   Array1D<double> gradpoly(refNodeLocations.dim(), 0.0);
   if (N != 0) {
-    gradpoly = sqrt(N * (N + alpha + beta + 1)) 
+    gradpoly = sqrt(N * (N + alpha + beta + 1.)) 
       * jacobiP(refNodeLocations, alpha + 1.0, beta + 1.0, N - 1);
   }
+
+  /*  for(int nodenum=0; nodenum<order+1; nodenum++){
+    cout << setprecision(15);
+    cout << nodenum << " " << refNodeLocations[nodenum] << " " << gradpoly[nodenum] << endl;
+  }*/
+
+  
   return gradpoly;
 }
 

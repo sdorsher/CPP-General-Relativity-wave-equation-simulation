@@ -144,20 +144,20 @@ int main()
 					     params.grid.pdenum,
                                              params.grid.numelems,
                                              params.grid.elemorder+1,
-					     0.0);
+					     {0.0,0.0});
 
   //Initialization of initial value of calculation variables.
   TwoDVectorGridFunction<complex<double>> uh0(lmmodes.ntotal,
                                               params.grid.pdenum,
                                               params.grid.numelems,
                                               params.grid.elemorder + 1,
-                                              0.0);
+                                              {0.0,0.0});
   //Right hand side of PDE
   TwoDVectorGridFunction<complex<double>> RHStdvgf(lmmodes.ntotal,
 						   params.grid.pdenum,
 						   params.grid.numelems,
 						   params.grid.elemorder + 1,
-						   0.0); 
+						   {0.0,0.0}); 
   
 
   //Setup initial conditions and initialize window
@@ -248,7 +248,9 @@ int main()
   
   //  for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
   while(t<params.time.tmax){
-  
+    //Increment the count to determine whether or not to output
+    outputcount++;
+    
     //Increment the time integration
     rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
@@ -302,10 +304,7 @@ int main()
       }//end for k
     }//no options to output at fixed radius currently
           
-    //Increment the count to determine whether or not to output
-    outputcount++;
-    
-  }//end while loop
+   }//end while loop
 }
                          
 
@@ -324,6 +323,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
         }
         
         uh.set(n,1,i,j,0.0);
+	fs << setprecision(16);
         fs << rho.get(i,j) << " " << uh.get(0,2,i,j) << endl;
 
       }

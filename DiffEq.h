@@ -58,7 +58,8 @@ class DiffEq
   Array2D<double> getAtrimmed(int gridindex, int pointsindex);
 
   //Returns du, for the characteristic flux.
-  vector<TNT::Array2D<complex<double>>> characteristicflux(int modenum,
+  vector<TNT::Array2D<complex<double>>> characteristicflux(double t,
+							   int modenum,
 							   Grid& thegrid,
 				   TwoDVectorGridFunction<complex<double>>& 
 							   uh, bool output);

@@ -52,7 +52,7 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
     }
     }
     break;
-  case 3: //rh
+  case 3: //rhs
     {
       for (int i = 0; i < uh.GFvecDim(); i++){
 	for(int j = 0; j < uh.GFarrDim(); j++){
@@ -136,11 +136,15 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
 	 << t << " "
 	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
 	 << uh.get(k, 1, ijoutput.ifinite, ijoutput.jfinite).real() << " " 
-	 << uh.get(k, 2, ijoutput.ifinite, ijoutput.jfinite).real()<< " " 
-	 << thegrid.gridNodeLocations().get(ijoutput.iSplus, ijoutput.jSplus) << " " 
+	 << uh.get(k, 2, ijoutput.ifinite, ijoutput.jfinite).real()<< " "
+	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).imag() << " " 
+	 << uh.get(k, 1, ijoutput.ifinite, ijoutput.jfinite).imag() << " " 
+	 << uh.get(k, 2, ijoutput.ifinite, ijoutput.jfinite).imag()<<endl;
+	 
+	/*	 << thegrid.gridNodeLocations().get(ijoutput.iSplus, ijoutput.jSplus) << " " 
 	 << uh.get(k, 0, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
 	 << uh.get(k, 1, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
-	 << uh.get(k, 2, ijoutput.iSplus, ijoutput.jSplus).real()<< endl;
+	 << uh.get(k, 2, ijoutput.iSplus, ijoutput.jSplus).real()<< endl;*/
       break;
     default:
       throw invalid_argument("Type out of range in write_fixed_radius");
