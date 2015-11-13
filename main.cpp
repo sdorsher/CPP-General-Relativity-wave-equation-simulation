@@ -208,13 +208,13 @@ int main()
     if(params.file.outputtimefixed) {
 
 
-      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+      /*     write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,
 		       params.file.pdesolution,1);
       write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"source",2);
       write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-		       theequation,lmmodes,true,"rhs",3);
+      theequation,lmmodes,true,"rhs",3);*/
       write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"up",4);
 	
@@ -224,6 +224,7 @@ int main()
       write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes, true,
 			 params.file.fixedradiusfilename,1);
+
       if(k==params.modes.lmax){
 	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,

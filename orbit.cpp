@@ -11,8 +11,21 @@ void initialize_orbit() {
 // phi as a function of time
 double phi_of_t(double t)
 {
+  //  cout << setprecision(15);
+  //  cout << params.schw.mass << " " << params.schw.p_orb << endl;
+
+  //  cout << setprecision(15);
+  //  cout << t << endl;
+  
+
   double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
+
+  cout << setprecision(15);
+  cout << "before: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << omega*t << endl;
+
   return omega*t;
+  
+  
 }
 
 // chi as a function of time

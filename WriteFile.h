@@ -7,6 +7,9 @@
 #include <string>
 #include <complex>
 #include <limits>
+#include "orbit.h"
+#include "namespaces.h"
+
 
 //Output data at a fixed time
 void write_fixed_time(OutputIndices& ijoutput, int& k, double t,

@@ -80,15 +80,24 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 	} else {
 	  mfoldfactor={2.0,0.};
 	}
+	phi=phi_of_t(t);
 	complex<double> phase{cos(lmmodes.mm[k]*phi),sin(lmmodes.mm[k]*phi)};
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
 						      lmmodes.mm[k],0.0);
+
+    	if((fabs(t- 6.879125977502731)<1.0e-6)&&(i==0)&&(j==0)) {
+	  cout << setprecision(15);
+	  //	  cout << t << " " << lmmodes.mm[k] << " " << phi <<  " " << phase.real() << " " << phase.imag() <<" " << y_lm.real() << endl;
+	  }
+	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
+
+	
 	for(int v = 0; v< uh.VGFdim(); v++){
 	  up[v] = mfoldfactor * y_lm * phase * uh.get(k,v,i,j);
 	}
-	up[2] = up[2]/(params.schw.p_orb-2.0*params.schw.mass)-up[1]/pow(params.schw.p_orb,2.0);
+	up[1] = up[1]/(params.schw.p_orb-2.0*params.schw.mass)-up[0]/pow(params.schw.p_orb,2.0);
 	up[0]= up[0]/params.schw.p_orb;
-	up[1]= up[1]/params.schw.p_orb;
+	up[2]= up[2]/params.schw.p_orb;
 	fs << thegrid.gridNodeLocations().get(i, j) << " "
 	   << up[0].real() << " " 
 	   << up[1].real() <<" " 
@@ -96,6 +105,10 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 	   << up[0].imag() << " "
 	   << up[1].imag() << " "
 	   << up[2].imag() << endl;
+
+
+
+	
       }
     }
     }
@@ -146,6 +159,33 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
 	 << uh.get(k, 1, ijoutput.iSplus, ijoutput.jSplus).real() << " " 
 	 << uh.get(k, 2, ijoutput.iSplus, ijoutput.jSplus).real()<< endl;*/
       break;
+      /*    case 2: //up
+      double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
+      double m_fold_factor;
+      if(lmmodes.mm[k]==0) {
+	m_fold_factor = 1.0;
+      } else {
+	m_fold_factor = 2.0;
+      }
+      complex<double> phase{cos(lmmodes.mm[k]*phi),sin(lmmodes.mm[k]*phi)};
+      complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
+						    lmmodes.mm[k], 0.0);
+      Array1D<complex<double>> up(params.grid.pdenum);
+      for(int i=0; i<up.dim(); i++){
+	up[i]=m_fold_factor*y_lm*phase*uh.get(k,i, ijoutput.ifinite,
+					      ijoutput.jfinite);
+      }
+      up[1]=up[1]/(params.schw.p_orb-2.0*params.schw.mass)
+	-up[0]/pow(params.schw.p_orb,2.0);
+      up[2]=up[2]/params.schw.p_orb;
+      up[0]=up[0]/params.schw.p_orb;
+
+      fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite)
+	 << " " << up[0].real()  << " "  << up[1].real() << " "
+	 << up[2].real()  << " " << up[0].imag() << " " << up[1].imag()
+	 << " " << up[2].imag() << endl;
+
+	 break;*/
     default:
       throw invalid_argument("Type out of range in write_fixed_radius");
       break;
