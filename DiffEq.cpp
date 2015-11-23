@@ -477,15 +477,22 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
    
 
   int NumElem = thegrid.numberElements();
+  int vmaxAB = ArightBoundaries[0].getAdim()-1;
+  int vminA = vmaxAB - ArightBoundaries[0].getDdim() +1;
+  Array2D<double> D;
+  D = thegrid.refelem.getD();
+  Array2D<double> Lift;
+  Lift = thegrid.refelem.getLift();
+  
   //pragma omp parallel if(NumElem>lmmodes.ntotal) for
 
 #pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) 
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
     //Maximum index for both A and B matrix
-    int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
+    //    int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
     //Minimum index for use with trimmed A matrix. 
     //Minimum index for B matrix is zero
-    int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
+    //    int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
     
     //The B matrix component of the RHS. 
     Array2D<complex<double>> RHSB(uh.GFarrDim(), 
@@ -528,8 +535,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //							      uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)))));
 
     Array2D<complex<double>> RHSA1preA = thegrid.jacobian(elemnum) 
-					      * (matmult(thegrid.refelem.getD(),
-							 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)));
+					      * matmult(D,
+						 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0));
 
     //RHSA1preA is du2drho and du2dpi.
     /*    if(modenum==1){
@@ -572,7 +579,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum) 
     //					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
     Array2D<complex<double>> RHSA2 = thegrid.jacobian(elemnum) 
-      *matmult(thegrid.refelem.getLift(), du[elemnum]);
+      *matmult(Lift, du[elemnum]);
 
       
     //RHSA and RHSB will have different sizes due to the different 
