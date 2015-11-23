@@ -323,7 +323,7 @@ DiffEq::characteristicflux(double t, int modenum,
   
   vector<Array2D<complex<double>>> du;
   du.resize(NumElem);
-#pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh)
+#pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh) if(uh.TDVGFdim()<=thegrid.numberElements())
   for(int elemnum=0; elemnum<NumElem; elemnum++){
 
     int indL = 0; //index of leftmost node of that element
@@ -486,7 +486,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
   
   //pragma omp parallel if(NumElem>lmmodes.ntotal) for
 
-#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) 
+#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) if(uh.TDVGFdim()<=thegrid.numberElements())
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
     //Maximum index for both A and B matrix
     //    int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
@@ -644,6 +644,7 @@ void DiffEq::modeRHS(Grid& thegrid,
       }
     }
   }
+#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;
