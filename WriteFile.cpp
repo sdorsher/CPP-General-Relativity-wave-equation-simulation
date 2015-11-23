@@ -85,11 +85,11 @@ void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFu
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
 						      lmmodes.mm[k],0.0);
 
-    	if((fabs(t- 6.879125977502731)<1.0e-6)&&(i==0)&&(j==0)) {
-	  cout << setprecision(15);
+	//    	if((fabs(t- 6.879125977502731)<1.0e-6)&&(i==0)&&(j==0)) {
+	//	  cout << setprecision(15);
 	  //	  cout << t << " " << lmmodes.mm[k] << " " << phi <<  " " << phase.real() << " " << phase.imag() <<" " << y_lm.real() << endl;
-	  }
-	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
+	//	  }
+	//	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
 
 	
 	for(int v = 0; v< uh.VGFdim(); v++){

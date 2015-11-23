@@ -13,6 +13,7 @@
 #include "Grid.h"
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
+#include <omp.h>
 
 /*Interfaces with Barry Wardell's effective source package. Mostly
   copied directly (copy and paste) from source_interface.cc in the

@@ -20,8 +20,8 @@ double phi_of_t(double t)
 
   double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
 
-  cout << setprecision(15);
-  cout << "before: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << omega*t << endl;
+  //  cout << setprecision(15);
+  //  cout << "before: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << omega*t << endl;
 
   return omega*t;
   

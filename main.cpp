@@ -130,8 +130,6 @@ int main()
   cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
        << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
 
-  GridFunction<double> nodes = thegrid.gridNodeLocations();
-  
   
   
   //setup the differential equation
@@ -188,7 +186,7 @@ int main()
   //Set time based on smallest grid spacing. This assumes all elements
   // are equal in size
 
-  double dx = nodes.get(0, 1) - nodes.get(0, 0);
+  double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
   //  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
 
   
@@ -347,15 +345,12 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   double omega = 2.0 * PI / params.sine.wavelength;
   
-  GridFunction<double> nodes(uh.GFvecDim(), uh.GFarrDim(), false);
-  nodes=grd.gridNodeLocations();
-
   for(int k = 0; k < uh.TDVGFdim(); k++) {
     for(int i = 0; i < uh.GFvecDim(); i++){
       for (int j = 0; j < uh.GFarrDim(); j++){
-        double psi = params.sine.amp * sin(omega * nodes.get(i, j)
+        double psi = params.sine.amp * sin(omega * grd.gridNodeLocations().get(i, j)
                                            + params.sine.phase);
-        double pivar = omega * params.sine.amp * cos(omega * nodes.get(i, j)
+        double pivar = omega * params.sine.amp * cos(omega * grd.gridNodeLocations().get(i, j)
                                                      + params.sine.phase);
         double rho = -params.waveeq.speed * pivar;
         //travelling wave
@@ -368,17 +363,14 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   }
 }
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
-  GridFunction<double> nodes(uh.GFvecDim(), uh.GFarrDim(), false);
-  nodes=grd.gridNodeLocations();
-  
   for(int k = 0; k < uh.TDVGFdim(); k++) {
     for(int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
-        double gaussian = params.gauss.amp * exp(-pow((nodes.get(i, j)
+        double gaussian = params.gauss.amp * exp(-pow((grd.gridNodeLocations().get(i, j)
                                                        - params.gauss.mu), 2.0)
                                                  / 2.0 
                                                  / pow(params.gauss.sigma, 2.0));
-        double dgauss = -(nodes.get(i, j) - params.gauss.mu)
+        double dgauss = -(grd.gridNodeLocations().get(i, j) - params.gauss.mu)
           / pow(params.gauss.sigma, 2.0) * gaussian;
         uh.set(k, 0, i, j, gaussian);
         uh.set(k, 1, i, j, 0.0); //time derivative is zero
@@ -398,8 +390,6 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   L2 = 0.0;
   Array1D<double> weights;
   weights = thegrid.refelem.getw();
-  GridFunction<double> nodes(uh0.GFvecDim(), uh0.GFarrDim(), false);
-  nodes = thegrid.gridNodeLocations();
   for(int i = 0; i < uh0.GFvecDim(); i++){
     for(int j = 0; j < uh0.GFarrDim(); j++){
       double added = weights[j] 

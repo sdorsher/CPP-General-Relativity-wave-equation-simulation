@@ -138,7 +138,8 @@ namespace source_interface
       //cout << "d2tfac_dt2 = " << d2tfac_dt2 << endl;
       
       set_time_window(tfac,dtfac_dt, d2tfac_dt2, nummodes);
-      
+
+#pragma omp parallel for 
       for(int i=0; i<thegrid.numberElements(); i++) {
         double *r = &thegrid.rschw.get(i)[0];
         double * win = &window.get(i)[0];
@@ -149,6 +150,7 @@ namespace source_interface
           eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
         }
       }
+#pragma omp parallel for if(nummodes>omp_get_max_threads())
       for (int k=0; k<nummodes; k++) {
         source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
                            {0.0,0.0});

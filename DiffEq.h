@@ -14,6 +14,7 @@
 #include <complex>
 #include "source_interface.h"
 #include <iomanip>
+#include <omp.h>
 
 using namespace TNT;
 using namespace layers;

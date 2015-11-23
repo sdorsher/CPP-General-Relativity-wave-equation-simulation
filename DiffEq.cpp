@@ -91,10 +91,8 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
 void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 {
   double Omega, Omegap, H, Hp, eL, eLp, fT, fTp, fTpp,rm2M;
-  GridFunction<double> nodes = thegrid.gridNodeLocations();
-
-  for(int i = 0; i < nodes.GFvecDim(); i++){
-    for(int j = 0; j < nodes.GFarrDim(); j++){
+  for(int i = 0; i < thegrid.gridNodeLocations().GFvecDim(); i++){
+    for(int j = 0; j < thegrid.gridNodeLocations().GFarrDim(); j++){
       //regular wave equation
       if(params.metric.flatspacetime){
         Array2D<double> A(3, 3, 0.0);
@@ -115,15 +113,15 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
        } else if (params.metric.schwarschild) {
         
         int region;
-        if (nodes.get(i,j)==Sminus) {region = 0;}
-        else if ((nodes.get(i,j)>Sminus)&&(nodes.get(i,j)<Rminus)) {region=1;}
-        else if ((nodes.get(i,j)>=Rminus)&&(nodes.get(i,j)<=Rplus)) {region=2;}
-        else if ((nodes.get(i,j)>Rplus)&&(nodes.get(i,j)<Splus)){region=3;}
-        else if (nodes.get(i,j)==Splus) {region=4;}
+        if (thegrid.gridNodeLocations().get(i,j)==Sminus) {region = 0;}
+        else if ((thegrid.gridNodeLocations().get(i,j)>Sminus)&&(thegrid.gridNodeLocations().get(i,j)<Rminus)) {region=1;}
+        else if ((thegrid.gridNodeLocations().get(i,j)>=Rminus)&&(thegrid.gridNodeLocations().get(i,j)<=Rplus)) {region=2;}
+        else if ((thegrid.gridNodeLocations().get(i,j)>Rplus)&&(thegrid.gridNodeLocations().get(i,j)<Splus)){region=3;}
+        else if (thegrid.gridNodeLocations().get(i,j)==Splus) {region=4;}
         
         
         double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
-        //nodes = rho
+        //thegrid.gridNodeLocations() = rho
         //horizon
         switch (region){
         case 0:
@@ -158,19 +156,19 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	case 1:
 	  {
 	    //inner hyperboloidal layer
-	    transition(nodes.get(i, j), Rminus, 
+	    transition(thegrid.gridNodeLocations().get(i, j), Rminus, 
 		       Sminus, fT, fTp, fTpp);
-	    Omega = 1.0 - nodes.get(i, j) / Sminus * fT;
-	    Omegap = -(fT + nodes.get(i, j) * fTp) / Sminus;
-	    eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp 
+	    Omega = 1.0 - thegrid.gridNodeLocations().get(i, j) / Sminus * fT;
+	    Omegap = -(fT + thegrid.gridNodeLocations().get(i, j) * fTp) / Sminus;
+	    eL = 1.0 + pow(thegrid.gridNodeLocations().get(i, j), 2.0) * fTp 
 	      / Sminus;
-	    eLp = nodes.get(i, j) 
-	      * (2.0 * fTp + nodes.get(i, j) * fTpp)
+	    eLp = thegrid.gridNodeLocations().get(i, j) 
+	      * (2.0 * fTp + thegrid.gridNodeLocations().get(i, j) * fTpp)
             / Sminus;
 	    H = -1.0 + pow(Omega, 2.0) / eL;
 	    Hp = (2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
 	      / pow(eL, 2.0);
-	    thegrid.rstar.set(i, j, nodes.get(i,j) / Omega);
+	    thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i,j) / Omega);
 	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i,j),3.0));
@@ -207,7 +205,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	     eLp = 0.0;
 	     H = 0.0;
 	     Hp = 0.0;
-	     thegrid.rstar.set(i, j, nodes.get(i, j));
+	     thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i, j));
 	     rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	     thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	     term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j), 3.0));
@@ -233,16 +231,16 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	  {
 	    
 	    //outer hyperboloidal region
-	    transition(nodes.get(i,j), Rplus, Splus, fT, fTp, fTpp);
-	    Omega = 1.0 - nodes.get(i, j) / Splus * fT;
-	    Omegap = -(fT + nodes.get(i, j) * fTp) / Splus;
-	    eL = 1.0 + pow(nodes.get(i, j), 2.0) * fTp / Splus; 
-	    eLp = nodes.get(i, j) 
-            * (2.0 * fTp + nodes.get(i, j) * fTpp) / Splus;
+	    transition(thegrid.gridNodeLocations().get(i,j), Rplus, Splus, fT, fTp, fTpp);
+	    Omega = 1.0 - thegrid.gridNodeLocations().get(i, j) / Splus * fT;
+	    Omegap = -(fT + thegrid.gridNodeLocations().get(i, j) * fTp) / Splus;
+	    eL = 1.0 + pow(thegrid.gridNodeLocations().get(i, j), 2.0) * fTp / Splus; 
+	    eLp = thegrid.gridNodeLocations().get(i, j) 
+            * (2.0 * fTp + thegrid.gridNodeLocations().get(i, j) * fTpp) / Splus;
 	    H = 1.0 - pow(Omega, 2.0) / eL;
 	    Hp = -(2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
 	      / pow(eL, 2.0);
-	    thegrid.rstar.set(i, j, nodes.get(i, j) / Omega);
+	    thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i, j) / Omega);
 	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j),3.0));
@@ -280,7 +278,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	    Hp = 0.0;
 	    thegrid.rstar.set(i, j, -DBL_MAX);
 	    thegrid.rschw.set(i,j, -DBL_MAX);
-	    term1 = 1.0/ pow(nodes.get(i,j),2.0);
+	    term1 = 1.0/ pow(thegrid.gridNodeLocations().get(i,j),2.0);
 	    term2 = 0.0;
 	    Array2D<double> A(3,3,0.0);
 	    A[1][2]=-1.0;
@@ -325,7 +323,9 @@ DiffEq::characteristicflux(double t, int modenum,
   
   vector<Array2D<complex<double>>> du;
   du.resize(NumElem);
+#pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh)
   for(int elemnum=0; elemnum<NumElem; elemnum++){
+
     int indL = 0; //index of leftmost node of that element
     int indR = uh.GFarrDim()-1; //index of rightmost node of that element
     double nL = -1.0; //normal to the leftmost node
@@ -389,7 +389,6 @@ DiffEq::characteristicflux(double t, int modenum,
     //See pg 35 of Hesthaven and Warburten
     
     
-    GridFunction<double> nodes = thegrid.gridNodeLocations();
     for(int j = 0; j < DdimL; j++) {
       if(nL * lambdaL[j][j] <= 0) {
         lambdaminusL[j][j] = nL * lambdaL[j][j];
@@ -436,17 +435,17 @@ DiffEq::characteristicflux(double t, int modenum,
     //    Array1D<complex<double>> fL = matmult(AtrimmedL,uintL);
     //  Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
 
-    
+    /*    
     if((output)&&(modenum==1)){
       ofstream fs3, fs5, fs6;
       fs3.open("du.txt",ios::app);
       fs3 << setprecision(16);
-      fs3 << modenum <<  " " <<  nodes.get(elemnum, indL)<< " " << duL[0].real() << " " << duL[1].real() << " " <<
-        nodes.get(elemnum, indR)<<" " << duR[0].real() << " " << duR[1].real() << endl;
+      fs3 << modenum <<  " " <<  thegrid.gridNodeLocations().get(elemnum, indL)<< " " << duL[0].real() << " " << duL[1].real() << " " <<
+        thegrid.gridNodeLocations().get(elemnum, indR)<<" " << duR[0].real() << " " << duR[1].real() << endl;
       fs3.close();
       fs6.open("uL.txt", ios::app);
       fs6 << setprecision(16);
-      fs6 << t << " " << modenum << " " << nodes.get(elemnum, indL) <<  " " << uintL[0].real() << " " << uextL[0].real() << " " << uintL[1].real() << " " << uextL[1].real()<<endl;
+      fs6 << t << " " << modenum << " " << thegrid.gridNodeLocations().get(elemnum, indL) <<  " " << uintL[0].real() << " " << uextL[0].real() << " " << uintL[1].real() << " " << uextL[1].real()<<endl;
       fs6.close();
       fs5.open("uR.txt", ios::app);
       fs5 << setprecision(16);
@@ -454,7 +453,7 @@ DiffEq::characteristicflux(double t, int modenum,
       fs5.close();
 
     }
-    
+    */
     //create a 2D array with one column corresponding to the left
     //boundary and one column corresponding to the right boundary
     //of du for the the various components of u. 
@@ -478,7 +477,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
    
 
   int NumElem = thegrid.numberElements();
+  //pragma omp parallel if(NumElem>lmmodes.ntotal) for
 
+#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) 
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
     //Maximum index for both A and B matrix
     int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
@@ -518,13 +519,17 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
     //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
-    //we take the spatial derivative across all nodes. 
+    //we take the spatial derivative across all thegrid.gridNodeLocations(). 
 
 
     //FIX THIS. THIS CAN BE SPED UP BY NOT COPYING IN GETVECTORNODEARRAY
-    Array2D<complex<double>> RHSA1preA = move(thegrid.jacobian(elemnum) 
-					      * move((matmult(thegrid.refelem.getD(),
-							      uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)))));
+    //    Array2D<complex<double>> RHSA1preA = move(thegrid.jacobian(elemnum) 
+    //					      * move((matmult(thegrid.refelem.getD(),
+    //							      uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)))));
+
+    Array2D<complex<double>> RHSA1preA = thegrid.jacobian(elemnum) 
+					      * (matmult(thegrid.refelem.getD(),
+							 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)));
 
     //RHSA1preA is du2drho and du2dpi.
     /*    if(modenum==1){
@@ -541,13 +546,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
         int K = RHSA1preA.dim1();
         int L = RHSA1preA.dim2();
         
-        Array2D<double> tA(M,N); 
-        tA= trimmedAmatrices.get(elemnum, nodenum);
+	//        Array2D<double> tA(M,N); 
+	// tA= 
 	
         for (int i=0; i<M; i++){
           complex<double> sum = 0;
 	  for (int k=0; k<N; k++)
-	    sum += -tA[i][k] * RHSA1preA[nodenum][k];
+	    sum += -trimmedAmatrices.get(elemnum, nodenum)[i][k]
+	      * RHSA1preA[nodenum][k];
 	  RHSA1[nodenum][i] = sum;
         }
         //Copied and pasted from TmatmultT in TNT2 a
@@ -561,17 +567,19 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //Needs a multiplication by an A matrix before D 
     //but A is position dependent. 
 
-    
+    //get rid of moves?? PARALLEL PROBLEM?
     //This is the contribution due to du, or the numerical flux
-    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum) 
-					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
+    //    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum) 
+    //					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
+    Array2D<complex<double>> RHSA2 = thegrid.jacobian(elemnum) 
+      *matmult(thegrid.refelem.getLift(), du[elemnum]);
 
       
     //RHSA and RHSB will have different sizes due to the different 
     //number of diffeq variables stored in each. sum them using a 
     //for loop while assigning values to the RHStdvgf vector grid function
     
-    Array2D<complex<double>> RHSA = RHSA1 + RHSA2;
+    //    Array2D<complex<double>> RHSA = RHSA1 + RHSA2;
     
       //Sum the contributions from B, derivative, and flux, 
       //accounting for different matrix dimensions
@@ -585,7 +593,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	    cout << setprecision(15);
 	    cout << nodenum << " " << RHSA[nodenum][vecnum-vminA].real() << endl;
 	    }*/
-	  tot=-RHSB[nodenum][vecnum]+RHSA[nodenum][vecnum-vminA];
+	  tot=-RHSB[nodenum][vecnum]+RHSA1[nodenum][vecnum-vminA]
+	    + RHSA2[nodenum][vecnum-vminA];
 	}//-sign in B because it is on the left hand side of the 
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
 	  tot += source.get(modenum, elemnum, nodenum);

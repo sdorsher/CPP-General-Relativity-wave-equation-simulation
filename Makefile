@@ -12,7 +12,7 @@ LGSL = `pkg-config --libs gsl`
 #Both
 LCPP = -lstdc++
 #FLGS = -g -lm -std=c++11 -O3 -p
-FLGS = -g -lm -std=c++11 -O3 
+FLGS = -g -lm -std=c++11 -O3 -fopenmp
 
 
 #Steven's Mac
@@ -36,7 +36,7 @@ main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFu
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
-	$(CXX) -g -lm -std=c++11 $(ITNT) $(IGEN) -I$(ESRC) -c ReferenceElement.cpp
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c ReferenceElement.cpp
 
 #GridFunction.o: GridFunction.cpp GridFunction.h TNT2.h
 #	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c GridFunction.cpp
