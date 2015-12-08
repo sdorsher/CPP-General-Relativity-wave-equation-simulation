@@ -45,57 +45,57 @@ int main()
 
   //setup the modes
   Modes lmmodes(params.modes.lmax);
+  if(params.metric.schwarschild){
+    double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
+    double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
+    double xip = 0.5*(rmin+rmax);
+    Sminus = params.hyperb.Sminus;
+    double rstar_orb = rstar_of_r(xip, params.schw.mass);
+    
+    double deltar = (rstar_orb - Sminus)* 2.0/params.grid.numelems; 
+    Splus = rstar_orb +round(0.5* params.grid.numelems) *deltar;
+    Rminus = rstar_orb 
+      - round(0.175 * params.grid.numelems) * deltar;
+    Rplus = rstar_orb 
+      + round(0.125 * params.grid.numelems) * deltar;
+    Wminus = Rminus + params.window.noffset * deltar;
+    Wplus = Rplus - params.window.noffset * deltar;
 
-  double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
-  double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
-  double xip = 0.5*(rmin+rmax);
-  Sminus = params.hyperb.Sminus;
-  double rstar_orb = rstar_of_r(xip, params.schw.mass);
-
-  double deltar = (rstar_orb - Sminus)* 2.0/params.grid.numelems; 
-  Splus = rstar_orb +round(0.5* params.grid.numelems) *deltar;
-  Rminus = rstar_orb 
-    - round(0.175 * params.grid.numelems) * deltar;
-  Rplus = rstar_orb 
-    + round(0.125 * params.grid.numelems) * deltar;
-  Wminus = Rminus + params.window.noffset * deltar;
-  Wplus = Rplus - params.window.noffset * deltar;
-
-  cout << "R_star orbit" << endl;
-  cout << rstar_orb << endl << endl;
-
-  cout << "Sminus Rminus Rplus Splus Wminus Wplus" << endl;
-  cout << Sminus << " " << Rminus << " " 
-       << Rplus <<" " << Splus << " " 
-       << Wminus << " " << Wplus << endl;
-  cout << endl;
-
-  //initialize orbit
-  initialize_orbit();
-  cout << "p =" << p << endl;
-  cout << "e =" << e << endl;
-  cout << "chi =" << chi << endl;
-  cout << "phi = " << phi << endl;
-  cout << endl;
+    cout << "R_star orbit" << endl;
+    cout << rstar_orb << endl << endl;
+    
+    cout << "Sminus Rminus Rplus Splus Wminus Wplus" << endl;
+    cout << Sminus << " " << Rminus << " " 
+	 << Rplus <<" " << Splus << " " 
+	 << Wminus << " " << Wplus << endl;
+    cout << endl;
+  
+    //initialize orbit
+    initialize_orbit();
+    cout << "p =" << p << endl;
+    cout << "e =" << e << endl;
+    cout << "chi =" << chi << endl;
+    cout << "phi = " << phi << endl;
+    cout << endl;
 
  
-  if(params.opts.useSource) {
-    init_source( lmmodes, params.schw.mass);
-  }
-  R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
-  R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
-  w1 = params.schw.p_orb-(invert_tortoise(2.0*deltar, params.schw.mass)
+    if(params.opts.useSource) {
+      init_source( lmmodes, params.schw.mass);
+    }
+    R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
+    R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
+    w1 = params.schw.p_orb-(invert_tortoise(2.0*deltar, params.schw.mass)
                           +2.0*params.schw.mass)-R1;
-  w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
-  nmodes = lmmodes.ntotal;
+    w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
+    nmodes = lmmodes.ntotal;
 
-  cout << "R1 R2 w1 w2" << endl;
-  cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
+    cout << "R1 R2 w1 w2" << endl;
+    cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
   
-  if(params.opts.useSource) {
-    set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
+    if(params.opts.useSource) {
+      set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
+    }
   }
-  
   
   double lowlim, uplim; 
   
@@ -119,22 +119,27 @@ int main()
   
   OutputIndices ijoutput;
 
-  //  int ifinite, iSplus, jfinite, jSplus;
-  thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
-                                        params.schw.mass), Splus, 
-                             ijoutput);
+  if(params.metric.schwarschild){
+    //  int ifinite, iSplus, jfinite, jSplus;
+    thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
+					  params.schw.mass), Splus, 
+			       ijoutput);
+    
+    cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
+    cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
+    cout << "Output indices for finite and scri-plus radii" << endl;
+    cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
+	 << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
+  }
   
-  cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
-  cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
-  cout << "Output indices for finite and scri-plus radii" << endl;
-  cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
-       << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
 
-  
+  cout << "entering diff eq" << endl;
   
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
 
+  cout << "diff eq established" << endl;
+  
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   //Solution to PDE, possibly a vector
@@ -199,23 +204,27 @@ int main()
 
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
+  
 
-  lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
+  if (params.metric.schwarschild){
+    lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
+  }
 
+  
   for(int k = 0; k < uh.TDVGFdim(); k++) {
     if(params.file.outputtimefixed) {
 
 
-      /*     write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+      write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,
 		       params.file.pdesolution,1);
-      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+      write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+		       theequation,lmmodes,true,"rhs",3);
+	     /*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"source",2);
-      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-      theequation,lmmodes,true,"rhs",3);*/
-      write_fixed_time(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+     write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"up",4);
-	
+	     */
     }
     
     if(params.file.outputradiusfixed){
@@ -266,16 +275,16 @@ int main()
         if(params.file.outputtimefixed) {
 
 
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+	  write_fixed_time(k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,
 			   params.file.pdesolution,1);
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+	  write_fixed_time(k,t,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,"rhs",3);
+	  /*	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"source",2);
 	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,"rhs",3);
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"up",4);
-	  
+	  */
 	  
 	 
 	}

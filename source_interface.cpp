@@ -55,8 +55,8 @@ namespace source_interface
 
 
     void clean_source () {
-      int s{effsource.size()};
-      for (int i=0; i<s; i++) {
+      vector<complex<double>>::size_type s{effsource.size()};
+      for (vector<complex<double>>::size_type i=0; i<s; i++) {
         assert(effsource.at(s-1-i)!=nullptr);
         delete effsource.at(s-1-i);
         effsource.pop_back(); 

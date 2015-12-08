@@ -52,10 +52,11 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
     
   //set up the A and B matrices
 
-    
-  setupABmatrices(thegrid, lmmodes);
 
+  setupABmatrices(thegrid, lmmodes);
   
+
+  if(params.metric.schwarschild){
   //Print out the A and B coefficients in the same format as the Fortran file
    ofstream fs;
   fs.open("ABcoeffs.txt");
@@ -74,9 +75,8 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
     }
   }
   fs.close();
- 
-
   cout << "ABcoeffs output to file" << endl <<endl;
+  }
  
   //Get all characteristic equation information for each boundary node
   for (int i = 0; i < thegrid.numberElements(); i++){
@@ -325,7 +325,6 @@ DiffEq::characteristicflux(double t, int modenum,
   du.resize(NumElem);
 #pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh) if(uh.TDVGFdim()<=thegrid.numberElements())
   for(int elemnum=0; elemnum<NumElem; elemnum++){
-
     int indL = 0; //index of leftmost node of that element
     int indR = uh.GFarrDim()-1; //index of rightmost node of that element
     double nL = -1.0; //normal to the leftmost node
@@ -644,11 +643,15 @@ void DiffEq::modeRHS(Grid& thegrid,
       }
     }
   }
+
+  
+
 #pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
+    //    cout << modenum << endl;
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;
-    du = move(characteristicflux(t, modenum, thegrid, uh, output));
+    du = characteristicflux(t, modenum, thegrid, uh, output);
     RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
   }
 }

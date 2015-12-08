@@ -39,15 +39,15 @@ private:
                         //scaled by jacobian
 
  public:
-  Array2D<double> getD(); //get derivative matrix
+  const Array2D<double>& getD(); //get derivative matrix
   double getDelem(int, int); //get the derivative matrix at two indices
-  Array2D<double> getLift(); //get lift matrix
+  const Array2D<double>& getLift(); //get lift matrix
   Array1D<double> getr(); //get node locations
   Array1D<double> getw(); //get weights
   int getOrder(); //get order
 };
 
-inline Array2D<double> ReferenceElement::getD()
+inline const Array2D<double>& ReferenceElement::getD()
 {//Returns the derivative matrix.
   return derivativeMatrix;
 }
@@ -73,7 +73,7 @@ inline int ReferenceElement::getOrder()
   return order;
 }
 
-inline Array2D<double> ReferenceElement::getLift()
+inline const Array2D<double>& ReferenceElement::getLift()
 {//Returns the lift matrix.
   return lift;
 }

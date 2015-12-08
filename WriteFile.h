@@ -12,7 +12,7 @@
 
 
 //Output data at a fixed time
-void write_fixed_time(OutputIndices& ijoutput, int& k, double t,
+void write_fixed_time(int& k, double t,
 		      TwoDVectorGridFunction<complex<double>>& uh,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 

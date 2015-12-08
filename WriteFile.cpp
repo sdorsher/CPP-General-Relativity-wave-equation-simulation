@@ -2,7 +2,7 @@
 
 
 //write a file at a fixed time step, as a function of computational coordinate
-void write_fixed_time(OutputIndices& ijoutput, int& k,double t, TwoDVectorGridFunction<complex<double>>& uh,
+void write_fixed_time(int& k,double t, TwoDVectorGridFunction<complex<double>>& uh,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                       string filename,
