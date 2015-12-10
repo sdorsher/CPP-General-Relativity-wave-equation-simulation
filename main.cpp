@@ -192,15 +192,21 @@ int main()
   // are equal in size
 
   double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
-  //  int nt = ceil(params.time.tmax / params.time.courantfac / dt0);
-
   
   double deltat;
   double maxspeed = 1.0;
-  deltat = params.time.courantfac * dx/maxspeed;
-  //  deltat = (params.time.tmax - params.time.t0) / nt; 
-  cout << "set and actual time step, based on courant factor" << endl;
-  cout << dx << " " << deltat << endl << endl;
+
+  if(params.metric.schwarschild){
+    deltat = params.time.courantfac * dx/maxspeed;
+    cout << "set and actual time step, based on courant factor" << endl;
+    cout << dx << " " << deltat << endl << endl;
+  }else if(params.metric.flatspacetime){
+    //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
+    //deltat = (params.time.tmax - params.time.t0) / nt;
+    deltat = params.time.dt;
+    cout << "deltat set to dt";
+    cout << deltat << endl;
+  }
 
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
@@ -310,9 +316,15 @@ int main()
 	  }//end if k==lmax
 	}//end if outputradiusfixed
       }//end for k
-    }//no options to output at fixed radius currently
-          
-   }//end while loop
+     ofstream fsL2;
+     fsL2.open("L2error.txt", ios::app);
+     fsL2.precision(15);
+     if (outputcount==params.opts.L2outputcount){
+       fsL2 << params.grid.elemorder << " " << params.grid.numelems << " " << deltat << " " << LTwoError(thegrid, uh0, uh) << " " << t << " " << outputcount << endl;
+     }
+     fsL2.close();
+    }
+  }//end while loop
 }
                          
 
@@ -390,7 +402,7 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   }
 }
 
-  double LTwoerror(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0, 
+  double LTwoError(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0, 
                    TwoDVectorGridFunction<complex<double>>& uhend)
 {
   //FIX THIS SO IT DEALS WITH SUM OF MODES and nonrepeating waveforms

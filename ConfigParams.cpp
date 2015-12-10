@@ -14,6 +14,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   //read in options
   opts.useSource = getConfigFromFile<bool>(configFileName, "options", 
 					   "useSource");
+  opts.L2outputcount = getConfigFromFile<int>(configFileName, "options", 
+					     "Ltwooutputcount");
+  cout << opts.L2outputcount << endl;
   opts.turn_on_source_smoothly = getConfigFromFile<bool>(configFileName,
 							 "options",
 						    "turn_on_source_smoothly");

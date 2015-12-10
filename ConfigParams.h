@@ -12,6 +12,7 @@ using namespace std;
 using namespace libconfig;
 
 struct OptionsParams{
+  int L2outputcount;
   bool useSource; //use the effective source
   bool turn_on_source_smoothly; //use a window function in time to turn on
   //the effective source smoothly
