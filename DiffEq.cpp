@@ -414,22 +414,30 @@ DiffEq::characteristicflux(double t, int modenum,
 					       matmult(sinvL, uintL));
     Array1D<complex<double>> nfluxL2 =  matmult(lambdaminusL,
 						matmult(sinvL, uextL));
+    
     Array1D<complex<double>> nfluxL = matmult(SL, nfluxL1+nfluxL2);
+
+ 
     Array1D<complex<double>> nfluxR1 = matmult(lambdaplusR,
 					       matmult(sinvR, uintR));
     Array1D<complex<double>> nfluxR2 = matmult(lambdaminusR,
 					       matmult(sinvR, uextR));
     Array1D<complex<double>> nfluxR = matmult(SR, nfluxR1 + nfluxR2);
 
-    
     Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     Array2D<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
     Array2D<complex<double>> duelem(AtrimmedR.dim1(), 2, {0.0,0.0});
 
     
     //This gets multiplied by lift matrix to calculate flux
+    Array1D<complex<double>> temp10 = nL* matmult(AtrimmedL,uintL);
+    cout << temp10[0].real() << " " << temp10[1].real() << endl;
     Array1D<complex<double>> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<complex<double>> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
+    //DU SHOULD BE ZERO AFTER FIRST CALL TO RHS
+
+    
+    //    cout << duL[0].real() << " " <<duL[1].real() << " " << duR[0].real() << " " << duR[1].real() << endl;
     
     //    Array1D<complex<double>> fL = matmult(AtrimmedL,uintL);
     //  Array1D<complex<double>> fR = matmult(AtrimmedR,uintR);
@@ -652,6 +660,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;
     du = characteristicflux(t, modenum, thegrid, uh, output);
+    return;
     RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
   }
 }

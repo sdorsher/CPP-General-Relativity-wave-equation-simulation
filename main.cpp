@@ -210,7 +210,8 @@ int main()
 
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
-  
+
+  return 0;
 
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
@@ -371,14 +372,14 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
       for (int j = 0; j < uh.GFarrDim(); j++){
         double psi = params.sine.amp * sin(omega * grd.gridNodeLocations().get(i, j)
                                            + params.sine.phase);
-        double pivar = omega * params.sine.amp * cos(omega * grd.gridNodeLocations().get(i, j)
+        double rhovar = omega * params.sine.amp * cos(omega * grd.gridNodeLocations().get(i, j)
                                                      + params.sine.phase);
-        double rho = -params.waveeq.speed * pivar;
+        double pivar = -params.waveeq.speed * rhovar;
         //travelling wave
         //are rho and pi backward?
         uh.set(k, 0, i, j, psi);
-        uh.set(k, 1, i, j, rho);
-        uh.set(k, 2, i, j, pivar);
+        uh.set(k, 1, i, j, pivar);
+        uh.set(k, 2, i, j, rhovar);
       }
     }
   }
