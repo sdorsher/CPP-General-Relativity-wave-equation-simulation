@@ -431,7 +431,6 @@ DiffEq::characteristicflux(double t, int modenum,
     
     //This gets multiplied by lift matrix to calculate flux
     Array1D<complex<double>> temp10 = nL* matmult(AtrimmedL,uintL);
-    cout << temp10[0].real() << " " << temp10[1].real() << endl;
     Array1D<complex<double>> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
     Array1D<complex<double>> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
     //DU SHOULD BE ZERO AFTER FIRST CALL TO RHS
@@ -660,7 +659,6 @@ void DiffEq::modeRHS(Grid& thegrid,
     double max_speed = 1.0;
     vector<Array2D<complex<double>>> du;
     du = characteristicflux(t, modenum, thegrid, uh, output);
-    return;
     RHS(modenum, thegrid, uh, RHStdvgf, t, du, output);
   }
 }

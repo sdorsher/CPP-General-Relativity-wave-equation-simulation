@@ -211,7 +211,6 @@ int main()
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
 
-  return 0;
 
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);

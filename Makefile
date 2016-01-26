@@ -13,8 +13,8 @@ LGSL = `pkg-config --libs gsl`
 LCPP = -lstdc++
 #FLGS = -g -lm -std=c++11 -O3 -p
 
-#FLGS = -g -lm -std=c++11 -O3 -fopenmp
-FLGS = -g -lm -std=c++11 -O3 
+FLGS = -g -lm -std=c++11 -O3 -fopenmp
+#FLGS = -g -lm -std=c++11 -O3 
 
 
 #Steven's Mac
