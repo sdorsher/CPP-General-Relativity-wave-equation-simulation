@@ -16,18 +16,22 @@ vandermondeMatrix(N+1,N+1),
 dVdr(N+1,N+1),
 derivativeMatrix(N+1,N+1),
 lift(N+1,2,0.0),
-refNodeWeights(N+1)
+refNodeWeights(N+1),
+Ddim(2),
+liftDim(2)
 {
   order=N; //element order
   
   //set the node locations in the reference element
   refNodeLocations=jacobiGL(0.0,0.0,N);
+  refNodeLocationsVec=Array1DtoVector(refNodeLocations);
   cout<< refNodeLocations[0]-refNodeLocations[1] << endl;
 
   
   //set the weights associated with integration over the nodes
   //of the reference element
   refNodeWeights=gaussWeights(0.0,0.0,N);
+  refNodeWeightsVec=Array1DtoVector(refNodeWeights);
 
   //calculate the Vandermonde matrix
   vandermonde1D();
@@ -56,7 +60,9 @@ refNodeWeights(N+1)
   
   //calculate the derivative matrix
   Dmatrix1D();
-
+  Ddim[0]=derivativeMatrix.dim1();
+  Ddim[1]=derivativeMatrix.dim2();
+  
   /*  for(int nn=0; nn<order+1; nn++){
     for(int nodenum=0; nodenum<order+1; nodenum++){
       cout << setprecision(15);
@@ -66,6 +72,8 @@ refNodeWeights(N+1)
     
   //construct the lift matrix for use in the calculation of the flux
   lift1D();
+  liftDim[0] = lift.dim1();
+  liftDim[1] = lift.dim2();
 }
 
 void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha, 
@@ -256,6 +264,7 @@ void ReferenceElement::vandermonde1D()
     insert_1D_into_2D(vandermondeMatrix, 
                       jacobiP(refNodeLocations, 0.0, 0.0, j), 
                       j, true);
+    vandermondeMatrixVec=Array2DtoVector(vandermondeMatrix);
   }
 }
 
@@ -288,6 +297,7 @@ void ReferenceElement::gradVandermonde1D()
   for(int i = 0; i <= order; i++) {
     insert_1D_into_2D(dVdr, gradJacobiP(0.0, 0.0, i), i, true);
   }
+  dVdrVec=Array2DtoVector(dVdr);
   return;
 }
 
@@ -299,6 +309,8 @@ void ReferenceElement::Dmatrix1D()
   Array2D<double> dVdrT = transpose(dVdr);
   Array2D<double> DT = solver.solve(dVdrT);
   derivativeMatrix = transpose(DT);
+  derivativeMatrixVec=Array2DtoVector(derivativeMatrix);
+
 }
 
 void ReferenceElement::lift1D()
@@ -307,6 +319,7 @@ void ReferenceElement::lift1D()
   emat[0][0] = 1.0;
   emat[order][1] = 1.0;
   lift=matmult(vandermondeMatrix, matmult(transpose(vandermondeMatrix), emat));
+  liftVec=Array2DtoVector(lift);
 }
 
 

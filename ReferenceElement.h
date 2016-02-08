@@ -38,34 +38,49 @@ private:
   Array2D<double> lift; //used in numerical flux calculation, 
                         //scaled by jacobian
 
+  vector<double> refNodeLocationsVec;
+  vector<double> refNodeWeightsVec;
+  vector<double> vandermondeMatrixVec;
+  vector<double> dVdrVec;
+  vector<double> derivativeMatrixVec;
+  vector<double> liftVec;
+  vector<double> liftDim;
+  vector<double> Ddim;
+  
  public:
-  const Array2D<double>& getD(); //get derivative matrix
+  const vector<double>& getD(); //get derivative matrix
+  vector<double> getDdim();
   double getDelem(int, int); //get the derivative matrix at two indices
-  const Array2D<double>& getLift(); //get lift matrix
-  Array1D<double> getr(); //get node locations
-  Array1D<double> getw(); //get weights
+  const vector<double> getLift(); //get lift matrix
+  vector<double>& getLiftDim();
+  vector<double> getr(); //get node locations
+  vector<double> getw(); //get weights
   int getOrder(); //get order
 };
 
-inline const Array2D<double>& ReferenceElement::getD()
+inline const vector<double>& ReferenceElement::getD()
 {//Returns the derivative matrix.
-  return derivativeMatrix;
+  return derivativeMatrixVec;
 }
 
+inline vector<double> ReferenceElement::getDdim()
+{//returns the dimensions of the derivative matrix.
+  return Ddim;
+}
 
 inline double ReferenceElement::getDelem(int i, int j)
 {//Returns the derivative matrix at i j
-  return derivativeMatrix[i][j];
+  return derivativeMatrixVec[i][j];
 }
 
-inline Array1D<double> ReferenceElement::getr()
+inline vector<double> ReferenceElement::getr()
 {//Returns the reference node locations.
-  return refNodeLocations;
+  return refNodeLocationsVec;
 }
 
-inline Array1D<double> ReferenceElement::getw()
+inline vector<double> ReferenceElement::getw()
 {//Returns the reference node weights.
-  return refNodeWeights;
+  return refNodeWeightsVec;
 }
 
 inline int ReferenceElement::getOrder()
@@ -73,11 +88,14 @@ inline int ReferenceElement::getOrder()
   return order;
 }
 
-inline const Array2D<double>& ReferenceElement::getLift()
+inline const vector<double>& ReferenceElement::getLift()
 {//Returns the lift matrix.
-  return lift;
+  return liftVec;
 }
 
-
+inline vector<double> ReferenceElement::getLiftDim()
+{//returns the dimensions of the lift matrix.
+  return liftDim;
+}
 
 #endif

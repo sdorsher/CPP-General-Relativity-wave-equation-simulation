@@ -2,6 +2,7 @@
 #define TNT_ARRAY1D_EXTN_H
 #include <cmath>
 #include <complex>
+#include <vector>
 
 #include "tnt/tnt_array1d.h"
 //include "../tnt/tnt_array1d_utils.h"
@@ -10,6 +11,20 @@ namespace TNT
 {
 
   using namespace std;
+
+    template <class T>
+    vector<T> Array1DtoVector(const Array1D<T> &A)
+    {
+      int dimA1 = A.dim1();
+
+      vector<T> B(dimA1);
+      for(int j=0; j< dimA1; j++){
+	  B[j]=A[j];
+      }
+      return B;
+    }
+
+
   //Takes the square root of each element
   template <class T>
     Array1D<T> sqrt(const Array1D<T> &A)
@@ -47,10 +62,10 @@ namespace TNT
     }
   //Adds a scalar to an array
   template <typename T>
-    Array1D<complex<T>> operator+(const Array1D<complex<T>> &A, const T B)
+    Array1D<complex<T> > operator+(const Array1D<complex<T> > &A, const T B)
     {
       int n=A.dim();
-      Array1D<complex<T>> C(n);
+      Array1D<complex<T> > C(n);
       for(int k=0; k<n; k++){
         C[k]=A[k]+B;
       }
@@ -59,10 +74,10 @@ namespace TNT
   
   //Adds a scalar to an array
   template <class T>
-    Array1D<complex<T>> operator+(const T B, const Array1D<complex<T>> &A)
+    Array1D<complex<T> > operator+(const T B, const Array1D<complex<T> > &A)
     {
       int n=A.dim();
-      Array1D<complex<T>> C(n);
+      Array1D<complex<T> > C(n);
       for(int k=0; k<n; k++){
         C[k]=A[k]+B;
       }
@@ -82,10 +97,10 @@ namespace TNT
     }
   //Multiplies a scalar times a complex array
   template <class T>
-    Array1D<complex<T>> operator*(const T B, const Array1D<complex<T>> &A)
+    Array1D<complex<T> > operator*(const T B, const Array1D<complex<T> > &A)
     {
       int n=A.dim();
-      Array1D<complex<T>> C(n);
+      Array1D<complex<T> > C(n);
       for(int k=0; k<n; k++){
         C[k]=A[k]*B;
       }
