@@ -15,7 +15,7 @@ TwoDVectorGridFunction<T>::TwoDVectorGridFunction(int outerVecSize,
   GFarrayDim(arraySize)
 {
   if(outerVecSize<0) {
-    throw invalid_argument("Negative Vector dimensions at TwoDVectorGridFunction constructor.");
+    cout << "Negative Vector dimensions at TwoDVectorGridFunction constructor."<< endl;
   }
   
   for(int i=0; i<outerVecSize; i++) {
@@ -36,7 +36,7 @@ TwoDVectorGridFunction<T>::TwoDVectorGridFunction(int outerVecSize,
   GFarrayDim(arraySize)
 {
   if(outerVecSize<0){
-    throw invalid_argument("Negative Vector dimensions at TwoDVectorGridFunction constructor.");
+    cout << "Negative Vector dimensions at TwoDVectorGridFunction constructor."<< endl;
   }
   
   for(int i = 0; i < outerVecSize; i++){
@@ -52,7 +52,7 @@ void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFvcoord,
                                     T value)
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in set");
+    cout << "2D vector index out of range in set" << endl;
   }
   
   data.at(TDVGFvcoord).set(VGFvcoord, GFvcoord, GFacoord, value);
@@ -65,7 +65,7 @@ void TwoDVectorGridFunction<T>::set(int TDVGFvcoord,
                                     VectorGridFunction<T> vgf)
 {
   if((TDVGFvcoord < 0) || (TDVGFvcoord >= TDVGFvectorDim)) {
-    throw invalid_argument("2D vector index out of range in VGF set");
+    cout << "2D vector index out of range in VGF set" << endl;
   }
   data.at(TDVGFvcoord)=vgf;
 }
@@ -76,20 +76,20 @@ void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFcoord,
                                 GridFunction<T> gf)
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in set");
+    cout << "2D vector index out of range in set" << endl;
   }
 
   data.at(TDVGFvcoord).set(VGFcoord,gf);
 }
 
-//Set an outer, middle, and inner vector coordinate to an Array1D.
+//Set an outer, middle, and inner vector coordinate to an vector.
 template <class T>
 void TwoDVectorGridFunction<T>::set(int TDVGFvcoord, int VGFcoord, 
-                                    int GFcoord, TNT::Array1D<T> arr)
+                                    int GFcoord, std::vector<T> arr)
 {
 
   if((0 >TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in set");
+    cout << "2D vector index out of range in set"<< endl;
   }
 
   data.at(TDVGFvcoord).set(VGFcoord,GFcoord,arr);
@@ -103,7 +103,7 @@ void TwoDVectorGridFunction<T>::setVector(int TDVGFvcoord, int GFcoord,
 {
   if((GFcoord < 0) || (GFacoord < 0) || (GFacoord > GFarrayDim)
      || (TDVGFvcoord < 0 ) || (GFcoord > GFvectorDim)){
-    throw invalid_argument("Coordinates in setVector out of range.");
+    cout << "Coordinates in setVector out of range." << endl;
   }
   for(int i = 0; i < VGFvectorDim; i++){
     data.at(TDVGFvcoord).set(i,GFcoord,GFacoord,vec[i]);
@@ -116,7 +116,7 @@ T TwoDVectorGridFunction<T>::get(int TDVGFvcoord, int VGFvcoord,
                                  int GFvcoord, int GFacoord)
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in get");
+    cout << "2D vector index out of range in get" << endl;
   }
   return data.at(TDVGFvcoord).get(VGFvcoord, GFvcoord, GFacoord);
 }
@@ -128,18 +128,18 @@ template <class T>
 VectorGridFunction<T> TwoDVectorGridFunction<T>::get(int TDVGFvcoord) 
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)) {
-    throw invalid_argument("2D vector index out of range in VGF get");
+    cout << "2D vector index out of range in VGF get" << endl;
   }
   return data.at(TDVGFvcoord);
 }
 
 //Get an array from an inner, middle, and outer vector coordinate.
 template <class T>
-Array1D<T> TwoDVectorGridFunction<T>::get(int TDVGFvcoord, int VGFvcoord,
+vector<T> TwoDVectorGridFunction<T>::get(int TDVGFvcoord, int VGFvcoord,
                                           int GFvcoord)
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in get");
+    cout << "2D vector index out of range in get" << endl;
   }
   return data.at(TDVGFvcoord).get(VGFvcoord, GFvcoord);
 }
@@ -150,7 +150,7 @@ template <class T>
 GridFunction<T> TwoDVectorGridFunction<T>::get(int TDVGFvcoord, int VGFvcoord)
 {
   if((0 > TDVGFvcoord) || (TDVGFvcoord >= TDVGFvectorDim)){
-    throw invalid_argument("2D vector index out of range in get");
+    cout << "2D vector index out of range in get" << endl;
   }
   return data.at(TDVGFvcoord).get(VGFvcoord);
 }
@@ -166,14 +166,14 @@ void TwoDVectorGridFunction<T>::append(VectorGridFunction<T> vgf)
 
 //Get a vector from an outer vector coordinate and an inner vector 
 //coordinate and an array coordinate.
-template <class T>              
+/*template <class T>              
 vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord, 
                                                int GFvcoord, int GFacoord)
 {
   if((GFvcoord < 0) || (GFvcoord >= GFvectorDim) || (GFacoord < 0)
      || (GFacoord > GFarrayDim) || (TDVGFvcoord < 0) || 
      (TDVGFvcoord >= TDVGFvectorDim)) {
-    throw invalid_argument("Get indices out of range in TwoDVectorGridFunction.");
+    cout << "Get indices out of range in TwoDVectorGridFunction." << endl;
   }
   vector<T> outputvec;
   for(int j = 0; j < TDVGFvectorDim; j++) {
@@ -182,15 +182,15 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord,
     }
   }
   return outputvec;
-}
+}*/
     
-//Get an Array1D from an outer vector coordinate, a middle vector coordinate,
+//Get an vector from an outer vector coordinate, a middle vector coordinate,
 //and inner vector coordinate 
 //and an array coordinate, 
 //ranging from middle (dimension 0) or outer (dimension 1) vector index 
 //vmin to vmax with coordinate in the other dimension vectorCoord.
 template <class T>
-Array1D<T> TwoDVectorGridFunction<T>::getVectorAsArray1D(int vectorCoord,
+vector<T> TwoDVectorGridFunction<T>::getVector(int vectorCoord,
                                                          int GFvcoord, 
                                                          int GFacoord, 
                                                          int vmin, 
@@ -199,16 +199,16 @@ Array1D<T> TwoDVectorGridFunction<T>::getVectorAsArray1D(int vectorCoord,
 {
   if((GFvcoord < 0) || (GFvcoord >= GFvectorDim) || (GFacoord < 0)
      || (GFacoord > GFarrayDim)) {
-    throw invalid_argument("Get indices out of range in TwoDVectorGridFunction");
+    cout << "Get indices out of range in TwoDVectorGridFunction"<< endl;
   }
   
   if(((dimension == 0) && (vmax >= VGFvectorDim))
     || ((dimension == 1) && (vmax >= TDVGFvectorDim))
     || (vmin < 0)){
-    throw invalid_argument("Get max or min vector indices out of range in TwoDVectorGridFunction");
+    cout << "Get max or min vector indices out of range in TwoDVectorGridFunction" << endl;
   }
   
-  Array1D<T> outputvec(vmax - vmin + 1);
+  vector<T> outputvec(vmax - vmin + 1);
   if(dimension==0){
     for(int i = vmin; i <= vmax; i++){
       outputvec[i - vmin] =get(vectorCoord, i, GFvcoord, GFacoord);
@@ -218,7 +218,7 @@ Array1D<T> TwoDVectorGridFunction<T>::getVectorAsArray1D(int vectorCoord,
       outputvec[j - vmin] = get(j, vectorCoord, GFvcoord, GFacoord);
     }
   } else {
-    throw invalid_argument("Dimension out of range in TwoDVectorGridFunction::getVectorAsArray1D.");
+    cout << "Dimension out of range in TwoDVectorGridFunction::getVectorAsvector." << endl;
   }
   return outputvec;
 }
@@ -229,7 +229,7 @@ Array1D<T> TwoDVectorGridFunction<T>::getVectorAsArray1D(int vectorCoord,
 //and the array values running along the columns. Begins selecting
 //vector values at startvec and ends at stopvec. The unvaried vector dimension
 //is selected at vectorCoord.
-template <class T>
+/*template <class T>
 Array2D<T> TwoDVectorGridFunction<T>::getVectorNodeArray2D(int vectorCoord,
                                                            int GFcoord,
                                                            int startvec, 
@@ -237,11 +237,11 @@ Array2D<T> TwoDVectorGridFunction<T>::getVectorNodeArray2D(int vectorCoord,
                                                            int dimension)
 {
   if((GFcoord < 0) || (GFcoord > GFvectorDim)) {
-    throw invalid_argument("Get indices out of range");
+    cout << "Get indices out of range" << endl;
   }
   
   if((startvec < 0) || (stopvec >= VGFvectorDim)) {
-    throw invalid_argument("Endpoints of vector requested are out of range");
+    cout << "Endpoints of vector requested are out of range" << endl;
   }
   
   Array2D<T> output(GFarrayDim, stopvec - startvec + 1);
@@ -252,13 +252,13 @@ Array2D<T> TwoDVectorGridFunction<T>::getVectorNodeArray2D(int vectorCoord,
       } else if (dimension == 1) {
         output[j][i - startvec] = get(i, vectorCoord, GFcoord, j);
       } else {
-        throw invalid_argument("Dimension out of range in TwoDVectorGridFunction::getVectorNodeArray2D");
+        cout << "Dimension out of range in TwoDVectorGridFunction::getVectorNodeArray2D" << endl;
       }
     }
   }
   return output;
 }
-  
+ */ 
 //-----------------------------
 //not in class
 
@@ -268,7 +268,7 @@ TwoDVectorGridFunction<T> operator+(TwoDVectorGridFunction<T> tdvgf1,
                                 TwoDVectorGridFunction<T> tdvgf2)
 {
   if(tdvgf1.VGFdim() != tdvgf2.VGFdim()){
-    throw invalid_argument("Second dimension vector dimension mismatch in + operation");
+    cout << "Second dimension vector dimension mismatch in + operation" << endl;
   }
   TwoDVectorGridFunction<T> tdvgfsum(0, tdvgf1.VGFdim(), tdvgf1.GFvecDim(), 
                                  tdvgf1.GFarrDim());

@@ -1,10 +1,12 @@
 #ifndef VECTORGRIDFUNCTION_H
 #define VECTORGRIDFUNCTION_H
 
-#include "TNT2.h"
 #include "GridFunction.h"
 #include <fstream>
 #include <complex>
+#include <vector>
+
+using namespace std;
 
 //See .cpp file for explanations of functions
 template <class T>
@@ -27,8 +29,8 @@ class VectorGridFunction
   inline T get(int VGFvcoord, int GFvcoord, int GFacoord);
   //Get value at full coordinate specification.
   
-  inline Array1D<T> get(int VGFvcoord,int GFvcoord);
-  // Get Array1D at outer two vector coordinates. 
+  inline vector<T> get(int VGFvcoord,int GFvcoord);
+  // Get vector at outer two vector coordinates. 
   
   inline GridFunction<T> get(int VGFvcoord);
   //Get grid function at outermost vectorcoordinate. 
@@ -39,8 +41,8 @@ class VectorGridFunction
   void set(int VGFcoord,GridFunction<T> value);
   // Set Grid Function at outermost vector specification.
   
-  void set(int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
-  // Set Array1D at outer two vector coordinates.
+  void set(int VGFcoord,int GFcoord,std::vector<T> arr);
+  // Set vector at outer two vector coordinates.
   
   void setVector(int GFcoord, int GFacoord, vector<T> vec);
   //Using a for loop, set the values along the VGFcoord vector dimension at the inner two
@@ -56,13 +58,13 @@ class VectorGridFunction
   //Using a for loop, returns a vector of the values along the VGFcoord dimension at the
   // inner two coordinates specified.
   
-  Array1D<T> getVectorAsArray1D(int GFvcoord, int GFacoord,int vmin, int vmax);
-  // Does the same, but returns an Array1D.
+  vector<T> getVectorAsvector(int GFvcoord, int GFacoord,int vmin, int vmax);
+  // Does the same, but returns an vector.
 
-  Array2D<T> getVectorNodeArray2D(int GFcoord,int startvec, int stopvec);
+  //  Array2D<T> getVectorNodeArray2D(int GFcoord,int startvec, int stopvec);
   // Returns an Array2D of outer vector (VGFcoord dimension) values and inner coordinate
   //(GFacoord dimension) values. VGFcoord runs from startvec to stopvec. 
-
+  
 };
 
 //Adds two VGFs.

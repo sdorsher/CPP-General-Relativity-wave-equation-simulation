@@ -1,10 +1,13 @@
 #ifndef TWODVECTORGRIDFUNCTION_H
 #define TWODVECTORGRIDFUNCTION_H
 
-#include "TNT2.h"
 #include "VectorGridFunction.h"
 #include <fstream>
 #include <complex>
+#include <iostream>
+#include <vector>
+
+using namespace std;
 
 //See .cpp file for explanations of functions
 template <class T>
@@ -32,8 +35,8 @@ class TwoDVectorGridFunction
   inline T get(int TDVGFvcoord, int VGFvcoord, int GFvcoord, int GFacoord);
   // get the value at the full set of four coordinates specified
   
-  inline Array1D<T> get(int TDVGFvcoord, int VGFvcoord,int GFvcoord);
-  // get the Array1D at the outer three vector coordinates specified
+  inline vector<T> get(int TDVGFvcoord, int VGFvcoord,int GFvcoord);
+  // get the vector at the outer three vector coordinates specified
   
   inline GridFunction<T> get(int TDVGFvcoord, int VGFvcoord);
   // Get the grid function at the outer two vector coordinates specified
@@ -47,8 +50,8 @@ class TwoDVectorGridFunction
   void set(int TDVGFvcoord, int VGFcoord,GridFunction<T> value);
   // Set the TDVGF at the outer two vector coordinates to the Grid Function specified. 
   
-  void set(int TDVGFvcoord, int VGFcoord,int GFcoord,TNT::Array1D<T> arr);
-  // Set the TDGVGF at the outer three vector coordinates the the Array1D specified
+  void set(int TDVGFvcoord, int VGFcoord,int GFcoord,std::vector<T> arr);
+  // Set the TDGVGF at the outer three vector coordinates the the vector specified
   
   void setVector(int TDVGFvcoord, int GFcoord, int GFacoord, vector<T> vec);
   // Set the TDVGF using a for loop along the VGF vector dimension to the vector specified at
@@ -60,17 +63,17 @@ class TwoDVectorGridFunction
   int GFarrDim(); //the dimension of the array within the GridFunction
   void append(VectorGridFunction<T> gf);
 
-  vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
+  //  vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
   //Using a for loop, get the vector along the VGFvector dimension.
 
-  Array1D<T> getVectorAsArray1D(int vectorCoord, int GFvcoord, int GFacoord,
+  vector<T> getVector(int vectorCoord, int GFvcoord, int GFacoord,
                                 int vmin, int vmax, int dimension);
-  //Using for loops, get that same vector as an Array1D.
+  //Using for loops, get that same vector as an vector.
   
-  Array2D<T> getVectorNodeArray2D(int vectorCoord, int GFcoord,int startvec, 
-                                  int stopvec, int dimension);
+  //  Array2D<T> getVectorNodeArray2D(int vectorCoord, int GFcoord,int startvec, 
+  //                                 int stopvec, int dimension);
   //Using for loops, get an array along the either the outermost or second outermost
-  //vector dimension and the GFArray1D dimensions at the other
+  //vector dimension and the GFvector dimensions at the other
   // coordinates specified. Choose which of the two dimensions using "dimension". Choose
   // which elements to take from that dimension using startvec and stopvec. 
 

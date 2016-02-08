@@ -1,10 +1,13 @@
 #ifndef _GRIDFUNCTION_H
 #define _GRIDFUNCTION_H
-#include "tnt/tnt.h"
-#include "TNT2.h"
 #include <fstream>
+#include <vector>
+#include <string>
+#include <complex>
+#include <iostream>
 
 using namespace std;
+
 
 template <class T>
 class GridFunction
@@ -13,18 +16,20 @@ class GridFunction
   //See .cpp file for explanations of functions
   GridFunction(int vecSize, int arraySize,T initvalue);
   GridFunction(int vecSize, int arraySize);
-  void set(int vcoord, TNT::Array1D<T>); 
+  ~GridFunction();
+
+  void set(int vcoord, std::vector<T>); 
   void set(int vcoord, int acoord,T value); 
-  void append(TNT::Array1D<T> array);
+  void append(std::vector<T> array);
   inline T get(int vcoord, int acoord);
-  inline TNT::Array1D<T> get(int vcoord);
-  inline int GFvecDim(); //Dimension of vector
+  inline std::vector<T> get(int vcoord);
+  inline int GFvecDim(); //Dimension of std::vector
   inline int GFarrDim(); //Dimension of Array1D
   void save(string filename);
   
   // private:
  private:
-  vector<TNT::Array1D<T>> data;
+  std::vector<std::vector<T>> data;
   int GFvectorDim; 
   int GFarrayDim;
 };
@@ -44,25 +49,25 @@ template <typename T>
 GridFunction<complex<T>> operator*(T A,GridFunction<complex<T>> gf2);
 
 //Get a value at a vector and array coordinate.
-template <class T>
+template <typename T>
 T GridFunction<T>::get(int vcoord, int acoord)
 {
   if((0>vcoord) || (vcoord>=GFvectorDim)) {
-    throw out_of_range("Grid coordinate out of range in get(int,int)");
+    cout <<"Grid coordinate out of range in get(int,int)";
   } else if((0>acoord) || (acoord>=GFarrayDim)) {
-    throw out_of_range("Grid function coordinate out of range in get(int,int)");
+    cout << "Grid function coordinate out of range in get(int,int)";
   } else {
-    return data.at(vcoord)[acoord];
+    return data.at(vcoord).at(acoord);
   }
 }
 
 
 //Get an array at a vector coordinate.
-template <class T>
-inline TNT::Array1D<T> GridFunction<T>::get(int vcoord)
+template <typename T>
+inline std::vector<T> GridFunction<T>::get(int vcoord)
 {
   if((0>vcoord) || (vcoord>=GFvectorDim)) {
-    throw out_of_range("Grid coordinate out of range in get(int)");
+    cout <<"Grid coordinate out of range in get(int)";
   } else {
     return data.at(vcoord);
   }
@@ -70,7 +75,7 @@ inline TNT::Array1D<T> GridFunction<T>::get(int vcoord)
 
 
 //Get the dimension of the vector.
-template <class T>
+template <typename T>
 inline int GridFunction<T>::GFvecDim()
 {
   return GFvectorDim;
@@ -78,7 +83,7 @@ inline int GridFunction<T>::GFvecDim()
 
 
 //Get the dimension of the array.
-template <class T>
+template <typename T>
 inline int GridFunction<T>::GFarrDim()
 {
   return GFarrayDim;
