@@ -15,14 +15,16 @@
 // Sinv= inverse of S
 // Sinv*Atrimmed*S=Lamb, Lamb has eigenvalues of Atrimmed on diagonals
 
+//We can leave TNT in here because it is only done at the beginning
+
 CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
-                                       TNT::Array2D<double> Atrim): 
-  A(Amatrix.dim1(), Amatrix.dim2()),
-  Atrimmed(Atrim.dim1(), Atrim.dim2()),
-  Smatrix(0, 0), 
-  Sinv(0, 0), 
-  Lamb(0, 0), 
-  one(0, 0)
+                                       TNT::Array2D<double> Atrim)
+  //  A(Amatrix.dim1(), Amatrix.dim2()),
+  //  Atrimmed(Atrim.dim1(), Atrim.dim2()),
+  //  Smatrix(0, 0), 
+  //  Sinv(0, 0), 
+  //  Lamb(0, 0), 
+  //  one(0, 0)
 {
 
   
@@ -34,6 +36,12 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
     throw invalid_argument("Atrim not square in CharacteristicFlux");
   }
 
+  Array2D<double> A(Amatrix.dim1(), Amatrix.dim2());
+  Array2D<double> Atrimmed(Atrim.dim1(), Atrim.dim2());
+  Array2D<double> Smatrix(0, 0); 
+  Array2D<double> Sinv(0, 0); 
+  Array2D<double> Lamb(0, 0); 
+  Array2D<double> one(0, 0,1.0);
   A = Amatrix;
   Atrimmed = Atrim;
   Adimension = A.dim1();
@@ -55,26 +63,37 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
   Sinv=Sinverter.solve(one); //Invert the Eigenvector matrix to get Sinv
   Lamb = matmult(Sinv, matmult(Atrimmed, Smatrix));
   //Find the characteristic matrix for the system of equations, Lamb
+
+
+  SmatrixV=Array2DtoVector(Smatrix);
+  SinvV=Array2DtoVector(Sinv);
+  LambV=Array2DtoVector(Lamb);
+  AtrimmedV=Array2DtoVector(Atrimmed);
+  AV=Array2DtoVector(A);
+
 }
 
-Array2D<double> CharacteristicFlux::getS(){
-  return Smatrix;
+
+
+
+vector<double> CharacteristicFlux::getS(){
+  return SmatrixV;
 }
 
-Array2D<double> CharacteristicFlux::getA(){
-  return A;
+vector<double> CharacteristicFlux::getA(){
+  return AV;
 }
 
-Array2D<double> CharacteristicFlux::getSinv(){
-  return Sinv;
+vector<double> CharacteristicFlux::getSinv(){
+  return SinvV;
 }
 
-Array2D<double> CharacteristicFlux::getLambda(){
-  return Lamb;
+vector<double> CharacteristicFlux::getLambda(){
+  return LambV;
 }
 
-Array2D<double> CharacteristicFlux::getAtrimmed(){
-  return Atrimmed;
+vector<double> CharacteristicFlux::getAtrimmed(){
+  return AtrimmedV;
 }
   
 int CharacteristicFlux::getAdim(){
