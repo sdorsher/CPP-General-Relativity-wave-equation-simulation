@@ -14,7 +14,8 @@ class ReferenceElement
   //see .cpp file for explanation of functions
  public:
  ReferenceElement(int N);
-
+ ~ReferenceElement();
+ 
  private:
   void jacobiGQ(TNT::Array1D<double>& x, double alpha, double beta, int n, 
 		TNT::Array1D<double>& w);
@@ -44,33 +45,34 @@ private:
   vector<double> dVdrVec;
   vector<double> derivativeMatrixVec;
   vector<double> liftVec;
-  vector<double> liftDim;
-  vector<double> Ddim;
+  vector<int> liftDim;
+  vector<int> Ddim;
   
  public:
-  const vector<double>& getD(); //get derivative matrix
-  vector<double> getDdim();
+  vector<double> getD(); //get derivative matrix
+  vector<int> getDdim();
   double getDelem(int, int); //get the derivative matrix at two indices
-  const vector<double> getLift(); //get lift matrix
-  vector<double>& getLiftDim();
+  vector<double> getLift(); //get lift matrix
+  vector<int> getLiftDim();
   vector<double> getr(); //get node locations
   vector<double> getw(); //get weights
   int getOrder(); //get order
 };
 
-inline const vector<double>& ReferenceElement::getD()
+inline vector<double> ReferenceElement::getD()
 {//Returns the derivative matrix.
   return derivativeMatrixVec;
 }
 
-inline vector<double> ReferenceElement::getDdim()
+inline vector<int> ReferenceElement::getDdim()
 {//returns the dimensions of the derivative matrix.
   return Ddim;
 }
 
 inline double ReferenceElement::getDelem(int i, int j)
 {//Returns the derivative matrix at i j
-  return derivativeMatrixVec[i][j];
+ double temp = derivativeMatrix[i][j];
+ return temp;
 }
 
 inline vector<double> ReferenceElement::getr()
@@ -88,12 +90,12 @@ inline int ReferenceElement::getOrder()
   return order;
 }
 
-inline const vector<double>& ReferenceElement::getLift()
+inline vector<double> ReferenceElement::getLift()
 {//Returns the lift matrix.
   return liftVec;
 }
 
-inline vector<double> ReferenceElement::getLiftDim()
+inline vector<int> ReferenceElement::getLiftDim()
 {//returns the dimensions of the lift matrix.
   return liftDim;
 }

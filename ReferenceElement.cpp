@@ -76,6 +76,9 @@ liftDim(2)
   liftDim[1] = lift.dim2();
 }
 
+ReferenceElement::~ReferenceElement(){
+}
+
 void ReferenceElement::jacobiGQ(Array1D<double>& x, double alpha, 
 				double beta, int n, Array1D<double>& w)
 { //Computes nth order Gaussian quadrature points (x) and weights (w)
