@@ -1,8 +1,24 @@
 #ifndef VEC_MATRIX_TOOLS_H
 #define VEC_MATRIX_TOOLS_H
 #include <vector>
+#include <iostream>
 
 using namespace std;
+
+void insert_1D_into_2D_vec(vector<double> &A, vector<double> &B, int dimA1,int dimA2, int index, bool iscolumn){
+  if(iscolumn){
+    if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    for(int j=0; j<dimA2; j++){
+      A[j*dimA1+index]=B[j];
+    }
+  }else{
+    if(index>=dimA1) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    for(int i=0; i<dimA1; i++){
+      A[index*dimA1+i]=B[i];
+    }
+  }
+}
+
 
 vector<double> vecsum(vector <double> &A, vector<double> &B, int dimAB1, int dimAB2){
   vector<double> C(dimAB1*dimAB2);

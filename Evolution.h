@@ -1,7 +1,6 @@
 #ifndef EVOLUTION_H
 #define EVOLUTION_H
 
-#include "TNT2.h"
 #include "TwoDVectorGridFunction.h"
 #include "GridFunction.h"
 #include "DiffEq.h"

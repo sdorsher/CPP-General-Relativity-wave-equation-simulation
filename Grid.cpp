@@ -19,7 +19,7 @@ Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim,
   }
   
   //Get physical positions of nodes from the reference element
-  Array1D<double> physicalPosition(elemorder + 1);
+  vector<double> physicalPosition(elemorder + 1);
   for(int elem = 0; elem < numelements; elem++){
     physicalPosition = ((elementBoundaries[elem + 1] 
                          - elementBoundaries[elem]) / 2.0)

@@ -161,7 +161,7 @@ vector<T> VectorGridFunction<T>::getVector(int GFvcoord, int GFacoord)
 //Get an vector from an inner vector coordinate and an array coordinate, 
 //ranging from outer vector index vmin to vmax.
 template <class T>
-vector<T> VectorGridFunction<T>::getVectorAsvector(int GFvcoord, 
+vector<T> VectorGridFunction<T>::getVectorRegion(int GFvcoord, 
                                                      int GFacoord, int vmin, 
                                                      int vmax)
 

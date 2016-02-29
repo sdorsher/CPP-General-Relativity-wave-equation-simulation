@@ -58,7 +58,7 @@ class VectorGridFunction
   //Using a for loop, returns a vector of the values along the VGFcoord dimension at the
   // inner two coordinates specified.
   
-  vector<T> getVectorAsvector(int GFvcoord, int GFacoord,int vmin, int vmax);
+  vector<T> getVectorRegion(int GFvcoord, int GFacoord,int vmin, int vmax);
   // Does the same, but returns an vector.
 
   //  Array2D<T> getVectorNodeArray2D(int GFcoord,int startvec, int stopvec);
