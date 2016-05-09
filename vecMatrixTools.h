@@ -20,36 +20,34 @@ void insert_1D_into_2D_vec(vector<double> &A, vector<double> &B, int dimA1,int d
 }
 
 
-vector<double> vecsum(vector <double> &A, vector<double> &B, int dimAB1, int dimAB2){
-  vector<double> C(dimAB1*dimAB2);
+vector<double> vecsum(vector <double> &A, vector<double> &B){
+  vector<double> C(A.size());
+
+  if(A.size()!=B.size()) cout << "vecsum dimension mismatch\n";
   
-  for(int i=0; i<dimAB1; i++){
-    for(int j=0; j<dimAB2; j++){
-      C[j*dimAB1+i]=A[j*dimAB1+i]+B[j*dimAB1+i];
-    }
+  for(int i=0; i<A.size(); i++){
+    C[i]=A[i]+B[i];
   }
   return C;
 }
 
-vector<double> vecdiff(vector <double> &A, vector<double> &B, int dimAB1, int dimAB2){
-  vector<double> C(dimAB1*dimAB2);
-  
-  for(int i=0; i<dimAB1; i++){
-    for(int j=0; j<dimAB2; j++){
-      C[j*dimAB1+i]=A[j*dimAB1+i]-B[j*dimAB1+i];
-    }
+vector<double> vecdiff(vector <double> &A, vector<double> &B){
+  vector<double> C(A.size());
+
+  if(A.size()!=B.size()) cout << "vecdiff dimension mismatch\n";
+  for(int i=0; i<A.size(); i++){
+    C[i]=A[i]-B[i];
   }
-  return C;
+    return C;
 }
 
-vector<double> scalarmult(double s, vector<double> &A, int dimA1, int dimA2){
-  vector<double> C(dimA1*dimA2);
+vector<double> scalarmult(double s, vector<double> &A){
+  vector<double> C(A.size());
   
-  for(int i=0; i<dimA1; i++){
-    for(int j=0; j<dimA2; j++){
-      C[j*dimA1+i]=A[j*dimA1+i]*s;
+  for(int i=0; i<A.size(); i++){
+      C[i]=A[i]*s;
     }
-  }
+  
   return C;
 }
 
