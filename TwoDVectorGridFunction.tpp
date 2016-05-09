@@ -190,7 +190,7 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord,
 //ranging from middle (dimension 0) or outer (dimension 1) vector index 
 //vmin to vmax with coordinate in the other dimension vectorCoord.
 template <class T>
-vector<T> TwoDVectorGridFunction<T>::getVector(int vectorCoord,
+vector<T> TwoDVectorGridFunction<T>::getVectorRange(int vectorCoord,
                                                          int GFvcoord, 
                                                          int GFacoord, 
                                                          int vmin, 
@@ -218,7 +218,7 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int vectorCoord,
       outputvec[j - vmin] = get(j, vectorCoord, GFvcoord, GFacoord);
     }
   } else {
-    cout << "Dimension out of range in TwoDVectorGridFunction::getVectorAsvector." << endl;
+    cout << "Dimension out of range in TwoDVectorGridFunction::getVectorRange." << endl;
   }
   return outputvec;
 }
@@ -229,12 +229,14 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int vectorCoord,
 //and the array values running along the columns. Begins selecting
 //vector values at startvec and ends at stopvec. The unvaried vector dimension
 //is selected at vectorCoord.
-/*template <class T>
-Array2D<T> TwoDVectorGridFunction<T>::getVectorNodeArray2D(int vectorCoord,
+template <class T>
+vector<T> TwoDVectorGridFunction<T>::getVectorNode2D(int vectorCoord,
                                                            int GFcoord,
                                                            int startvec, 
                                                            int stopvec,
-                                                           int dimension)
+                                                           int dimension,
+							   int* dim1,
+							   int* dim2)
 {
   if((GFcoord < 0) || (GFcoord > GFvectorDim)) {
     cout << "Get indices out of range" << endl;
@@ -243,22 +245,28 @@ Array2D<T> TwoDVectorGridFunction<T>::getVectorNodeArray2D(int vectorCoord,
   if((startvec < 0) || (stopvec >= VGFvectorDim)) {
     cout << "Endpoints of vector requested are out of range" << endl;
   }
-  
-  Array2D<T> output(GFarrayDim, stopvec - startvec + 1);
+  //was Array2D
+  vector<T> output(GFarrayDim*(stopvec - startvec + 1));
   for(int i = startvec; i <= stopvec; i++){
     for(int j = 0; j < GFarrayDim; j++){
       if(dimension==0){
-        output[j][i - startvec]=get(vectorCoord,i, GFcoord, j);
+
+        output[(i - startvec)*GFarrayDim+j]=get(vectorCoord,i, GFcoord, j);
+	dim1=GFarrayDim;
+	dim2=VGFvectorDim;
+//        output[j][i - startvec]=get(vectorCoord,i, GFcoord, j);
       } else if (dimension == 1) {
-        output[j][i - startvec] = get(i, vectorCoord, GFcoord, j);
+        output[(i - startvec)*GFarrayDim+j] = get(i, vectorCoord, GFcoord, j);
+	dim1 = GFarrayDim;
+	dim2 = TDVGFvectorDim;
       } else {
-        cout << "Dimension out of range in TwoDVectorGridFunction::getVectorNodeArray2D" << endl;
+        cout << "Dimension out of range in TwoDVectorGridFunction::getVectorNode2D" << endl;
       }
     }
   }
   return output;
 }
- */ 
+
 //-----------------------------
 //not in class
 

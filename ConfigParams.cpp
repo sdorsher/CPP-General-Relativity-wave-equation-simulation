@@ -90,7 +90,10 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   modes.lmax = getConfigFromFile<int>(configFileName,"modes", "lmax");
 
   //Read in parameters associated with the grid
-    grid.pdenum=getConfigFromFile<int>(configFileName, "grid", "pdenum");
+  grid.Adim = getConfigFromFile<int>(configFileName,"grid","Adim");
+  grid.Ddim = getConfigFromFile<int>(configFileName,"grid","Ddim");
+  
+  grid.pdenum=getConfigFromFile<int>(configFileName, "grid", "pdenum");
 
     grid.numelems=getConfigFromFile<int>(configFileName, "grid", "numelems");
     grid.elemorder=getConfigFromFile<int>(configFileName, "grid", "elemorder");

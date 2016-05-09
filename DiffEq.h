@@ -15,6 +15,7 @@
 #include "source_interface.h"
 #include <iomanip>
 #include <omp.h>
+#include "vecMatrixTools.h"
 
 using namespace TNT;
 using namespace layers;
@@ -59,7 +60,7 @@ class DiffEq
   Array2D<double> getAtrimmed(int gridindex, int pointsindex);
 
   //Returns du, for the characteristic flux.
-  vector<TNT::Array2D<complex<double>>> characteristicflux(double t,
+  vector<vector<complex<double>>> characteristicflux(double t,
 							   int modenum,
 							   Grid& thegrid,
 				   TwoDVectorGridFunction<complex<double>>& 

@@ -21,10 +21,12 @@ Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim,
   //Get physical positions of nodes from the reference element
   vector<double> physicalPosition(elemorder + 1);
   for(int elem = 0; elem < numelements; elem++){
-    physicalPosition = ((elementBoundaries[elem + 1] 
-                         - elementBoundaries[elem]) / 2.0)
-      *refelem.getr()
-      +((elementBoundaries[elem + 1] + elementBoundaries[elem]) / 2.0);
+    for(int node=0; node <= order; node++){
+      physicalPosition[node] = ((elementBoundaries[elem + 1] 
+			   - elementBoundaries[elem]) / 2.0)
+	*refelem.getr()[node]
+	+((elementBoundaries[elem + 1] + elementBoundaries[elem]) / 2.0);
+    }
     nodeLocs.append(physicalPosition);
   }
   

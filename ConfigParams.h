@@ -62,7 +62,10 @@ struct ModeParams{
   int lmax; //Maximum l mode to be computed.
 };
 
+
 struct GridParams{
+  int Ddim;
+  int Adim;
   int pdenum; //number of components in coupled differential equations
   double lowerlim; //lower boundary of grid
   double upperlim; //upper boundary of grid

@@ -5,7 +5,8 @@
 
 using namespace std;
 
-void insert_1D_into_2D_vec(vector<double> &A, vector<double> &B, int dimA1,int dimA2, int index, bool iscolumn){
+template <class T>
+void insert_1D_into_2D_vec(vector<T> &A, vector<T> &B, int dimA1,int dimA2, int index, bool iscolumn){
   if(iscolumn){
     if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
     for(int j=0; j<dimA2; j++){
@@ -19,9 +20,9 @@ void insert_1D_into_2D_vec(vector<double> &A, vector<double> &B, int dimA1,int d
   }
 }
 
-
-vector<double> vecsum(vector <double> &A, vector<double> &B){
-  vector<double> C(A.size());
+template <class T>
+vector<T> vecsum(vector <T> &A, vector<T> &B){
+  vector<T> C(A.size());
 
   if(A.size()!=B.size()) cout << "vecsum dimension mismatch\n";
   
@@ -31,8 +32,9 @@ vector<double> vecsum(vector <double> &A, vector<double> &B){
   return C;
 }
 
-vector<double> vecdiff(vector <double> &A, vector<double> &B){
-  vector<double> C(A.size());
+template <class T>
+vector<T> vecdiff(vector <T> &A, vector<T> &B){
+  vector<T> C(A.size());
 
   if(A.size()!=B.size()) cout << "vecdiff dimension mismatch\n";
   for(int i=0; i<A.size(); i++){
@@ -41,8 +43,9 @@ vector<double> vecdiff(vector <double> &A, vector<double> &B){
     return C;
 }
 
-vector<double> scalarmult(double s, vector<double> &A){
-  vector<double> C(A.size());
+template <class T>
+vector<T> scalarmult(T s, vector<T> &A){
+  vector<T> C(A.size());
   
   for(int i=0; i<A.size(); i++){
       C[i]=A[i]*s;
@@ -51,9 +54,51 @@ vector<double> scalarmult(double s, vector<double> &A){
   return C;
 }
 
-vector<double> matmul(vector<double> &A, vector<double> &B, int dimA1,
+template <class T>
+vector<complex<T>> scalarmult(complex<T> s, vector<T> &A){
+  vector<complex<T>> C(A.size());
+  
+  for(int i=0; i<A.size(); i++){
+      C[i]=A[i]*s;
+    }
+  
+  return C;
+}
+
+template <class T>
+vector<complex<T>> scalarmult(T s, vector<complex<T>> &A){
+  vector<complex<T>> C(A.size());
+  
+  for(int i=0; i<A.size(); i++){
+      C[i]=A[i]*s;
+    }
+  
+  return C;
+}
+
+
+template <class T>
+vector<T> matmul(vector<T> &A, vector<T> &B, int dimA1,
 		       int dimA2B1, int dimB2){
-  vector<double> C(dimA1*dimB2);
+  vector<T> C(dimA1*dimB2);
+  
+  for(int i=0; i<dimA1; i++){
+    for(int j=0; j<dimB2; j++){
+      double sum = 0.0;
+      for(int k=0; k<dimA2B1;k++){
+	sum+=A[i*dimA2B1+k]*B[k*dimB2+j];
+      }
+      C[i*dimB2+j]=sum;
+    }
+  }
+  return C;
+
+}
+
+template <class T>
+vector<complex<T>> matmul(vector<T> &A, vector<complex<T>> &B, int dimA1,
+		       int dimA2B1, int dimB2){
+  vector<complex<T>> C(dimA1*dimB2);
   
   for(int i=0; i<dimA1; i++){
     for(int j=0; j<dimB2; j++){

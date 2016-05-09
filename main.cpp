@@ -17,6 +17,7 @@
 #include <complex>
 #include "source_interface.h"
 #include "WriteFile.h"
+#include "vecMatrixTools.h"
 
 using namespace std;
 using namespace layers;
@@ -409,7 +410,8 @@ void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
   //The square root of the integral of the squared difference
   double L2;
   L2 = 0.0;
-  Array1D<double> weights;
+  //was Array1D
+  vector<double> weights;
   weights = thegrid.refelem.getw();
   for(int i = 0; i < uh0.GFvecDim(); i++){
     for(int j = 0; j < uh0.GFarrDim(); j++){

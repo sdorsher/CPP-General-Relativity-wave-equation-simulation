@@ -308,7 +308,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 }//end function setab
 
 
-vector<TNT::Array2D<complex<double>>> 
+vector<vector<complex<double>>> //inner vector was Array2D 
 DiffEq::characteristicflux(double t, int modenum, 
                            Grid& thegrid,
                            TwoDVectorGridFunction<complex<double>>& uh, 
@@ -321,9 +321,9 @@ DiffEq::characteristicflux(double t, int modenum,
 
   int NumElem = thegrid.numberElements();
   
-  vector<Array2D<complex<double>>> du;
+  vector<vector<complex<double>>> du; //inner was Array2D
   du.resize(NumElem);
-#pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh) if(uh.TDVGFdim()<=thegrid.numberElements())
+  //#pragma omp parallel for shared(du,NumElem,thegrid,output,modenum,uh) if(uh.TDVGFdim()<=thegrid.numberElements())
   for(int elemnum=0; elemnum<NumElem; elemnum++){
     int indL = 0; //index of leftmost node of that element
     int indR = uh.GFarrDim()-1; //index of rightmost node of that element
@@ -333,53 +333,53 @@ DiffEq::characteristicflux(double t, int modenum,
     //Dimension of the components of the differential equation with 
     //spatial derivatives (dimension of the trimmed A matrices)
     //two for schwarszchild
-    int DdimL = AleftBoundaries[elemnum].getDdim();
-    int DdimR = ArightBoundaries[elemnum].getDdim();
-    
+        
     //vmin and vmax are min and max indices in vector dimension (psi, rho, pi)
     //one and two respectively for schwarzschild
-    int vmaxL = AleftBoundaries[elemnum].getAdim() - 1;
-    int vminL = vmaxL - DdimL + 1; //neglect zero rows at top of A matrix
-    int vmaxR = ArightBoundaries[elemnum].getAdim() - 1;
-    int vminR = vmaxR - DdimR + 1; //neglect zero rows at top of A matrix
+    int vmaxL = params.grid.Adim - 1;
+    int vminL = vmaxL - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
+    int vmaxR = params.grid.Adim - 1;
+    int vminR = vmaxR - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
+
+    //were Array1D
+    vector<complex<double>> uintL(params.grid.Ddim); //internal u at left boundary
+    vector<complex<double>> uintR(params.grid.Ddim); //internal u at right boundary
+    vector<complex<double>> uextL(params.grid.Ddim); //external u at left boundary
+    vector<complex<double>> uextR(params.grid.Ddim); //external u at right boundary
     
-    Array1D<complex<double>> uintL(DdimL); //internal u at left boundary
-    Array1D<complex<double>> uintR(DdimR); //internal u at right boundary
-    Array1D<complex<double>> uextL(DdimL); //external u at left boundary
-    Array1D<complex<double>> uextR(DdimR); //external u at right boundary
-    
-    uintL = uh.getVectorAsArray1D(modenum,elemnum, indL, vminL, vmaxL, 0); 
-    uintR = uh.getVectorAsArray1D(modenum,elemnum, indR, vminR, vmaxR, 0);
+    uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0); 
+    uintR = uh.getVectorRange(modenum,elemnum, indR, vminR, vmaxR, 0);
 
     
     if(elemnum > 0) {
-      uextL = uh.getVectorAsArray1D(modenum, elemnum - 1, indR, vminL, 
+      uextL = uh.getVectorRange(modenum, elemnum - 1, indR, vminL, 
                                     vmaxL, 0); 
       //external u, left boundary
     }else{
-      uextL = uh.getVectorAsArray1D(modenum, NumElem - 1, indR, vminL, 
+      uextL = uh.getVectorRange(modenum, NumElem - 1, indR, vminL, 
                                     vmaxL, 0); 
       //periodic boundary conditions
     }
     
     if(elemnum < NumElem - 1) {
-      uextR = uh.getVectorAsArray1D(modenum, elemnum + 1, indL, vminR, 
+      uextR = uh.getVectorRange(modenum, elemnum + 1, indL, vminR, 
                                     vmaxR, 0); 
       //external u, right boundary
     }else{
-      uextR = uh.getVectorAsArray1D(modenum, 0, indL, vminR, vmaxR, 0); 
+      uextR = uh.getVectorRange(modenum, 0, indL, vminR, vmaxR, 0); 
       //periodic boundary conditions
     }
-    
+
+    //below were Array2Ds
     //Initialize plus and minus components of lambda matrix to zero at both
     //boundaries
-    Array2D<double> lambdaminusL(DdimL, DdimL, 0.0);
-    Array2D<double> lambdaminusR(DdimR, DdimR, 0.0);
-    Array2D<double> lambdaplusL(DdimL, DdimL, 0.0);
-    Array2D<double> lambdaplusR(DdimR, DdimR, 0.0);
+    vector<double> lambdaminusL(params.grid.Ddim*params.grid.Ddim, 0.0);
+    vector<double> lambdaminusR(params.grid.Ddim*params.grid.Ddim, 0.0);
+    vector<double> lambdaplusL(params.grid.Ddim*params.grid.Ddim, 0.0);
+    vector<double> lambdaplusR(params.grid.Ddim*params.grid.Ddim, 0.0);
     
-    Array2D<double> lambdaL= AleftBoundaries[elemnum].getLambda();
-    Array2D<double> lambdaR= ArightBoundaries[elemnum].getLambda();
+    vector<double> lambdaL= AleftBoundaries[elemnum].getLambda();
+    vector<double> lambdaR= ArightBoundaries[elemnum].getLambda();
     
     
     //lambda minus contains outward moving wave components
@@ -388,51 +388,56 @@ DiffEq::characteristicflux(double t, int modenum,
     //See pg 35 of Hesthaven and Warburten
     
     
-    for(int j = 0; j < DdimL; j++) {
-      if(nL * lambdaL[j][j] <= 0) {
-        lambdaminusL[j][j] = nL * lambdaL[j][j];
+    for(int j = 0; j < params.grid.Ddim; j++) {
+      if(nL * lambdaL[j*params.grid.Ddim+j] <= 0) {
+        lambdaminusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
       } else {
-        lambdaplusL[j][j] = nL * lambdaL[j][j];
+        lambdaplusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
       }
       
-      if(nR * lambdaR[j][j] <= 0) {
-        lambdaminusR[j][j] = nR * lambdaR[j][j];
+      if(nR * lambdaR[j*params.grid.Ddim+j] <= 0) {
+        lambdaminusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
       } else {
-        lambdaplusR[j][j] = nR * lambdaR[j][j];
+        lambdaplusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
       }
     }
-
+    
     //S and S inverse matrices at both boundaries
-    Array2D<double> sinvL = AleftBoundaries[elemnum].getSinv();
-    Array2D<double> sinvR = ArightBoundaries[elemnum].getSinv();
-    Array2D<double> SL = AleftBoundaries[elemnum].getS();
-    Array2D<double> SR = ArightBoundaries[elemnum].getS();
+    vector<double> sinvL = AleftBoundaries[elemnum].getSinv();
+    vector<double> sinvR = ArightBoundaries[elemnum].getSinv();
+    vector<double> SL = AleftBoundaries[elemnum].getS();
+    vector<double> SR = ArightBoundaries[elemnum].getS();
     
     //Numerical fluxes at both boundaries 
     //See Hesthaven and Warburten pg 35 (n*F)
-    Array1D<complex<double>> nfluxL1 = matmult(lambdaplusL,
-					       matmult(sinvL, uintL));
-    Array1D<complex<double>> nfluxL2 =  matmult(lambdaminusL,
-						matmult(sinvL, uextL));
-    
-    Array1D<complex<double>> nfluxL = matmult(SL, nfluxL1+nfluxL2);
+    //were Array1D's
+    vector<complex<double>> temp = matmul(sinvL, uintL,params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> nfluxL1 = matmul(lambdaplusL, temp, params.grid.Ddim,params.grid.Ddim,1);
+    temp = matmul(sinvL, uextL,params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> nfluxL2 =  matmul(lambdaminusL,temp,params.grid.Ddim,params.grid.Ddim,1);
+    temp = vecsum(nfluxL1,nfluxL2);
+    vector<complex<double>> nfluxL = matmul(SL,temp,params.grid.Ddim,params.grid.Ddim,1);
+    temp = matmul(sinvR, uintR,params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> nfluxR1 = matmul(lambdaplusR,temp,params.grid.Ddim,params.grid.Ddim,1);
+    temp = matmul(sinvR, uextR,params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> nfluxR2 = matmul(lambdaminusR,temp,params.grid.Ddim,params.grid.Ddim,1);
+    temp = vecsum(nfluxR1,nfluxR2);
+    vector<complex<double>> nfluxR = matmul(SR,temp,params.grid.Ddim,params.grid.Ddim,1);
 
- 
-    Array1D<complex<double>> nfluxR1 = matmult(lambdaplusR,
-					       matmult(sinvR, uintR));
-    Array1D<complex<double>> nfluxR2 = matmult(lambdaminusR,
-					       matmult(sinvR, uextR));
-    Array1D<complex<double>> nfluxR = matmult(SR, nfluxR1 + nfluxR2);
+    //were Array2D's
+    vector<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
+    vector<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
+    vector<complex<double>> duelem(params.grid.Adim*2, {0.0,0.0});
 
-    Array2D<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
-    Array2D<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
-    Array2D<complex<double>> duelem(AtrimmedR.dim1(), 2, {0.0,0.0});
-
-    
+    //were Array1Ds
     //This gets multiplied by lift matrix to calculate flux
-    Array1D<complex<double>> temp10 = nL* matmult(AtrimmedL,uintL);
-    Array1D<complex<double>> duL = nL * matmult(AtrimmedL, uintL) - nfluxL; 
-    Array1D<complex<double>> duR = nR * matmult(AtrimmedR, uintR) - nfluxR; 
+    vector<complex<double>> temp1 = matmul(AtrimmedL,uintL,params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> temp2 = matmul(AtrimmedR, uintR, params.grid.Ddim,params.grid.Ddim,1);
+    vector<complex<double>> temp10 = scalarmult(nL,temp1);
+    vector<complex<double>> temp3= scalarmult(nL,temp1);
+    vector<complex<double>> temp4 = scalarmult(nR,temp2);
+    vector<complex<double>> duL = vecdiff(temp3,nfluxL);
+    vector<complex<double>> duR = vecdiff(temp4,nfluxR);
     //DU SHOULD BE ZERO AFTER FIRST CALL TO RHS
 
     
@@ -463,8 +468,8 @@ DiffEq::characteristicflux(double t, int modenum,
     //create a 2D array with one column corresponding to the left
     //boundary and one column corresponding to the right boundary
     //of du for the the various components of u. 
-    insert_1D_into_2D(duelem, duL, 0, false);
-    insert_1D_into_2D(duelem, duR, 1, false);
+    insert_1D_into_2D_vec(duelem, duL, 0, false);
+    insert_1D_into_2D_vec(duelem, duR, 1, false);
 
     du[elemnum] = duelem;
   }
@@ -474,7 +479,7 @@ DiffEq::characteristicflux(double t, int modenum,
 void DiffEq::RHS(int modenum, Grid& thegrid,
                  TwoDVectorGridFunction<complex<double>>& uh, 
                  TwoDVectorGridFunction<complex<double>>& RHStdvgf, double t, 
-                 vector<Array2D<complex<double>>>& du , bool output)
+                 vector<vector<complex<double>>>& du , bool output)
 {
 
   //We can loop over RHS in an external function independent of mode 
@@ -483,37 +488,39 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
    
 
   int NumElem = thegrid.numberElements();
-  int vmaxAB = ArightBoundaries[0].getAdim()-1;
-  int vminA = vmaxAB - ArightBoundaries[0].getDdim() +1;
-  Array2D<double> D;
+  int vmaxAB = params.grid.Adim-1;
+  int vminA = vmaxAB - params.grid.Ddim +1;
+  vector<double> D; //was Array2D<double>
   D = thegrid.refelem.getD();
-  Array2D<double> Lift;
+  vector<double> Lift; //was Array2D<double>
   Lift = thegrid.refelem.getLift();
   
   //pragma omp parallel if(NumElem>lmmodes.ntotal) for
 
-#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) if(uh.TDVGFdim()<=thegrid.numberElements())
+  //#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) if(uh.TDVGFdim()<=thegrid.numberElements())
   for(int elemnum = 0; elemnum < NumElem; elemnum++){
     //Maximum index for both A and B matrix
-    //    int vmaxAB = ArightBoundaries[elemnum].getAdim() - 1;
+    //    int vmaxAB = ArightBoundaries[elemnum].getparams.grid.Adim() - 1;
     //Minimum index for use with trimmed A matrix. 
     //Minimum index for B matrix is zero
     //    int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
     
-    //The B matrix component of the RHS. 
-    Array2D<complex<double>> RHSB(uh.GFarrDim(), 
-                                  ArightBoundaries[elemnum].getAdim());
-    for(int nodenum = 0; nodenum < uh.GFarrDim(); nodenum++){
-      Array1D<complex<double>> RHSBpernode;
+    //The B matrix component of the RHS.
+
+    //was Array2D
+    vector<complex<double>> RHSB(uh.GFarrDdim() 
+                                 *params.grid.Adim);
+    for(int nodenum = 0; nodenum < uh.GFarrDdim(); nodenum++){
+      vector<complex<double>> RHSBpernode; //was Array1D
       
       //FIX THIS. THIS CAN BE SPED UP BY NOT COPYING IN GETVECTORASARRAY1D
       //Multiply the B matrix times a "vector" of u for each node
-      RHSBpernode = matmult(Bmatrices.get(modenum, elemnum, nodenum),
-                            uh.getVectorAsArray1D(modenum,elemnum, nodenum, 
-                                                  0, vmaxAB, 0));
+      RHSBpernode = matmul(Bmatrices.get(modenum, elemnum, nodenum),
+                            uh.getVectorRegion(modenum,elemnum, nodenum, 
+					       0, vmaxAB, 0),params.grid.Adim,params.grid.Adim,1);
 
       //Insert that result into the rows of a larger matrix
-      insert_1D_into_2D(RHSB, RHSBpernode, nodenum, false);
+      insert_1D_into_2D_vec(RHSB, RHSBpernode, nodenum, false);
       
 
     }//This can be sped up by skipping the insert step and reading directly 
@@ -528,7 +535,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       
 
     //A contribution:
-    Array2D<complex<double>> RHSA1(uh.GFarrDim(), ArightBoundaries[elemnum].getDdim());
+    vector<complex<double>> RHSA1(uh.GFarrdim()*params.grid.Ddim);//was Array2D
     
     //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
@@ -540,19 +547,23 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //					      * move((matmult(thegrid.refelem.getD(),
     //							      uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0)))));
 
-    Array2D<complex<double>> RHSA1preA = thegrid.jacobian(elemnum) 
-					      * matmult(D,
-						 uh.getVectorNodeArray2D(modenum, elemnum, vminA, vmaxAB, 0));
 
+    //HERE
+    vector<complex<double>> RHSA1preA = scalarmult(thegrid.jacobian(elemnum), 
+					      matmul(D,
+						     uh.getVectorNode2D(modenum, elemnum, vminA, vmaxAB, 0),params.grid.Ddim,params.grid.Ddim,uh.GFarrdim()));
+    //was Array2D
+
+    
     //RHSA1preA is du2drho and du2dpi.
     /*    if(modenum==1){
-      for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++){ 
+      for(int nodenum=0; nodenum < uh.GFarrdim(); nodenum++){ 
 	cout << setprecision(15);
 	cout << t << " " << thegrid.gridNodeLocations().get(elemnum, nodenum) << " " << RHSA1preA[nodenum][0].real() << " " << RHSA1preA[nodenum][1].real() << endl;
       }
       }*/
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
-    for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++)
+    for(int nodenum=0; nodenum < uh.GFarrdim(); nodenum++)
       {
         int M = trimmedAmatrices.get(elemnum,nodenum).dim1();
         int N = trimmedAmatrices.get(elemnum,nodenum).dim2();
@@ -597,7 +608,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //Sum the contributions from B, derivative, and flux, 
       //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
-      for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
+      for(int nodenum = 0; nodenum < RHStdvgf.GFarrdim(); nodenum++){
 	complex<double> tot;
 	if(vecnum<vminA){
 	  tot = -RHSB[nodenum][vecnum];
@@ -640,8 +651,8 @@ void DiffEq::modeRHS(Grid& thegrid,
       fs << " #time = " << t << endl;
       
       
-      for (int i = 0; i < source.GFvecDim(); i++){
-	for(int j = 0; j < source.GFarrDim(); j++){
+      for (int i = 0; i < source.GFvecdim(); i++){
+	for(int j = 0; j < source.GFarrdim(); j++){
 	  //Print out at select time steps
 	  fs << thegrid.gridNodeLocations().get(i, j) << " "
 	     << source.get(k, i, j).real() << " " 
@@ -653,7 +664,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 
   
 
-#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
+  //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     //    cout << modenum << endl;
     double max_speed = 1.0;
