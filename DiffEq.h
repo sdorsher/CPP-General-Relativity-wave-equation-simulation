@@ -32,9 +32,9 @@ class DiffEq
 
  private:
   //Grid functions and VectorGridFunctions range over all elements and all nodes
-  GridFunction<Array2D<double>> Amatrices;
-  VectorGridFunction<Array2D<double>> Bmatrices;
-  GridFunction<Array2D<double>> trimmedAmatrices;
+  VectorGridFunction<double> Amatrices; //used to be GridFunction array2D
+  TwoDVectorGridFunction<double> Bmatrices; //used to be Vector Grid Function array2D
+  VectorGridFunction<double> trimmedAmatrices; //used to be GridFunction array2D
 
   //vectors range over the elements, containing left and right boundaries
   vector<CharacteristicFlux> AleftBoundaries;
@@ -69,7 +69,7 @@ class DiffEq
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<complex<double>>& uh, 
            TwoDVectorGridFunction<complex<double>>& RHSvgf, 
-           double t, vector<Array2D<complex<double>>>& du , bool output);
+           double t, vector<vector<complex<double>>>& du , bool output);
 
   //loops over the modes to get the effective source,
   //get the characteristic flux, then calculate the RHS of the
