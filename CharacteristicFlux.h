@@ -1,6 +1,8 @@
 #ifndef CHARACTERISTICFLUX_H
 #define CHARACTERISTICFLUX_H
 #include "TNT2.h"
+#include "globals.h"
+#include "ConfigParams.h"
 
 using namespace TNT;
 using namespace JAMA;
@@ -22,7 +24,7 @@ class CharacteristicFlux
   int Ddimension; //dimension of non-zero derivative variables
 
  public:
-  CharacteristicFlux(Array2D<double> Amatrix, Array2D<double> Atrimmed);
+  CharacteristicFlux(vector<double> Amatrix, vector<double> Atrimmed);
   vector<double> getA();
   vector<double> getS();
   vector<double> getSinv();

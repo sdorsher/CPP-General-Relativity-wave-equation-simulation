@@ -102,7 +102,7 @@ vector<complex<T>> matmul(vector<T> &A, vector<complex<T>> &B, int dimA1,
   
   for(int i=0; i<dimA1; i++){
     for(int j=0; j<dimB2; j++){
-      double sum = 0.0;
+      complex<double> sum = 0.0;
       for(int k=0; k<dimA2B1;k++){
 	sum+=A[i*dimA2B1+k]*B[k*dimB2+j];
       }

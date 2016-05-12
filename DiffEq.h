@@ -53,11 +53,11 @@ class DiffEq
 
  public:
   DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal);
-  Array2D<double> getA(int gridindex, int pointsindex);
-  Array2D<double> getB(int modesindex, int gridindex, int pointsindex);
+  vector<double> getA(int gridindex, int pointsindex);
+  vector<double> getB(int modesindex, int gridindex, int pointsindex);
   CharacteristicFlux getAleft(int elemnum);
   CharacteristicFlux getAright(int elemnum);
-  Array2D<double> getAtrimmed(int gridindex, int pointsindex);
+  vector<double> getAtrimmed(int gridindex, int pointsindex);
 
   //Returns du, for the characteristic flux.
   vector<vector<complex<double>>> characteristicflux(double t,
@@ -69,7 +69,7 @@ class DiffEq
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<complex<double>>& uh, 
            TwoDVectorGridFunction<complex<double>>& RHSvgf, 
-           double t, vector<vector<complex<double>>>& du , bool output);
+           double t, bool output);
 
   //loops over the modes to get the effective source,
   //get the characteristic flux, then calculate the RHS of the

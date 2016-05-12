@@ -235,8 +235,8 @@ vector<T> TwoDVectorGridFunction<T>::getVectorNode2D(int vectorCoord,
                                                            int startvec, 
                                                            int stopvec,
                                                            int dimension,
-							   int* dim1,
-							   int* dim2)
+							   int& dim1,
+							   int& dim2)
 {
   if((GFcoord < 0) || (GFcoord > GFvectorDim)) {
     cout << "Get indices out of range" << endl;

@@ -61,7 +61,7 @@ ConfigParams.o: ConfigParams.cpp ConfigParams.h
 DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h vecMatrixTools.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
-CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h
+CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
 
 HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h 

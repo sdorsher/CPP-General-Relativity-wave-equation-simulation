@@ -11,14 +11,14 @@
 // Atrimmed cuts the equation down to just those variables with nonzero 
 // spatial derivatives 
 // dw/dt + Lamb * dw/dx + ? =0, Lamb diagonal, characteristic form
-// S matrix has eigenvectors of Atrimmed in columns
+// S matrix has eigevectors of Atrimmed in columns
 // Sinv= inverse of S
 // Sinv*Atrimmed*S=Lamb, Lamb has eigenvalues of Atrimmed on diagonals
 
 //We can leave TNT in here because it is only done at the beginning
 
-CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
-                                       TNT::Array2D<double> Atrim)
+CharacteristicFlux::CharacteristicFlux(vector<double> Amatrix,
+                                       vector<double> Atrim)
   //  A(Amatrix.dim1(), Amatrix.dim2()),
   //  Atrimmed(Atrim.dim1(), Atrim.dim2()),
   //  Smatrix(0, 0), 
@@ -28,24 +28,25 @@ CharacteristicFlux::CharacteristicFlux(TNT::Array2D<double> Amatrix,
 {
 
   
-  if(Amatrix.dim1() != Amatrix.dim2()) {
-    throw invalid_argument("Amatrix not square in CharacteristicFlux");
-  }
+  //  if(Amatrix.dim1() != Amatrix.dim2()) {
+  //  throw invalid_argument("Amatrix not square in CharacteristicFlux");
+  // }
 
-  if(Atrim.dim1() != Atrim.dim2()) {
-    throw invalid_argument("Atrim not square in CharacteristicFlux");
-  }
+  //if(Atrim.dim1() != Atrim.dim2()) {
+  //  throw invalid_argument("Atrim not square in CharacteristicFlux");
+  // }
 
-  Array2D<double> A(Amatrix.dim1(), Amatrix.dim2());
-  Array2D<double> Atrimmed(Atrim.dim1(), Atrim.dim2());
+  
+  Array2D<double> A(params.grid.Adim,params.grid.Adim);
+  Array2D<double> Atrimmed(params.grid.Ddim,params.grid.Ddim);
   Array2D<double> Smatrix(0, 0); 
   Array2D<double> Sinv(0, 0); 
   Array2D<double> Lamb(0, 0); 
   Array2D<double> one(0, 0,1.0);
-  A = Amatrix;
-  Atrimmed = Atrim;
-  Adimension = A.dim1();
-  Ddimension = Atrim.dim1();
+  A = vectorToArray2D(Amatrix,params.grid.Adim,params.grid.Adim);
+  Atrimmed = vectorToArray2D(Atrim,params.grid.Ddim,params.grid.Ddim);
+  Adimension = params.grid.Adim;
+  Ddimension = params.grid.Ddim;
 
   Array2D<double> onetemp(Ddimension, Ddimension, 0.0);
   

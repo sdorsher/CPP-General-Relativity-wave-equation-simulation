@@ -72,7 +72,7 @@ class TwoDVectorGridFunction
 
   //was Array2D
    vector<T> getVectorNode2D(int vectorCoord, int GFcoord,int startvec, 
-			     int stopvec, int dimension, int* dim1, int* dim2);
+			     int stopvec, int dimension, int& dim1, int& dim2);
   //Using for loops, get an array along the either the outermost or second outermost
   //vector dimension and the GFvector dimensions at the other
   // coordinates specified. Choose which of the two dimensions using "dimension". Choose
