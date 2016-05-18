@@ -63,7 +63,7 @@ class TwoDVectorGridFunction
   int GFarrDim(); //the dimension of the array within the GridFunction
   void append(VectorGridFunction<T> gf);
 
-  //  vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
+   vector<T> getVector(int TDVGFvcoord, int GFvcoord, int GFacoord);
   //Using a for loop, get the vector along the VGFvector dimension.
 
   vector<T> getVectorRange(int vectorCoord, int GFvcoord, int GFacoord,

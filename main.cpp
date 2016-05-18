@@ -134,7 +134,7 @@ int main()
   }
   
 
-  cout << "entering diff eq" << endl;
+  cout << "defining the differential equation" << endl;
   
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
@@ -212,6 +212,7 @@ int main()
 
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
 
+  cout << "first call to RHS succeeded" << endl;
 
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
