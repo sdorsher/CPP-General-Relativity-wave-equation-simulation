@@ -205,8 +205,8 @@ int main()
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
     deltat = params.time.dt;
-    cout << "deltat set to dt";
-    cout << deltat << endl;
+    cout << "deltat set to dt" << endl;
+    cout << dx << " " << deltat << endl;
   }
 
 

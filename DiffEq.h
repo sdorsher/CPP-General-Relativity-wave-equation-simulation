@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <omp.h>
 #include "vecMatrixTools.h"
+#include "TwoDVectorGridFunction.h"
 
 using namespace TNT;
 using namespace layers;

@@ -166,7 +166,7 @@ void TwoDVectorGridFunction<T>::append(VectorGridFunction<T> vgf)
 
 //Get a vector from an outer vector coordinate and an inner vector 
 //coordinate and an array coordinate.
-/*template <class T>              
+template <class T>              
 vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord, 
                                                int GFvcoord, int GFacoord)
 {
@@ -182,7 +182,7 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord,
     }
   }
   return outputvec;
-}*/
+}
     
 //Get an vector from an outer vector coordinate, a middle vector coordinate,
 //and inner vector coordinate 

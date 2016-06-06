@@ -8,12 +8,12 @@ using namespace std;
 template <class T>
 void insert_1D_into_2D_vec(vector<T> &A, vector<T> &B, int dimA1,int dimA2, int index, bool iscolumn){
   if(iscolumn){
-    if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    if(index>=dimA1) cout << "index out of range in insert_1D_into_2D_vec" << endl;
     for(int j=0; j<dimA2; j++){
       A[index*dimA2+j]=B[j];
     }
   }else{
-    if(index>=dimA1) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
     for(int i=0; i<dimA1; i++){
       A[i*dimA2+index]=B[i];
     }
@@ -84,7 +84,7 @@ vector<T> matmul(vector<T> &A, vector<T> &B, int dimA1,
   
   for(int i=0; i<dimA1; i++){
     for(int j=0; j<dimB2; j++){
-      double sum = 0.0;
+      T sum = 0.0;
       for(int k=0; k<dimA2B1;k++){
 	sum+=A[i*dimA2B1+k]*B[k*dimB2+j];
       }
