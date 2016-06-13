@@ -2,20 +2,21 @@
 #define VEC_MATRIX_TOOLS_H
 #include <vector>
 #include <iostream>
+#include <complex>
 
 using namespace std;
 
 template <class T>
 void insert_1D_into_2D_vec(vector<T> &A, vector<T> &B, int dimA1,int dimA2, int index, bool iscolumn){
   if(iscolumn){
-    if(index>=dimA1) cout << "index out of range in insert_1D_into_2D_vec" << endl;
-    for(int j=0; j<dimA2; j++){
-      A[index*dimA2+j]=B[j];
+    if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    for(int j=0; j<dimA1; j++){
+      A[j*dimA2+index]=B[j];
     }
   }else{
-    if(index>=dimA2) cout << "index out of range in insert_1D_into_2D_vec" << endl;
-    for(int i=0; i<dimA1; i++){
-      A[i*dimA2+index]=B[i];
+    if(index>=dimA1) cout << "index out of range in insert_1D_into_2D_vec" << endl;
+    for(int i=0; i<dimA2; i++){
+      A[index*dimA2+i]=B[i];
     }
   }
 }

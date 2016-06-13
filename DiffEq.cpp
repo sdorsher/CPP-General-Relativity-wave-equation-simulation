@@ -537,13 +537,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       RHSBpernode = matmul(tempd,temp,params.grid.Adim,params.grid.Adim,1);
       
       //Insert that result into the rows of a larger matrix
-      insert_1D_into_2D_vec(RHSB, RHSBpernode,params.grid.Adim,uh.GFarrDim(),nodenum, false);
+      
 
-      
-      
-      
+      insert_1D_into_2D_vec(RHSB, RHSBpernode,uh.GFarrDim(),params.grid.Adim,nodenum, false);
+
+
     }//end node loop
-    
+    //PAST HERE
+
     //A contribution:
     vector<complex<double>> RHSA1(uh.GFarrDim()*params.grid.Ddim);//was Array2D
     
@@ -639,7 +640,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);
   }
-  if (output&&params.opts.useSource){
+  /*if (output&&params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;
       fs.precision(16);
@@ -648,7 +649,7 @@ void DiffEq::modeRHS(Grid& thegrid,
       fs.open(oss.str(),ios::app);
       fs << endl << endl;
       fs << " #time = " << t << endl;
-      
+   
       
       for (int i = 0; i < source.GFvecDim(); i++){
 	for(int j = 0; j < source.GFarrDim(); j++){
@@ -659,7 +660,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 	}
       }
     }
-  }
+    }*/
   
   
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
