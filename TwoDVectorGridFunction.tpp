@@ -251,12 +251,12 @@ vector<T> TwoDVectorGridFunction<T>::getVectorNode2D(int vectorCoord,
     for(int j = 0; j < GFarrayDim; j++){
       if(dimension==0){
 
-        output[(i - startvec)*GFarrayDim+j]=get(vectorCoord,i, GFcoord, j);
+        output[(stopvec-startvec+1)*j+i-startvec]=get(vectorCoord,i, GFcoord, j);
 	dim1=GFarrayDim;
 	dim2=VGFvectorDim;
 //        output[j][i - startvec]=get(vectorCoord,i, GFcoord, j);
       } else if (dimension == 1) {
-        output[(i - startvec)*GFarrayDim+j] = get(i, vectorCoord, GFcoord, j);
+        output[(stopvec-startvec+1)*j+i-startvec] = get(i, vectorCoord, GFcoord, j);
 	dim1 = GFarrayDim;
 	dim2 = TDVGFvectorDim;
       } else {

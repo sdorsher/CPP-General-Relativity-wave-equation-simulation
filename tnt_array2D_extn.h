@@ -20,9 +20,9 @@ namespace TNT
       int dimA2 = A.dim2();
 
       vector<T> B(dimA1*dimA2);
-      for(int i=0; i< dimA2; i++){
-	for(int j=0; j< dimA1; j++){
-	  B[i*dimA1+j]=A[j][i];
+      for(int j=0; j< dimA1; j++){
+	for(int i=0; i< dimA2; i++){
+	  B[j*dimA2+i]=A[j][i];
 	}
       }
       return B;
