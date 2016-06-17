@@ -200,6 +200,8 @@ int main()
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/maxspeed;
     cout << "set and actual time step, based on courant factor" << endl;
+
+    //temporary
     cout << dx << " " << deltat << endl << endl;
   }else if(params.metric.flatspacetime){
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
@@ -210,7 +212,7 @@ int main()
   }
 
 
-  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, false);
+  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
 
   cout << "first call to RHS succeeded" << endl;
 
@@ -346,7 +348,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
         
         uh.set(n,1,i,j,0.0);
 	fs << setprecision(16);
-        fs << rho.get(i,j) << " " << uh.get(0,2,i,j) << endl;
+        fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
 
       }
 
@@ -376,7 +378,7 @@ void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd){
         double rhovar = omega * params.sine.amp * cos(omega * grd.gridNodeLocations().get(i, j)
                                                      + params.sine.phase);
         double pivar = -params.waveeq.speed * rhovar;
-        //travelling wave
+        //travelling waves
         //are rho and pi backward?
         uh.set(k, 0, i, j, psi);
         uh.set(k, 1, i, j, pivar);
