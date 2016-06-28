@@ -37,7 +37,7 @@ namespace TNT
       Array2D<T> B(dim1,dim2);
       for(int i=0; i< dim2; i++){
 	for(int j=0; j< dim1; j++){
-	  B[j][i]= A[i*dim1+j];
+	  B[i][j]= A[i*dim1+j];
 	}
       }
       return B;

@@ -74,9 +74,6 @@ CharacteristicFlux::CharacteristicFlux(vector<double> Amatrix,
 
 }
 
-
-
-
 vector<double> CharacteristicFlux::getS(){
   return SmatrixV;
 }

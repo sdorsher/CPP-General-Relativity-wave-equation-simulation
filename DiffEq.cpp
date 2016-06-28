@@ -32,7 +32,7 @@ CharacteristicFlux DiffEq::getAright(int elemnum)
 }
 vector<double> DiffEq::getAtrimmed(int gridindex, int pointsindex)
 {
-  return trimmedAmatrices.get(gridindex, pointsindex);
+  return trimmedAmatrices.getVector(gridindex, pointsindex);
 }
 
 // The A matrix must be formatted such that zero rows are at the top
@@ -486,8 +486,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
     vector<complex<double>> duelem(params.grid.Adim*2, {0.0,0.0});
 
-    
-    
+    //    if(output){
+    //  cout << elemnum << " " << SR[0] << " " << SR[1] << " " << SR[2] << " "<< SR[3] << endl;
+    // }
     //were Array1Ds
     //This gets multiplied by lift matrix to calculate flux
     vector<complex<double>> temp1 = matmul(AtrimmedL,uintL,params.grid.Ddim,params.grid.Ddim,1);
@@ -507,6 +508,11 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     insert_1D_into_2D_vec(du,duL,2,params.grid.Ddim,0,false);
     insert_1D_into_2D_vec(du,duR,2,params.grid.Ddim,1,false);
 
+    //if(output){
+    // cout << elemnum << "\t" << du[0].real() << "\t" << du[1].real() << "\t" << du[2].real() << "\t"  << du[3].real() << endl;
+    //}
+
+    
     vector<complex<double>> uint2D(2*params.grid.Ddim);
     insert_1D_into_2D_vec(uint2D,uintL,2,params.grid.Ddim,0,false);
     insert_1D_into_2D_vec(uint2D,uintR,2,params.grid.Ddim,1,false);
@@ -634,7 +640,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	
 	//if((output)&&(modenum==0)){
 	  //cout << setprecision(15);
-    
+
 	//cout << thegrid.gridNodeLocations().get(elemnum,nodenum) << " " << tA[0] << " " << tA[1] << " " << tA[2] << " " <<tA[3] << endl;
 	//}
 	
@@ -662,14 +668,48 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
 
     //RHSA1.txt
-    if(output){
-     for(int i=0; i<RHSA1.size(); i++){
-    cout << elemnum*RHSA1.size()+i << "\t" << RHSA1.at(i).real() << endl;
-     }
-    }
+    //if(output){
+    // for(int i=0; i<RHSA1.size(); i++){
+    //  cout << setprecision(15);
+    //cout << elemnum*RHSA1.size()+i << "\t" << RHSA1.at(i).real() << endl;
+    // }
+    //}
+
+    //GOOD UNTIL HERE FOR SURE
     temp =matmul(Lift,du,uh.GFarrDim(),2,2);
     vector<complex<double>> RHSA2 = scalarmult(thegrid.jacobian(elemnum),temp);
 
+    //if(output){
+    //for(int i=0; i< RHSA2.size(); i++){
+    //cout << setprecision(15);
+    // 	cout << elemnum*RHSA2.size()+i << "\t" << RHSA2.at(i).real() << endl;
+    //}
+    //}
+
+
+    //RHSA2 matches. Problem was transposed conversion from vectors to TNT in CharacteristicFlux.cpp. After HERE. trimmedA may still not match to 1e-7 not sure
+    
+      //  if(output){
+    // cout << elemnum << "\t" << du[0].real() << "\t" << du[1].real() << "\t" << du[2].real()<< "\t" << du[3].real() << endl;
+    //}
+    
+    //if(output){
+    //for(int i=0; i<temp.size(); i++){
+    //	cout << setprecision(15);
+    //	cout << elemnum*temp.size()+i << "\t" << temp.at(i).real() << endl;
+    //}
+    //}
+    
+    //LIFT IS FINE
+    //if(output){
+    // for(int i=0; i<Lift.size(); i++){
+    //cout << setprecision(15);
+    //	cout << elemnum*Lift.size()+i << "\t" << Lift.at(i) << endl;
+
+    //}
+    //}
+    
+    
     //if((elemnum==3)&&(output)){
     // for(int i=0; i<RHSA2.size(); i++){
     //	cout << i << "\t" << RHSA2.at(i) << endl;
