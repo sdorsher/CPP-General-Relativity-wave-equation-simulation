@@ -190,7 +190,9 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,-Hp / (1.0 - H));
 	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 - H));
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2));
+	      double temp=1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+	      //	      cout << i << " " << j << " " << k << " " << temp << endl;
 	    }
 	    
 	    break;
@@ -229,7 +231,9 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	       // * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	       //Bmatrices.set(k, i, j, B);
 	       Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
-	       Bmatrices.set(k,2*params.grid.Adim+0,i,j,1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1 * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2));
+	       double temp =1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1 * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	       Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+	       //cout << i << " " << j << " " << k <<" " << temp << endl;
 	     }
 	     break;
            }
@@ -280,7 +284,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,Hp / (1.0 + H));
 	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 + H));
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2));
+	      double temp = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
 	    }
 	    break;
              }
@@ -316,7 +321,10 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
             //B[2][0]=lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
             //Bmatrices.set(k,i,j,B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0)));
+	      double temp =lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+			  
+	      
 	    }
             break;
           }
@@ -726,16 +734,13 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
       for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
-	complex<double> tot;
-	if(vecnum<vminA){
-	  tot = -RHSB.at(nodenum*params.grid.Adim+vecnum);;
-	} else {
-	  /*if((output)&&(modenum==1)&&(vecnum==2)){
+	complex<double> tot=-RHSB.at(nodenum*params.grid.Adim+vecnum);;
+	if(vecnum>=vminA){
+	 	  /*if((output)&&(modenum==1)&&(vecnum==2)){
 	    cout << setprecision(15);
 	    cout << nodenum << " " << RHSA[nodenum][vecnum-vminA].real() << endl;
 	    }*/
-	  tot=-RHSB.at(nodenum*params.grid.Adim+vecnum)
-	    +RHSA1.at(nodenum*params.grid.Ddim+(vecnum-vminA))
+	  tot+=RHSA1.at(nodenum*params.grid.Ddim+(vecnum-vminA))
 	    + RHSA2.at(nodenum*params.grid.Ddim+(vecnum-vminA));
 	}//-sign in B because it is on the left hand side of the 
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){

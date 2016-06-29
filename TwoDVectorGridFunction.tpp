@@ -176,12 +176,10 @@ vector<T> TwoDVectorGridFunction<T>::getVector(int TDVGFvcoord,
     cout << "Get indices out of range in TwoDVectorGridFunction." << endl;
   }
   vector<T> outputvec;
-  for(int j = 0; j < TDVGFvectorDim; j++) {
     for(int i = 0; i < VGFvectorDim; i++) {
-      outputvec.push_back(get(j, i, GFvcoord, GFacoord));
+      outputvec.push_back(get(TDVGFvcoord, i, GFvcoord, GFacoord));
     }
-  }
-  return outputvec;
+    return outputvec;
 }
     
 //Get an vector from an outer vector coordinate, a middle vector coordinate,
