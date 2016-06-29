@@ -163,7 +163,6 @@ int main()
 						   params.grid.elemorder + 1,
 						   {0.0,0.0}); 
   
-
   //Setup initial conditions and initialize window
   if(params.waveeq.issinusoid){
     initialSinusoid(uh, thegrid);
@@ -173,7 +172,10 @@ int main()
     initialSchwarzchild(uh, thegrid, theequation);
     //need to write initial swcharzchild
   }
-          
+
+  cout << "here" << endl;
+
+  
   //output window function
   ofstream fs;
   fs.open("window.txt");
@@ -199,6 +201,7 @@ int main()
 
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/maxspeed;
+    //deltat = params.time.dt;
     cout << "set and actual time step, based on courant factor" << endl;
 
     //temporary
@@ -336,34 +339,51 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
   GridFunction<double> rho(uh.GFvecDim(), uh.GFarrDim(), false);
   rho=grd.gridNodeLocations();
   ofstream fs;
-  fs.open("initialdata.txt");
+  GridFunction<double> nodes = grd.gridNodeLocations();
+  if(!params.opts.useSource){
+    fs.open("initialdata.txt");
+  }
   for(int i = 0; i < uh.GFvecDim(); i++) {
     for (int j = 0; j < uh.GFarrDim(); j++) {
       for (int n = 0; n < uh.TDVGFdim(); n++) {
-        double modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
-        uh.set(n,0,i,j,0.0);
+        complex<double> modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
+
+	
+        //uh.set(n,0,i,j,0.0);
         if(!params.opts.useSource){
           uh.set(n,2,i,j,modeval);
-        }
-        
-        uh.set(n,1,i,j,0.0);
-	fs << setprecision(16);
-        fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
 
+
+	//}else{
+	  //uh.set(n,2,i,j,0.0);
+	  //}
+        
+	  //uh.set(n,1,i,j,0.0);
+	  fs << setprecision(16);
+	  fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
+	}
       }
 
       if(params.opts.useSource){
-        double * r = &grd.rschw.get(i)[0];
-        double * win = &eqn.window.get(i)[0];
-        double * dwin = &eqn.dwindow.get(i)[0];
-        double * d2win = &eqn.d2window.get(i)[0];
-        calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
-      } 
-      double dxmin = fabs(grd.gridNodeLocations().get(0,0)
-                          -grd.gridNodeLocations().get(0,2));
+	vector<double> rschw = grd.rschw.get(i);
+	vector<double> window = eqn.window.get(i);
+	vector<double> dwindow = eqn.dwindow.get(i);
+	vector<double> d2window = eqn.d2window.get(i);
+        double * r = &rschw[0];
+	double * win = &window[0];
+        double * dwin = &dwindow[0];
+        double * d2win = &d2window[0];
+	calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
+      }
+
+      double dxmin = fabs(nodes.get(0,0)
+                          -nodes.get(0,2));
+	
     }
   }
-  fs.close();
+  if(!params.opts.useSource){
+    fs.close();
+  }
 }
   
 

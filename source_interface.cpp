@@ -141,12 +141,17 @@ namespace source_interface
 
 #pragma omp parallel for
       for(int i=0; i<thegrid.numberElements(); i++) {
-        double *r = &thegrid.rschw.get(i)[0];
-        double * win = &window.get(i)[0];
-        double * dwin = &dwindow.get(i)[0];
-        double * d2win = &d2window.get(i)[0];
+	vector<double> rschwv = thegrid.rschw.get(i);
+	vector<double> windowv = window.get(i);
+	vector<double> dwindowv = dwindow.get(i);
+	vector<double> d2windowv = d2window.get(i);
+        double *r = &rschwv[0];
+        double * win = &windowv[0];
+        double * dwin = &dwindowv[0];
+        double * d2win = &d2windowv[0];
         for(int k=0; k<nummodes; k++) {
-          complex<double> * src = &source.get(k,i)[0];
+	  vector<complex<double>> temp = source.get(k,i);
+          complex<double> * src = &temp[0];
           eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
         }
       }
