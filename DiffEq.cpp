@@ -744,7 +744,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	    + RHSA2.at(nodenum*params.grid.Ddim+(vecnum-vminA));
 	}//-sign in B because it is on the left hand side of the 
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
-	  tot += source.get(modenum, elemnum, nodenum);
+	  complex<double> temp = source.get(modenum,elemnum,nodenum);
+	  tot += temp;
 	  
 	  //equation in the definition supplied in DiffEq.cpp
 	}

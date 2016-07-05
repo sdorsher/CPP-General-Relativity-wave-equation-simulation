@@ -201,7 +201,7 @@ int main()
 
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/maxspeed;
-    //deltat = params.time.dt;
+    deltat = params.time.dt;
     cout << "set and actual time step, based on courant factor" << endl;
 
     //temporary

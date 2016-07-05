@@ -6,7 +6,7 @@ namespace source_interface
 {
 
   void init_source ( const Modes& lmmodes, const double &M ) {
-      assert(effsource.empty());
+    assert(effsource.empty());
       for (int i=0; i<lmmodes.ntotal; i++) {
         
         effsource.push_back(new EffectiveSource(lmmodes.ll[i], 
@@ -18,19 +18,20 @@ namespace source_interface
 		      const double& q2, const double& s2, const int& nmodes ) {
       assert(effsource.size()==nmodes);
       for (auto& x : effsource) 
-	(*x).set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
+	x->set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
     }
     void calc_window ( const int& n, const double r[],
 		       double Win[], double dWin[], double d2Win[] ) {
       assert(!effsource.empty());
-      (*effsource.at(0)).calc_window ( n, r, Win, dWin, d2Win );
+      auto & temp = effsource.at(0);
+      temp->calc_window ( n, r, Win, dWin, d2Win );
     }
 
     void set_time_window ( const double& T, const double& dT_dt,
 		           const double& d2T_dt2, const int& nmodes ) {
       assert(effsource.size()==nmodes);
       for (auto& x : effsource)
-        (*x).set_time_window ( T, dT_dt, d2T_dt2 );
+        x->set_time_window ( T, dT_dt, d2T_dt2 );
     }
 
     void set_particle ( const double& p, const double& e,
@@ -38,19 +39,21 @@ namespace source_interface
                         const int& nmodes ) {
       assert(effsource.size()==nmodes);
       for (auto& x : effsource) 
-	(*x).set_particle ( p, e, chi, phi );
+	x->set_particle ( p, e, chi, phi );
     }
 
     void eval_source (const int& mode,  const double& r,
                       std::complex<double> &src) {
-      assert(effsource.size()>=mode);
-      src =(*(effsource.at(mode)))(r);
+      //assert(effsource.size()>=mode);
+      auto& temp = effsource.at(mode);
+      src =(*temp)(r);
     }
     void eval_source_all (const int& mode,  const int& n, const double r[],
                           const double Win[], const double dWin[],
                           const double d2Win[], complex<double> src[]) {
       assert(effsource.size()>=mode);
-      (*(effsource.at(mode)))(n, r, Win, dWin, d2Win, src);
+      auto & temp = effsource.at(mode);
+      (*temp)(n, r, Win, dWin, d2Win, src);
     }
 
 
@@ -66,7 +69,9 @@ namespace source_interface
     void Phi ( const int* mode, const double* r,
                double* phire, double* phiim ) {
       assert(effsource.size()>=*mode);
-      std::complex<double> phi{(*(effsource.at(*mode))).Phi(*r)};
+      auto & temp = effsource.at(*mode);
+      auto temp2 = (*temp).Phi(*r);
+      std::complex<double> phi{temp2};
       *phire = std::real(phi);
       *phiim = std::imag(phi);
     }
@@ -74,14 +79,18 @@ namespace source_interface
     void dPhi_dr ( const int* mode, const double* r,
                    double* dphidrre, double* dphidrim ) {
       assert(effsource.size()>=*mode);
-      std::complex<double> dphidr{(*(effsource.at(*mode))).dPhi_dr(*r)};
+      auto & temp = effsource.at(*mode);
+      auto temp2 = temp->dPhi_dr(*r);
+      std::complex<double> dphidr{temp2};
       *dphidrre = std::real(dphidr);
       *dphidrim = std::imag(dphidr);
     }
     void dPhi_dt ( const int* mode, const double* r,
                    double* dphidtre, double* dphidtim ) {
       assert(effsource.size()>=*mode);
-      std::complex<double> dphidt{(*(effsource.at(*mode))).dPhi_dt(*r)};
+      auto & temp = effsource.at(*mode);
+      auto temp2 = (*temp).dPhi_dt(*r);
+      std::complex<double> dphidt{temp2};
       *dphidtre = std::real(dphidt);
       *dphidtim = std::imag(dphidt);
     }
@@ -139,7 +148,7 @@ namespace source_interface
       
       set_time_window(tfac,dtfac_dt, d2tfac_dt2, nummodes);
 
-#pragma omp parallel for
+      //#pragma omp parallel for
       for(int i=0; i<thegrid.numberElements(); i++) {
 	vector<double> rschwv = thegrid.rschw.get(i);
 	vector<double> windowv = window.get(i);
@@ -149,10 +158,10 @@ namespace source_interface
         double * win = &windowv[0];
         double * dwin = &dwindowv[0];
         double * d2win = &d2windowv[0];
-        for(int k=0; k<nummodes; k++) {
+	for(int k=0; k<nummodes; k++) {
 	  vector<complex<double>> temp = source.get(k,i);
           complex<double> * src = &temp[0];
-          eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
+	  eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
         }
       }
       //#pragma omp parallel for if(nummodes>omp_get_max_threads())
