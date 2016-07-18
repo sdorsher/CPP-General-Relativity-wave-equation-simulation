@@ -39,6 +39,7 @@ double LTwoError(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0,
 int main()
 {
 
+  //cout << "Start" << endl;
   //params is initialized at the beginning of this file by its 
   //inclusion in the file
   //modify such that hyperboloidal and tortoise boundaries
@@ -46,6 +47,7 @@ int main()
 
   //setup the modes
   Modes lmmodes(params.modes.lmax);
+
   if(params.metric.schwarschild){
     double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
     double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
@@ -70,7 +72,8 @@ int main()
 	 << Rplus <<" " << Splus << " " 
 	 << Wminus << " " << Wplus << endl;
     cout << endl;
-  
+
+
     //initialize orbit
     initialize_orbit();
     cout << "p =" << p << endl;
@@ -90,9 +93,11 @@ int main()
     w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
     nmodes = lmmodes.ntotal;
 
+
     cout << "R1 R2 w1 w2" << endl;
     cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
-  
+
+    
     if(params.opts.useSource) {
       set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
     }
@@ -110,6 +115,8 @@ int main()
     uplim = Splus;
   }
  
+
+
   Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
                lowlim, uplim);
 
@@ -119,6 +126,7 @@ int main()
   //find the indices associated with the radii to extract the solution at
   
   OutputIndices ijoutput;
+
 
   if(params.metric.schwarschild){
     //  int ifinite, iSplus, jfinite, jSplus;
@@ -133,14 +141,13 @@ int main()
 	 << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
   }
   
-
-  cout << "defining the differential equation" << endl;
   
+  cout << "defining the differential equation" << endl;
   //setup the differential equation
   DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
 
   cout << "diff eq established" << endl;
-  
+
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   //Solution to PDE, possibly a vector
@@ -162,6 +169,7 @@ int main()
 						   params.grid.numelems,
 						   params.grid.elemorder + 1,
 						   {0.0,0.0}); 
+
   
   //Setup initial conditions and initialize window
   if(params.waveeq.issinusoid){
@@ -173,9 +181,6 @@ int main()
     //need to write initial swcharzchild
   }
 
-  cout << "here" << endl;
-
-  
   //output window function
   ofstream fs;
   fs.open("window.txt");
@@ -199,6 +204,8 @@ int main()
   double deltat;
   double maxspeed = 1.0;
 
+
+
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/maxspeed;
     deltat = params.time.dt;
@@ -214,11 +221,11 @@ int main()
     cout << dx << " " << deltat << endl;
   }
 
-
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
 
   cout << "first call to RHS succeeded" << endl;
 
+  
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
   }
@@ -239,7 +246,7 @@ int main()
 		       theequation,lmmodes,true,"up",4);
 	     */
     }
-    
+
     if(params.file.outputradiusfixed){
       write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes, true,
@@ -332,6 +339,9 @@ int main()
      fsL2.close();
     }
   }//end while loop
+
+clean_source();
+
 }
                          
 
@@ -374,6 +384,9 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
         double * dwin = &dwindow[0];
         double * d2win = &d2window[0];
 	calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
+	//	for(int f=0; f<17; f++){
+	// cout << win[f] << endl;
+	//}
       }
 
       double dxmin = fabs(nodes.get(0,0)
@@ -384,6 +397,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
   if(!params.opts.useSource){
     fs.close();
   }
+
 }
   
 

@@ -4,7 +4,8 @@
 
 namespace source_interface
 {
-
+  vector<EffectiveSource*> effsource;
+  
   void init_source ( const Modes& lmmodes, const double &M ) {
     assert(effsource.empty());
       for (int i=0; i<lmmodes.ntotal; i++) {
@@ -13,9 +14,11 @@ namespace source_interface
                                                 lmmodes.mm[i], M));
       }
     }
-    void set_window ( const double& r1, const double& w1, const double& q1,
+
+  void set_window ( const double& r1, const double& w1, const double& q1,
 		      const double& s1, const double& r2, const double& w2,
 		      const double& q2, const double& s2, const int& nmodes ) {
+    //    cout << "set_window" <<  r1 << " " << w1 << " " << q1 << " " << s1 << " " << s2 << " " << r2 << " " << w2 << " " << q2 << " " << s2 << " " << nmodes << endl;
       assert(effsource.size()==nmodes);
       for (auto& x : effsource) 
 	x->set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
@@ -44,6 +47,7 @@ namespace source_interface
 
     void eval_source (const int& mode,  const double& r,
                       std::complex<double> &src) {
+
       //assert(effsource.size()>=mode);
       auto& temp = effsource.at(mode);
       src =(*temp)(r);
@@ -53,6 +57,10 @@ namespace source_interface
                           const double d2Win[], complex<double> src[]) {
       assert(effsource.size()>=mode);
       auto & temp = effsource.at(mode);
+            //for(int i=0; i<17; i++){
+      //	cout << Win[i] << endl;
+      //}
+
       (*temp)(n, r, Win, dWin, d2Win, src);
     }
 
@@ -130,12 +138,14 @@ namespace source_interface
       using namespace orbit;
 
       double tfac, dtfac_dt, d2tfac_dt2;
-
-
+     
       phi= phi_of_t(time);
-      //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
+
+      //      cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
+
       set_particle(p,e,chi,phi,nummodes);
-      
+
+
       if(params.opts.turn_on_source_smoothly){
         time_window(time, params.timewindow.tsigma, params.timewindow.torder, 
                     tfac, dtfac_dt, d2tfac_dt2);
@@ -146,30 +156,48 @@ namespace source_interface
       // cout << "dtfac_dt = " << dtfac_dt << endl;
       //cout << "d2tfac_dt2 = " << d2tfac_dt2 << endl;
       
+
       set_time_window(tfac,dtfac_dt, d2tfac_dt2, nummodes);
 
+      
       //#pragma omp parallel for
       for(int i=0; i<thegrid.numberElements(); i++) {
 	vector<double> rschwv = thegrid.rschw.get(i);
 	vector<double> windowv = window.get(i);
 	vector<double> dwindowv = dwindow.get(i);
 	vector<double> d2windowv = d2window.get(i);
+	
         double *r = &rschwv[0];
         double * win = &windowv[0];
         double * dwin = &dwindowv[0];
         double * d2win = &d2windowv[0];
+
 	for(int k=0; k<nummodes; k++) {
 	  vector<complex<double>> temp = source.get(k,i);
           complex<double> * src = &temp[0];
 	  eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
-        }
+	  for(int i=0; i< thegrid.numberElements(); i++){
+	    for(int j=0; j<= thegrid.nodeOrder(); j++){
+	      if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
+		source.set(k,i,j,{0.,0.});
+ 	      }else{
+		//		if((abs(src[j].real())>1.e-15)||(abs(src[j].imag())>1.e-15)){
+		//		    cout << src[j] << endl;
+		// }
+		source.set(k,i,j,src[j]);
+	      }
+	    }
+	  }
+	}
       }
+      
       //#pragma omp parallel for if(nummodes>omp_get_max_threads())
-      for (int k=0; k<nummodes; k++) {
-        source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
-                           {0.0,0.0});
-      }
-
-    }
-
-}
+      //      for (int k=0; k<nummodes; k++) {
+      //source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
+      //	   {0.,0.});
+      //}
+      
+  }
+  
+  
+}//end namespace

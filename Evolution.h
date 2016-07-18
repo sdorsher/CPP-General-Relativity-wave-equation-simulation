@@ -7,6 +7,7 @@
 #include <fstream>
 #include "ConfigParams.h"
 #include <complex>
+#include "source_interface.h"
 
 //Low storage fourth order Runga Kutta routine.
 //See pg 64 of Hesthaven and Warburton.

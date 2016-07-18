@@ -761,9 +761,16 @@ void DiffEq::modeRHS(Grid& thegrid,
                      double t, bool output)
 {
   if(params.opts.useSource) {
-    fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
+   fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);
   }
+  //for(int i=0; i<source.GFvecDim(); i++){
+  // for(int j=0; j<source.GFarrDim(); j++){
+  //  cout << source.get(0,i,j) << endl;
+  // }
+  // }
+  
+  
   /*if (output&&params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;

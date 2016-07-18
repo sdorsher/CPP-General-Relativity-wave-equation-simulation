@@ -27,7 +27,7 @@ namespace source_interface {
 
   //vector for all lmmodes that contains EffectiveSource objects from Barry Wardell's
   //effective source package.
-  static std::vector<EffectiveSource*> effsource;
+  extern vector<EffectiveSource*> effsource;
 
 
   //constructor for vector

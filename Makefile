@@ -49,7 +49,7 @@ ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Grid.cpp
 
-Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h
+Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h
@@ -58,7 +58,7 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h vecMatrixTools.h TwoDVectorGridFunction.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h vecMatrixTools.h TwoDVectorGridFunction.h source_interface.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
