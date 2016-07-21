@@ -117,7 +117,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	    eLp = 0.0;
 	    H = -1.0;
 	    Hp = 0.0;
-	    thegrid.rstar.set(i,j,DBL_MAX);
+	    thegrid.rstar.set(i,j,-DBL_MAX);
 	    thegrid.rschw.set(i,j,2.0*params.schw.mass); 
 	    term1 = 0.0;
 	    term2 = 1.0;
@@ -299,8 +299,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	    eLp = 0.0;
 	    H = 1.0;
 	    Hp = 0.0;
-	    thegrid.rstar.set(i, j, -DBL_MAX);
-	    thegrid.rschw.set(i,j, -DBL_MAX);
+	    thegrid.rstar.set(i, j, DBL_MAX);
+	    thegrid.rschw.set(i,j, DBL_MAX);
 	    term1 = 1.0/ pow(thegrid.gridNodeLocations().get(i,j),2.0);
 	    term2 = 0.0;
 	    //Array2D<double> A(3,3,0.0);

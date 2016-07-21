@@ -28,6 +28,9 @@ namespace source_interface
       assert(!effsource.empty());
       auto & temp = effsource.at(0);
       temp->calc_window ( n, r, Win, dWin, d2Win );
+      //for(int i=0; i<n; i++){
+      //cout <<r[i] << " " <<  Win[i] << " " << dWin[i] << " " << d2Win[i] << endl;
+      //}
     }
 
     void set_time_window ( const double& T, const double& dT_dt,
@@ -171,20 +174,25 @@ namespace source_interface
         double * win = &windowv[0];
         double * dwin = &dwindowv[0];
         double * d2win = &d2windowv[0];
-
+	//for(int ii=0; ii<17; ii++){
+	  //cout <<r[ii] << " " <<  win[ii] << " " << dwin[ii] << " " << d2win[ii] << endl;
+	//}
 	for(int k=0; k<nummodes; k++) {
 	  vector<complex<double>> temp = source.get(k,i);
           complex<double> * src = &temp[0];
 	  eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
+	 
 	  for(int i=0; i< thegrid.numberElements(); i++){
+	    vector<complex<double>> src2(src, src+params.grid.elemorder+1);
 	    for(int j=0; j<= thegrid.nodeOrder(); j++){
+	      double eps11 = 1.e-200;
+	      //if(abs(win[j]>eps11)){
+	      //cout << win[j] << endl;
+	      //}
 	      if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
 		source.set(k,i,j,{0.,0.});
  	      }else{
-		//		if((abs(src[j].real())>1.e-15)||(abs(src[j].imag())>1.e-15)){
-		//		    cout << src[j] << endl;
-		// }
-		source.set(k,i,j,src[j]);
+		source.set(k,i,j,src2[j]);
 	      }
 	    }
 	  }

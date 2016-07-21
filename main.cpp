@@ -208,7 +208,7 @@ int main()
 
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/maxspeed;
-    deltat = params.time.dt;
+    //deltat = params.time.dt;
     cout << "set and actual time step, based on courant factor" << endl;
 
     //temporary
@@ -221,6 +221,10 @@ int main()
     cout << dx << " " << deltat << endl;
   }
 
+  //output coords
+  //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+  //		   theequation,lmmodes,true,"coords",5);
+  
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
 
   cout << "first call to RHS succeeded" << endl;
@@ -363,7 +367,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
         if(!params.opts.useSource){
           uh.set(n,2,i,j,modeval);
 
-
+	
 	//}else{
 	  //uh.set(n,2,i,j,0.0);
 	  //}
@@ -371,33 +375,38 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
 	  //uh.set(n,1,i,j,0.0);
 	  fs << setprecision(16);
 	  fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
-	}
-      }
+	}//end if
+      }//end n loop modes
+    }//end j loop
 
-      if(params.opts.useSource){
-	vector<double> rschw = grd.rschw.get(i);
-	vector<double> window = eqn.window.get(i);
-	vector<double> dwindow = eqn.dwindow.get(i);
-	vector<double> d2window = eqn.d2window.get(i);
-        double * r = &rschw[0];
-	double * win = &window[0];
-        double * dwin = &dwindow[0];
-        double * d2win = &d2window[0];
-	calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
-	//	for(int f=0; f<17; f++){
-	// cout << win[f] << endl;
-	//}
-      }
-
-      double dxmin = fabs(nodes.get(0,0)
-                          -nodes.get(0,2));
-	
+   
+    if(params.opts.useSource){
+      vector<double> rschw = grd.rschw.get(i);
+      vector<double> window = eqn.window.get(i);
+      vector<double> dwindow = eqn.dwindow.get(i);
+      vector<double> d2window = eqn.d2window.get(i);
+      double * r = &rschw[0];
+      double * win = &window[0];
+      double * dwin = &dwindow[0];
+      double * d2win = &d2window[0];
+      calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
+      vector<double> win3(win, win+params.grid.elemorder+1);
+      eqn.window.set(i,win3);
+      vector<double> dwin3(dwin, dwin+params.grid.elemorder+1);
+      eqn.dwindow.set(i,dwin3);
+      vector<double> d2win3(d2win, d2win+params.grid.elemorder+1);
+      eqn.d2window.set(i,d2win3);
     }
-  }
+    
+    double dxmin = fabs(nodes.get(0,0)
+			-nodes.get(0,2));
+    
+  }//end i loop
+
   if(!params.opts.useSource){
     fs.close();
   }
-
+  
 }
   
 
