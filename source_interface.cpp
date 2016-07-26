@@ -18,11 +18,10 @@ namespace source_interface
   void set_window ( const double& r1, const double& w1, const double& q1,
 		      const double& s1, const double& r2, const double& w2,
 		      const double& q2, const double& s2, const int& nmodes ) {
-    //    cout << "set_window" <<  r1 << " " << w1 << " " << q1 << " " << s1 << " " << s2 << " " << r2 << " " << w2 << " " << q2 << " " << s2 << " " << nmodes << endl;
-      assert(effsource.size()==nmodes);
+    assert(effsource.size()==nmodes);
       for (auto& x : effsource) 
 	x->set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
-    }
+  }
     void calc_window ( const int& n, const double r[],
 		       double Win[], double dWin[], double d2Win[] ) {
       assert(!effsource.empty());
@@ -144,7 +143,7 @@ namespace source_interface
      
       phi= phi_of_t(time);
 
-      //      cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
+      //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
 
       set_particle(p,e,chi,phi,nummodes);
 
@@ -181,22 +180,23 @@ namespace source_interface
 	  vector<complex<double>> temp = source.get(k,i);
           complex<double> * src = &temp[0];
 	  eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
-	 
-	  for(int i=0; i< thegrid.numberElements(); i++){
-	    vector<complex<double>> src2(src, src+params.grid.elemorder+1);
-	    for(int j=0; j<= thegrid.nodeOrder(); j++){
+	  vector<complex<double>> src2(src, src+params.grid.elemorder+1);
+	  
+	  for(int j=0; j<= thegrid.nodeOrder(); j++){
 	      double eps11 = 1.e-200;
 	      //if(abs(win[j]>eps11)){
 	      //cout << win[j] << endl;
 	      //}
 	      if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
 		source.set(k,i,j,{0.,0.});
+	      }else if((i==0)&&(j==0)){
+		source.set(k,i,j,{0.,0.});
  	      }else{
 		source.set(k,i,j,src2[j]);
 	      }
-	    }
 	  }
 	}
+	
       }
       
       //#pragma omp parallel for if(nummodes>omp_get_max_threads())

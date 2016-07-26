@@ -43,13 +43,14 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
 	    params.grid.elemorder + 1,0.},
   trimmedAmatrices{params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.},
   source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}},
-  window{params.grid.numelems, params.grid.elemorder+1},
-  dwindow{params.grid.numelems, params.grid.elemorder+1},
-  d2window{params.grid.numelems, params.grid.elemorder+1}
+  window{params.grid.numelems, params.grid.elemorder+1,0.0},
+  dwindow{params.grid.numelems, params.grid.elemorder+1,0.0},
+  d2window{params.grid.numelems, params.grid.elemorder+1,0.0}
 
   {
     //set up the A and B matrices
-    
+
+
     printf("setting up A and B matrices\n");
     setupABmatrices(thegrid, lmmodes);
     printf("A and B matrices established\n");
@@ -761,14 +762,16 @@ void DiffEq::modeRHS(Grid& thegrid,
                      double t, bool output)
 {
   if(params.opts.useSource) {
+
+    
    fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);
   }
-  //for(int i=0; i<source.GFvecDim(); i++){
-  // for(int j=0; j<source.GFarrDim(); j++){
-  //  cout << source.get(0,i,j) << endl;
-  // }
-  // }
+  //  for(int i=0; i<source.GFvecDim(); i++){
+  //for(int j=0; j<source.GFarrDim(); j++){
+  //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
+  //}
+  //}
   
   
   /*if (output&&params.opts.useSource){

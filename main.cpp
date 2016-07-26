@@ -148,6 +148,7 @@ int main()
 
   cout << "diff eq established" << endl;
 
+  
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   //Solution to PDE, possibly a vector
@@ -344,6 +345,8 @@ int main()
     }
   }//end while loop
 
+  cout.flush();
+  
 clean_source();
 
 }
