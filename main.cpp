@@ -39,7 +39,7 @@ double LTwoError(Grid thegrid, TwoDVectorGridFunction<complex<double>>& uh0,
 int main()
 {
 
-  //cout << "Start" << endl;
+  cout << "Start" << endl;
   //params is initialized at the beginning of this file by its 
   //inclusion in the file
   //modify such that hyperboloidal and tortoise boundaries
