@@ -82,7 +82,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     grid.upperlim=hyperb.Splus;
     //in this case, the boundaries on the grid should correspond to the horizon
     //and Scri-plus
-    
+    schw.use_generic_orbit=getConfigFromFile<bool>(configFileName, "schw","use_generic_orbit");
   }
 
   

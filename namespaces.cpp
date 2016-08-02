@@ -6,6 +6,7 @@ namespace orbit{
   double chi; //angular parameter for radial oscillations
   double phi; //angular parameter for angular oscillations
   double dchidt, dphidt, reschi, resphi;
+  double drdlambda_particle, drdxi_particle;
 }
 
 namespace layers{

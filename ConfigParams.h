@@ -46,6 +46,8 @@ struct SchwParams{ //used if schwarzschild is set to true under metric
   double sigma; //width of initial scalar field perturbation if effective source is not used
   double p_orb; //location of orbit
   double ecc; //eccentricity of orbit
+  bool use_generic_orbit;
+
 };
 
 struct WindowParams{
