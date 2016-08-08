@@ -19,8 +19,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
   cout << opts.L2outputcount << endl;
   opts.turn_on_source_smoothly = getConfigFromFile<bool>(configFileName,
 							 "options",
-						    "turn_on_source_smoothly");
-
+							 "turn_on_source_smoothly");
+  opts.use_generic_orbit=getConfigFromFile<bool>(configFileName, "options",
+						 "use_generic_orbit");							
 
   //Read parameters associated with the metric
   metric.flatspacetime = getConfigFromFile<bool>(configFileName, "metric", 
@@ -82,7 +83,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     grid.upperlim=hyperb.Splus;
     //in this case, the boundaries on the grid should correspond to the horizon
     //and Scri-plus
-    schw.use_generic_orbit=getConfigFromFile<bool>(configFileName, "schw","use_generic_orbit");
+
   }
 
   

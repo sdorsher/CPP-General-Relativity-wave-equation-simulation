@@ -118,3 +118,5 @@ void Coordinates::transition(double rho, double R, double S, double& fT, double&
     (PI * (q2 * cotx * cscx2 - secx2 * tanx) 
      + es * pow((q2 * cscx2 + secx2), 2.0) * tanhfac) / pow((S - R),2.);
 }
+
+

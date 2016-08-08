@@ -16,6 +16,7 @@ struct OptionsParams{
   bool useSource; //use the effective source
   bool turn_on_source_smoothly; //use a window function in time to turn on
   //the effective source smoothly
+  bool use_generic_orbit;
 };
 
 struct MetricParams{
@@ -46,7 +47,6 @@ struct SchwParams{ //used if schwarzschild is set to true under metric
   double sigma; //width of initial scalar field perturbation if effective source is not used
   double p_orb; //location of orbit
   double ecc; //eccentricity of orbit
-  bool use_generic_orbit;
 
 };
 

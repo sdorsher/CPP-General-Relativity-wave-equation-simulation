@@ -30,12 +30,14 @@ FLGS = -g -lm -std=c++11 -O3 -fopenmp
 
 
 #dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o numerics.o source_interface.o
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o namespaces.o numerics.o source_interface.o WriteFile.o
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o  orbit.o namespaces.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o $(LCONF) $(LGSL) $(LCPP) EllipticalOrbit.o -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h HyperboloidalCoords.h namespaces.h orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
+
+EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c ReferenceElement.cpp
@@ -58,14 +60,14 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h HyperboloidalCoords.h vecMatrixTools.h TwoDVectorGridFunction.h source_interface.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h source_interface.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
 
-HyperboloidalCoords.o: HyperboloidalCoords.cpp HyperboloidalCoords.h globals.h 
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c HyperboloidalCoords.cpp
+Coordinates.o: Coordinates.cpp Coordinates.h globals.h 
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Coordinates.cpp
 
 
 

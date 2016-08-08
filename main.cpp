@@ -18,6 +18,8 @@
 #include "source_interface.h"
 #include "WriteFile.h"
 #include "vecMatrixTools.h"
+#include "EllipticalOrbit.h"
+#include "Coordinates.h"
 
 using namespace std;
 using namespace layers;
@@ -43,15 +45,40 @@ int main()
   Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
                lowlim, uplim);
   cout << "grid established " << endl;
+   //setup the modes
+  Modes lmmodes(params.modes.lmax);
+
+  EllipticalOrbit eorb;
+  CircularOrbit corb;
   
-  Orbit orb();
-  //here
+  if(params.opts.use_generic_orbit){
+    eorb = new EllipticalOrbit();
+  }else{
+    corb= new CircularOrbit();
+  }
   
+  if(params.opts.useSource) {
+    init_source( lmmodes, params.schw.mass);
+  }
+
+  Coordinates coords();
+  
+  //here need to initialize coordinates either now or after orb of t
+  
+  if(params.opts.use_generic_orbit){
+    eorb.orb_of_t(rp,drpdt,d2rpdt2);
+    cout << "rp = " << rp << " drpdt = " << drpt << " d2rpdt2 = " d2rpdt2 << endl;
+  }
+  if(params.opts.useSource){
+    set_particle(p,e,chi,phi,nmodes);
+  }
+
+    
   //find the indices associated with the radii to extract the solution at
   OutputIndices ijoutput;
   if(params.metric.schwarschild){
     //  int ifinite, iSplus, jfinite, jSplus;
-    thegrid.find_extract_radii(rstar_of_r(params.grid.outputradius,
+    thegrid.find_extract_radii(coordobj.rstar_of_r(params.grid.outputradius,
 					  params.schw.mass), Splus, 
 			       ijoutput);
     cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
@@ -64,7 +91,7 @@ int main()
   
   cout << "defining the differential equation" << endl;
   //setup the differential equation
-  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal);
+  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal, coordobj);
 
   cout << "diff eq established" << endl;
 
@@ -99,6 +126,12 @@ int main()
     initialGaussian(uh, thegrid);
   } else if(params.metric.schwarschild) {
     initialSchwarzchild(uh, thegrid, theequation);
+
+    if(params.opts.use_world_tube){
+      coords.set_world_tube_window(thegrid);
+      overwrite_init_data(thegrid);
+    }
+    
     //need to write initial swcharzchild
   }
 
@@ -269,6 +302,12 @@ int main()
   
 clean_source();
 
+ if(params.opts.use_generic_orbit){
+   delete eorb;
+ }else{
+   delete corb;
+ }
+ 
 }
                          
 
