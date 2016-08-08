@@ -37,7 +37,7 @@ vector<double> DiffEq::getAtrimmed(int gridindex, int pointsindex)
 
 // The A matrix must be formatted such that zero rows are at the top
 
-DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
+DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coordobj):
   Amatrices{params.grid.Adim*params.grid.Adim,params.grid.numelems, params.grid.elemorder + 1,0.},
   Bmatrices{nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
 	    params.grid.elemorder + 1,0.},
@@ -67,7 +67,7 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal):
     }
   }
 
-void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
+void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordobj)
 {
   double Omega, Omegap, H, Hp, eL, eLp, fT, fTp, fTpp,rm2M;
   for(int i = 0; i < thegrid.gridNodeLocations().GFvecDim(); i++){
@@ -147,7 +147,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	case 1:
 	  {
 	    //inner hyperboloidal layer
-	    transition(thegrid.gridNodeLocations().get(i, j), Rminus, 
+	    coordobj.transition(thegrid.gridNodeLocations().get(i, j), Rminus, 
 		       Sminus, fT, fTp, fTpp);
 	    Omega = 1.0 - thegrid.gridNodeLocations().get(i, j) / Sminus * fT;
 	    Omegap = -(fT + thegrid.gridNodeLocations().get(i, j) * fTp) / Sminus;
@@ -160,7 +160,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	    Hp = (2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
 	      / pow(eL, 2.0);
 	    thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i,j) / Omega);
-	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	    rm2M = coordobj.invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i,j),3.0));
 	    term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i,j);
@@ -209,7 +209,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	     H = 0.0;
 	     Hp = 0.0;
 	     thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i, j));
-	     rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	     rm2M = coordobj.invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	     thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	     term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j), 3.0));
 	     term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
@@ -242,7 +242,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	  {
 	    
 	    //outer hyperboloidal region
-	    transition(thegrid.gridNodeLocations().get(i,j), Rplus, Splus, fT, fTp, fTpp);
+	    coordobj.transition(thegrid.gridNodeLocations().get(i,j), Rplus, Splus, fT, fTp, fTpp);
 	    Omega = 1.0 - thegrid.gridNodeLocations().get(i, j) / Splus * fT;
 	    Omegap = -(fT + thegrid.gridNodeLocations().get(i, j) * fTp) / Splus;
 	    eL = 1.0 + pow(thegrid.gridNodeLocations().get(i, j), 2.0) * fTp / Splus; 
@@ -252,7 +252,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes)
 	    Hp = -(2.0 * Omega * Omegap * eL - pow(Omega, 2.0) * eLp) 
 	      / pow(eL, 2.0);
 	    thegrid.rstar.set(i, j, thegrid.gridNodeLocations().get(i, j) / Omega);
-	    rm2M = invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
+	    rm2M = coordobj.invert_tortoise(thegrid.rstar.get(i, j), params.schw.mass);
 	    thegrid.rschw.set(i, j, 2.0 * params.schw.mass + rm2M);
 	    term1 = rm2M / (pow(Omega, 2.0) * pow(thegrid.rschw.get(i, j),3.0));
 	    term2 = 2.0 * params.schw.mass / thegrid.rschw.get(i, j);
