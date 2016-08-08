@@ -20,6 +20,8 @@
 #include "vecMatrixTools.h"
 #include "EllipticalOrbit.h"
 #include "Coordinates.h"
+#include "WorldTube.h"
+
 
 using namespace std;
 using namespace layers;
@@ -63,7 +65,6 @@ int main()
 
   Coordinates coords();
   
-  //here need to initialize coordinates either now or after orb of t
   
   if(params.opts.use_generic_orbit){
     eorb.orb_of_t(rp,drpdt,d2rpdt2);
@@ -127,9 +128,14 @@ int main()
   } else if(params.metric.schwarschild) {
     initialSchwarzchild(uh, thegrid, theequation);
 
+    WorldTube worldtb;
+    
     if(params.opts.use_world_tube){
-      coords.set_world_tube_window(thegrid);
-      overwrite_init_data(thegrid);
+      worldtb = new WorldTube(thegrid, coords);
+      worldtb.set_world_tube_window(thegrid,coords);
+     //HERE. THe following function is bogus. need to add world tube parameter
+
+       overwrite_init_data(thegrid);
     }
     
     //need to write initial swcharzchild
@@ -306,6 +312,10 @@ clean_source();
    delete eorb;
  }else{
    delete corb;
+ }
+
+ if(params.opts.use_world_tube){
+   delete worldtb;
  }
  
 }
