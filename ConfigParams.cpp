@@ -86,6 +86,7 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 
   }
 
+
   
   //Read in parameters associated with the modes
   modes.lmax = getConfigFromFile<int>(configFileName,"modes", "lmax");
@@ -136,6 +137,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
     file.initialconditions=getConfigFromFile<string>(configFileName, "file",
                                                      "initialconditions");
 }
+
+
+
 
 //Template function that handles libconfig input from file for different
 //types of data

@@ -21,6 +21,7 @@
 #include "EllipticalOrbit.h"
 #include "Coordinates.h"
 #include "WorldTube.h"
+#include "CircularOrbit.h"
 
 
 using namespace std;
@@ -50,13 +51,12 @@ int main()
    //setup the modes
   Modes lmmodes(params.modes.lmax);
 
-  EllipticalOrbit eorb;
-  CircularOrbit corb;
+  Orbit orb;
   
   if(params.opts.use_generic_orbit){
-    eorb = new EllipticalOrbit();
+    orb = new EllipticalOrbit();
   }else{
-    corb= new CircularOrbit();
+    orb= new CircularOrbit();
   }
   
   if(params.opts.useSource) {
@@ -67,7 +67,7 @@ int main()
   
   
   if(params.opts.use_generic_orbit){
-    eorb.orb_of_t(rp,drpdt,d2rpdt2);
+    orb.orb_of_t(rp,drpdt,d2rpdt2);
     cout << "rp = " << rp << " drpdt = " << drpt << " d2rpdt2 = " d2rpdt2 << endl;
   }
   if(params.opts.useSource){
@@ -133,12 +133,8 @@ int main()
     if(params.opts.use_world_tube){
       worldtb = new WorldTube(thegrid, coords);
       worldtb.set_world_tube_window(thegrid,coords);
-     //HERE. THe following function is bogus. need to add world tube parameter
-
-       overwrite_init_data(thegrid);
     }
     
-    //need to write initial swcharzchild
   }
 
   //output window function
@@ -188,7 +184,7 @@ int main()
   theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
 
   cout << "first call to RHS succeeded" << endl;
-
+  
   
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
@@ -258,7 +254,6 @@ int main()
      for(int k = 0; k < uh.TDVGFdim(); k++) {
         if(params.file.outputtimefixed) {
 
-
 	  write_fixed_time(k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,
 			   params.file.pdesolution,1);
@@ -308,11 +303,7 @@ int main()
   
 clean_source();
 
- if(params.opts.use_generic_orbit){
-   delete eorb;
- }else{
-   delete corb;
- }
+ delete orb;
 
  if(params.opts.use_world_tube){
    delete worldtb;

@@ -354,7 +354,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
   Dmatrix = thegrid.refelem.getD();
   vector<double> Lift; //was Array2D<double>
   Lift = thegrid.refelem.getLift();
-  
+
   //We can loop over RHS in an external function independent of mode 
   //because in general the right hand side of the differential equation
   //does not mix spherical harmonic modes. Neither does the numerical flux. 
@@ -761,8 +761,17 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output)
 {
-  if(params.opts.useSource) {
 
+
+
+    //orb of t
+    // timedep to rstar
+    // set coefficients
+    // calc window coeffs
+    // 
+    
+  time_dep_to_rstar(rp, drpdt, d2rpdt2);
+  if(params.opts.useSource) {
     
    fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
 		    dwindow, d2window);

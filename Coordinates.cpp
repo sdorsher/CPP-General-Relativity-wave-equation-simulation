@@ -1,7 +1,7 @@
 #include "Coordinates.h"
 
 
-Coordinates::Coordinates(){
+Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0}{
   
     R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
     R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
@@ -119,4 +119,12 @@ void Coordinates::transition(double rho, double R, double S, double& fT, double&
      + es * pow((q2 * cscx2 + secx2), 2.0) * tanhfac) / pow((S - R),2.);
 }
 
+
+void timedep_to_rstar(double &rp, double &drpdt, double &d2rpdt2){
+  d2rpdt2 = ( -2.0 * params.schw.mass * pow(drpdt,2.) 
+	      + rp * ( rp - 2.0 * params.schw.mass ) * d2rpdt2 )
+    /pow(( rp - 2.0 * params.schw.mass ),2.);
+  drpdt = rp / ( rp - 2.0 * params.schw.mass ) * drpdt;
+  rp = rstar_of_r ( rp, params.schw.mass );
+}
 

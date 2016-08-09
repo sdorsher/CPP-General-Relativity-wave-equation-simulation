@@ -4,12 +4,15 @@
 #include "globals.h"
 #include <cmath>
 #include <iostream>
+#include "ConfigParams.h"
+#include <vector>
 
 using namespace std;
 
 class Coordinates{
 
   double R1, R2, W1, W2;
+  vector<double> dxdxib;
   
   Coordinates();
   

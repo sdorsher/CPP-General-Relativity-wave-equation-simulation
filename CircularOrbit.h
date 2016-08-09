@@ -5,11 +5,11 @@
 #include <cmath>
 #include "ConfigParams.h"
 #include <iomanip>
-
+#include "Orbit.h"
 
 using namespace orbit;
 
-class CircularOrbit{
+class CircularOrbit:Orbit{
   //set parameters in orbit namespace
   void CircularOrbit();
 

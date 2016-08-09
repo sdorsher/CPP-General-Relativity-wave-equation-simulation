@@ -3,7 +3,7 @@
 
 #include "Grid.h"
 #include "Coordinates.h"
-#include "Globals.h"
+#include "globals.h"
 #include "ConfigParams.h"
 #include "GridFunction.h"
 
