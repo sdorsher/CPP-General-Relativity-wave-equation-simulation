@@ -7,18 +7,19 @@
 #include <iomanip>
 #include "Orbit.h"
 
-using namespace orbit;
+//using namespace orbit;
 
-class CircularOrbit:Orbit{
+class CircularOrbit:public Orbit{
+ public:
   //set parameters in orbit namespace
   void CircularOrbit();
-
+  
   //calculate phi as a function of time
   double CircularOrbit::phi_of_t(double t);
   
   //calculate chi as a function of time
   double CircularOrbit::chi_of_t(double t);
-
-}
+  
+};
  
 #endif

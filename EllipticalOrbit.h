@@ -5,14 +5,17 @@
 #include "Orbit.h"
 
 using namespace std;
-using namespace orbit;
+//using namespace orbit;
 
-class EllipticalOrbit:Orbit{
+class EllipticalOrbit:public Orbit{
+ public:
+  double dtdchi, dphidchi, dchidt, dphidt;
+  double dchidt, d2chidt2, drpdt, d2rpdt2, dphidt, reschi, resphi;
   void EllipticalOrbit();
-  void dorbdchi(double &dtdchi, double &dphidchi);
+  void dorbdchi();
   void dorbdt();
-  void orb_of_t(double &rp, double &drpdt, double &d2rpdt2);
-}
+  void orb_of_t();
+};
 #endif
 
   
