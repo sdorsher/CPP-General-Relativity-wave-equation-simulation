@@ -120,11 +120,48 @@ void Coordinates::transition(double rho, double R, double S, double& fT, double&
 }
 
 
-void timedep_to_rstar(double &rp, double &drpdt, double &d2rpdt2){
-  d2rpdt2 = ( -2.0 * params.schw.mass * pow(drpdt,2.) 
-	      + rp * ( rp - 2.0 * params.schw.mass ) * d2rpdt2 )
-    /pow(( rp - 2.0 * params.schw.mass ),2.);
-  drpdt = rp / ( rp - 2.0 * params.schw.mass ) * drpdt;
-  rp = rstar_of_r ( rp, params.schw.mass );
+void Coordinates::timedep_to_rstar(Orbit& orb){
+  orb.d2rpdt2 = ( -2.0 * params.schw.mass * pow(orb.drpdt,2.) 
+	      + orb.rp * ( orb.rp - 2.0 * params.schw.mass ) * orb.d2rpdt2 )
+    /pow(( orb.rp - 2.0 * params.schw.mass ),2.);
+  orb.drpdt = orb.rp / ( orb.rp - 2.0 * params.schw.mass ) * orb.drpdt;
+  orb.rp = rstar_of_r ( orb.rp, params.schw.mass );
 }
 
+
+void Coordinates::coord_trans(Coordinates &coords, Grid& thegrid, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxdxi2,vector<double> & d2xdtdxi, int elemnum){
+  //time dep coord transf
+  double xpma, xipma, xima, bmxp, bmxip, bmxi, bma, ximxip, xipmxp, xipmainv, xipamulbmxipinv, dtfac;
+  for(int i=0; i<xi.size(); i++){
+    
+    //UNFINISHED HERE. Size is one params.grid.elemorder+1. pass in one element at a time. look at reference for arrays peter gave me. 
+
+    j= elemnum;
+    double a = coords.a;
+    double b = coords.b;
+    double xp = coords.xp;
+    xi=thegrid.rho.get(j);
+    x = thegrid.rstar.get(j);
+    
+    xpma=xp-a;
+    xipma=xp-a;
+    xima=xi.at(i)-a;
+    bmxp=b-xp;
+    bmxi=b-xi.at(i);
+    bmxip=b-xip;
+    bma=b-a;
+    ximxip=xi.at(i)-xip;
+    xipmainv=1./xipma;
+    xipmamulbmxipinv=xipmainv/bmxip;
+    xipmxp=xip-xp;
+    xi.at(i)=a+xpma*xipmainv*xima
+      +(bmxp*xipma-xpma*bmxip)*xipmamulbmxipinv/bma*xima*ximxip;
+    dtfac=xima*bmxi*xipmamulbmxipinv;
+    dxdt.at(i)=dtfac*dxpdt;
+    dxdxi.at(i)=((2.*xi.at(i)-xip-a)*xipmxp+xpma*bmxip)
+      *xipmamulbmxipinv;
+    d2xdt2.at(i)=dtfac*d2xpdt2;
+    d2xdxi2.at(i)=2.*xipmxp*xipmamulbmxipinv;
+    d2dtdxi(i)=(a+b+2.*xi.at(i))*xipmamulbmxipinv*dxpdt;
+  }
+}

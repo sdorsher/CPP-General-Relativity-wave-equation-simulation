@@ -340,7 +340,47 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
   }//end if schw
 }//end function setab
 
+void DiffEq::set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coords, DiffEq theeq, double maxspeed, double dxdxib, int elemnum)
 
+
+{
+  maxspeed = 1.0;
+  double ne = params.grid.elemorder;
+
+  vector<double> rm2m(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xd2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
+
+  coords.coord_trans(coords, thegrid, dxdxi, d2dxdt2, d2dxdxi2, d2xdtdxi, elemnum);
+  for(int i = 0; i<=ne; i++){
+    double dxdiinv = 1.0/dxdxi.at(i);
+    double dxdxiinv2 = dxdxiinv*dxdxiinv;
+    double dxdxiinv3 = dxdxiinv2*dxdxiinv;
+    double dxdt2 = dxdt.at(i)*dxdt.at(i);
+    
+    double coeff1 = -(1.-dxdt2)*dxdxiinv2;
+    double coeff2 = -2.*dxdt.at(i)*dxdiinv;
+    double coeff3 = -(d2xdxi2.at(i)*(dxd2-1.)
+		      +dxdxi.at(i)*(-2.*dxdt.at(i)*d2xdtdxi.at(i)
+				    +dxdxi.at(i)*d2dxdt2.at(i)))*dxdxiinv3;
+    double coeff4 = 0.0;
+    theeq.Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
+    theeq.Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
+    theeq.Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeff3);
+    theeq.Bmatrices.set(2*params.grid.Adim+2,elemnum,i,coeff4);
+    theeq.trimmedAmatrices.set(0*params.grid.Ddim+1,elemnum,i,coeff1);
+    theeq.trimmedAmatrices.set(1*params.grid.Ddim+1,elemnum,i,coeff2);
+
+    int boundary;
+    
+    if(i==0){
+      AleftBoundaries[elemnum].LambdaV(0*params.grid.Adim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+
+    
+  //coord_trans;
+  
+  //UNFINISHED HERE
+}
+
+  
 void DiffEq::RHS(int modenum, Grid& thegrid,
                  TwoDVectorGridFunction<complex<double>>& uh, 
                  TwoDVectorGridFunction<complex<double>>& RHStdvgf, double t, bool output)
@@ -759,15 +799,16 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                     double t, bool output)
+                     double t, bool output, Orbit& orb)
 {
 
+  if(params.opts.use_generic_orbit){
+    orb.orb_of_t();
+    timedep_to_rstar(orb);
 
-
-    //orb of t
-    // timedep to rstar
-    // set coefficients
-    // calc window coeffs
+    //UNFINISHED HERE
+    // set_coefficients
+    // calc_window_coeffs
     // 
     
   time_dep_to_rstar(rp, drpdt, d2rpdt2);

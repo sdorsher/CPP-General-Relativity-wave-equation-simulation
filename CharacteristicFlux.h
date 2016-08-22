@@ -13,7 +13,7 @@ using namespace JAMA;
 
 class CharacteristicFlux
 {
- private:
+ public:
   vector<double> AV; //see above
   vector<double> AtrimmedV; //part of A that has nonzero derivative dependence
   vector<double> SmatrixV; //matrix with eigenvectors of A in columns

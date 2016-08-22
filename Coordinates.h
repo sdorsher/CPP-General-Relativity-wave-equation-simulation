@@ -6,12 +6,17 @@
 #include <iostream>
 #include "ConfigParams.h"
 #include <vector>
+#include "Orbit.h"
+#include "CircularOrbit.h"
+#include "EllipticalOrbit.h"
+#include "Grid.h"
+
 
 using namespace std;
 
 class Coordinates{
 
-  double R1, R2, W1, W2;
+  double R1, R2, W1, W2, a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi;
   vector<double> dxdxib;
   
   Coordinates();
@@ -31,7 +36,13 @@ class Coordinates{
 		  double& fTpp);
   //the transition between the hyperboloidal and tortoise regions
   
+
+  void timedep_to_rstar(Orbit& orb);
+
+  //HERE (OSCULATING ORBITS COORDINATE TRANSFORM)
+  void coord_trans(Coordinates &coords, Grid& thegrid, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxdxi2,vector<double> & d2xdtdxi, int elemnum);
   
-}
+    
+};
 
 #endif

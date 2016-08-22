@@ -18,7 +18,9 @@
 #include "vecMatrixTools.h"
 #include "TwoDVectorGridFunction.h"
 #include "Coordinates.h"
-
+#include "Orbit.h"
+#include "EllipticalOrbit.h"
+#include "CircularOrbit.h"
 
 using namespace TNT;
 using namespace layers;
@@ -62,6 +64,8 @@ class DiffEq
   CharacteristicFlux getAright(int elemnum);
   vector<double> getAtrimmed(int gridindex, int pointsindex);
 
+  void set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coords, DiffEq theeq, double maxspeed, double dxdxib);
+  
   //Returns du, for the characteristic flux.
   vector<vector<complex<double>>> characteristicflux(double t,
 							   int modenum,
@@ -80,7 +84,7 @@ class DiffEq
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
-               double t, bool output); 
+               double t, bool output, Orbit& orb); 
 };
 
 #endif

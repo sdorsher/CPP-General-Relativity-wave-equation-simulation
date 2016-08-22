@@ -1,13 +1,6 @@
 #ifndef NAMESPACES_H
 #define NAMESPACES_H
 
-namespace orbit
-{
-  extern double p; //semilatus rectum
-  extern double e; //eccentricity
-  extern double chi; //parameter that runs from 0 to 2pi in on radial cycle
-  extern double phi; //standard angle phi
-}
 
 namespace layers
 {

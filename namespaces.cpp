@@ -1,13 +1,5 @@
 #include "namespaces.h"
 
-namespace orbit{
-  double p; //simulatus rectum
-  double e; //eccentricity -- zero for circular orbits
-  double chi; //angular parameter for radial oscillations
-  double phi; //angular parameter for angular oscillations
-  double dchidt, dphidt, reschi, resphi;
-  double drdlambda_particle, drdxi_particle;
-}
 
 namespace layers{
   double Splus; //position of Scri plus in hyperboloidal coordinates
