@@ -372,12 +372,58 @@ void DiffEq::set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coo
     int boundary;
     
     if(i==0){
-      AleftBoundaries[elemnum].LambdaV(0*params.grid.Adim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
+      maxspeed=max(max(abs(AleftBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)),abs(AleftBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1))),maxspeed);
+      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=1.0;
+      AleftBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+1)=1.0;
+      AleftBoundaries[elemnum].SinvV(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
+      AleftBoundaries[elemnum].SinvV(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
+      AleftBoundaries[elemnum].SinvV(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
+      AleftBoundaries[elemnum].SinvV(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
+    } else if(i==params.grid.elemorder){
+      ArightBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
+      maxspeed=max(max(abs(ArightBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)),abs(ArightBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1))),maxspeed);
+      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=1.0;
+      ArightBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+1)=1.0;
+      ArightBoundaries[elemnum].SinvV(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
+      ArightBoundaries[elemnum].SinvV(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
+      ArightBoundaries[elemnum].SinvV(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
+      ArightBoundaries[elemnum].SinvV(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
 
-    
-  //coord_trans;
-  
-  //UNFINISHED HERE
+    }
+  }
+
+  for(int i=0; i<=params.grid.elemorder; i++){
+
+    rm2m.at(i)= invert_tortoise(thegrid.rstar.get(elemnum,i),mass);
+  }
+
+  for(int i=0; i<=params.grid.elemorder; i++){
+    thegrid.rschw.set(elemnum,i,2.0*mass+rm2m.at(i));
+    rfac=rm2m.at(i)/pow(thegrid.get(elemnum,i),4.);
+    for(int k=0; k<params.grid.modenum; k++){
+      double coeffl = (lmmodes.ll(k)*(lmmodes.ll(k)+1)*thegrid.rschw.get(elemnum,i)+2.*mass)*rfac;
+      theeq.Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeffl);
+    }
+  }
+
+  dxdxib.at(0)=dxdt.at(0);
+  dxdxib.at(1)=dxdt.at(n+1);
+  //check this. I'm not really using four points. I'm using two. so how have I allocated it and where?
+
+  if(abs(thegrid.rho.at(elemnum,0)-xip)<1e-10){
+    drdlambda_particle-dxdt.at(0);
+    drdxi_particle=dxdxi.at(0);
+  }
+  //UNFINISHED HERE-- need to check if sensible, but code written. are previous two variables declared?
 }
 
   
