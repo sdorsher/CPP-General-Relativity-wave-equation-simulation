@@ -15,6 +15,8 @@ class WorldTube{
   vector<bool> timeDepTrans;
   vector<PMzero> addSingFieldtoLeft;
   vector<bool> inWorldTube;
+  vector<int> elem_index;
+  
   
   WorldTube(Grid thegrid, Coordinates coords);
   

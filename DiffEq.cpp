@@ -340,7 +340,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
   }//end if schw
 }//end function setab
 
-void DiffEq::set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coords, DiffEq theeq, double maxspeed, double dxdxib, int elemnum)
+void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &coords, double& maxspeed, vector<double> & dxdxib, int elemnum)
 
 
 {
@@ -362,12 +362,12 @@ void DiffEq::set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coo
 		      +dxdxi.at(i)*(-2.*dxdt.at(i)*d2xdtdxi.at(i)
 				    +dxdxi.at(i)*d2dxdt2.at(i)))*dxdxiinv3;
     double coeff4 = 0.0;
-    theeq.Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
-    theeq.Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
-    theeq.Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeff3);
-    theeq.Bmatrices.set(2*params.grid.Adim+2,elemnum,i,coeff4);
-    theeq.trimmedAmatrices.set(0*params.grid.Ddim+1,elemnum,i,coeff1);
-    theeq.trimmedAmatrices.set(1*params.grid.Ddim+1,elemnum,i,coeff2);
+    Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
+    Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
+    Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeff3);
+    Bmatrices.set(2*params.grid.Adim+2,elemnum,i,coeff4);
+    trimmedAmatrices.set(0*params.grid.Ddim+1,elemnum,i,coeff1);
+    trimmedAmatrices.set(1*params.grid.Ddim+1,elemnum,i,coeff2);
 
     int boundary;
     
@@ -411,19 +411,18 @@ void DiffEq::set_coefficients(Grid thegrid, EllipticalOrbit orb, Coordinates coo
     rfac=rm2m.at(i)/pow(thegrid.get(elemnum,i),4.);
     for(int k=0; k<params.grid.modenum; k++){
       double coeffl = (lmmodes.ll(k)*(lmmodes.ll(k)+1)*thegrid.rschw.get(elemnum,i)+2.*mass)*rfac;
-      theeq.Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeffl);
+      Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeffl);
     }
   }
 
   dxdxib.at(0)=dxdt.at(0);
   dxdxib.at(1)=dxdt.at(n+1);
-  //check this. I'm not really using four points. I'm using two. so how have I allocated it and where?
+  //HERE FIX THIS. I'm not really using four points. I'm using two. so how have I allocated it and where?
 
   if(abs(thegrid.rho.at(elemnum,0)-xip)<1e-10){
-    drdlambda_particle-dxdt.at(0);
-    drdxi_particle=dxdxi.at(0);
+    orb.drdlambda_particle=dxdt.at(0);
+    orb.drdxi_particle=dxdxi.at(0);
   }
-  //UNFINISHED HERE-- need to check if sensible, but code written. are previous two variables declared?
 }
 
   
@@ -845,14 +844,25 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                     double t, bool output, Orbit& orb)
+                     double t, bool output, Orbit& orb, WorldTube& wt, Coordinates& coords)
 {
-
+  double max_speed=1.0;
+  double maxspeed;
   if(params.opts.use_generic_orbit){
     orb.orb_of_t();
     timedep_to_rstar(orb);
 
-    //UNFINISHED HERE
+    for(int elemnum=1; i<params.grid.numelems; elemnum++){
+      if(wt.timeDepTrans.at(elemnum-1)){
+    //UNFINISHED HERE-- need to define dxdxib
+	set_coefficients(thegrid, orb, coords, maxspeed, vector<double> & dxdxib, elemnum);
+	//setup arrays HERE
+	if(!params.grid.use_world_tube){
+	  calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
+	}
+	max_speed=max(maxspeed,max_speed);
+      }
+    // elem_index
     // set_coefficients
     // calc_window_coeffs
     // 
