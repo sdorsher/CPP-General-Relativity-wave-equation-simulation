@@ -415,9 +415,9 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &
     }
   }
 
-  dxdxib.at(0)=dxdt.at(0);
-  dxdxib.at(1)=dxdt.at(n+1);
-  //HERE FIX THIS. I'm not really using four points. I'm using two. so how have I allocated it and where?
+  //finds right side of element boundary in time dependent region. for dxdt and dxdxi
+  dxdxib.at(0)=dxdt.at(params.grid.elemorder);
+  dxdxib.at(1)=dxdxi.at(params.grid.elemorder);
 
   if(abs(thegrid.rho.at(elemnum,0)-xip)<1e-10){
     orb.drdlambda_particle=dxdt.at(0);
@@ -844,7 +844,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                     double t, bool output, Orbit& orb, WorldTube& wt, Coordinates& coords)
+                     double t, bool output, Orbit& orb, WorldTube& wt, Coordinates& coords, double& max_speed)
 {
   double max_speed=1.0;
   double maxspeed;
@@ -854,9 +854,17 @@ void DiffEq::modeRHS(Grid& thegrid,
 
     for(int elemnum=1; i<params.grid.numelems; elemnum++){
       if(wt.timeDepTrans.at(elemnum-1)){
-    //UNFINISHED HERE-- need to define dxdxib
-	set_coefficients(thegrid, orb, coords, maxspeed, vector<double> & dxdxib, elemnum);
-	//setup arrays HERE
+	set_coefficients(thegrid, orb, coords, maxspeed, dxdxib, elemnum);
+	vector<double> rschwv = thgrid.rschw.get(elemnum);
+	vector<double> windowv = thegrid.window.get(elemnum);
+	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
+	vector<double> d2windowv = thegrid.d2window.get(elemnum);
+
+	double * rarr = &rschwv[0];
+	double * winarr = &windowv[0];
+	double * dwinarr = &dwindowv[0];
+	double * d2winarr = &d2windowv[0];
+	
 	if(!params.grid.use_world_tube){
 	  calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
 	}
@@ -867,7 +875,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     // calc_window_coeffs
     // 
     
-  time_dep_to_rstar(rp, drpdt, d2rpdt2);
+  
   if(params.opts.useSource) {
     
    fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
@@ -905,7 +913,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
-    double max_speed = 1.0;
+    //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output);
   }
 }

@@ -69,11 +69,11 @@ int main()
   if(params.opts.use_generic_orbit){
     orb.orb_of_t(rp,drpdt,d2rpdt2);
     cout << "rp = " << rp << " drpdt = " << drpt << " d2rpdt2 = " d2rpdt2 << endl;
+    if(params.opts.useSource){
+      set_particle(p,e,chi,phi,nmodes);
+    }
   }
-  if(params.opts.useSource){
-    set_particle(p,e,chi,phi,nmodes);
-  }
-
+  
     
   //find the indices associated with the radii to extract the solution at
   OutputIndices ijoutput;
@@ -152,21 +152,25 @@ int main()
   uh0 = uh;
 
 
-  //Set time based on smallest grid spacing. This assumes all elements
-  // are equal in size
+
+  //output coords
+  //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+  //		   theequation,lmmodes,true,"coords",5);
+  
+  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
+
+  cout << "first call to RHS succeeded" << endl;
+  
+  double deltat, max_speed;
 
   double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
   
-  double deltat;
-  double maxspeed = 1.0;
-
-
 
   if(params.metric.schwarschild){
-    deltat = params.time.courantfac * dx/maxspeed;
+    deltat = params.time.courantfac * dx/max_speed;
     //deltat = params.time.dt;
     cout << "set and actual time step, based on courant factor" << endl;
-
+    
     //temporary
     cout << dx << " " << deltat << endl << endl;
   }else if(params.metric.flatspacetime){
@@ -177,14 +181,6 @@ int main()
     cout << dx << " " << deltat << endl;
   }
 
-  //output coords
-  //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
-  //		   theequation,lmmodes,true,"coords",5);
-  
-  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
-
-  cout << "first call to RHS succeeded" << endl;
-  
   
   if (params.metric.schwarschild){
     lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
@@ -233,6 +229,7 @@ int main()
   //double output = deltat / 2.0;
   int outputcount =0;
   double t= params.time.t0;
+
   
   //  for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
   while(t<params.time.tmax){
@@ -240,14 +237,14 @@ int main()
     outputcount++;
     
     //Increment the time integration
-    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat);
+    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, max_speed);
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
 
     //increment time
     t+=deltat;
     
-    
+    //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){
       //Output in gnuplot format
     
@@ -297,6 +294,30 @@ int main()
      }
      fsL2.close();
     }
+  //Set time based on smallest grid spacing. This assumes all elements
+  // are equal in size
+
+  dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
+  
+
+
+
+
+  if(params.metric.schwarschild){
+    deltat = params.time.courantfac * dx/max_speed;
+    //deltat = params.time.dt;
+    cout << "set and actual time step, based on courant factor" << endl;
+    
+    //temporary
+    cout << dx << " " << deltat << endl << endl;
+  }else if(params.metric.flatspacetime){
+    //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
+    //deltat = (params.time.tmax - params.time.t0) / nt;
+    deltat = params.time.dt;
+    cout << "deltat set to dt" << endl;
+    cout << dx << " " << deltat << endl;
+  }
+
   }//end while loop
 
   cout.flush();

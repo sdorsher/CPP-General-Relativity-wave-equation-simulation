@@ -84,7 +84,7 @@ class DiffEq
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
-               double t, bool output, Orbit& orb, WorldTube& wt, Coordinates coords); 
+               double t, bool output, Orbit& orb, WorldTube& wt, Coordinates coords, double & max_speed); 
 };
 
 #endif

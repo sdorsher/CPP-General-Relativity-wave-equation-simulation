@@ -18,6 +18,6 @@ using namespace std;
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 
                    TwoDVectorGridFunction<complex<double>>& RHSvgf, 
-                   double t, double deltat);
+                   double t, double deltat, double & max_speed);
 
 #endif

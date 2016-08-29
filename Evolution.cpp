@@ -10,7 +10,7 @@
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 
                    TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
-                   double t, double deltat)
+                   double t, double deltat, double & max_speed)
 {
 
   
@@ -35,19 +35,30 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   TwoDVectorGridFunction<complex<double>> k(RHStdvgf.TDVGFdim(),
                                    RHStdvgf.VGFdim(), RHStdvgf.GFvecDim(),
                                    RHStdvgf.GFarrDim());
-
+  double chik, phik;
 
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false);//true for debugging output
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, max_speed);//true for debugging output
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
 
+  orb.dorbdt();
 
+  chik=deltat*orb.dchidt;
+  phik=deltat*orb.dphidt;
+
+  
   //steps 2-5
   for(int i=2; i<=5; i++){
-    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false); // true for debugging output
+    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, max_speed); // true for debugging output
     k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
+
+    orb.dorbdt();
+    chik=rk4a[i-1]*chik+deltat*orb.dchidt;
+    phik=rk4a[i-1]*phik+deltat*orb.dphidt;
+    orb.chi=orb.chi+rk4b[i-1]*chik;
+    orb.phi=orb.phi+rk4b[i-1]*phik;
   }
 
 }
