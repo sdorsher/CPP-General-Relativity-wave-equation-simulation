@@ -9,7 +9,7 @@ using namespace std;
 
 class EllipticalOrbit:public Orbit{
  public:
-  double dtdchi, dphidchi, dchidt, dphidt;
+  double dtdchi, dphidchi;
   double dchidt, d2chidt2, drpdt, d2rpdt2, dphidt, reschi, resphi;
   void EllipticalOrbit();
   void dorbdchi();

@@ -469,8 +469,19 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int vminL = vmaxL - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
     int vmaxR = params.grid.Adim - 1;
     int vminR = vmaxR - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
-    
-    
+    //SHOULD BE INSIDE IF BOUNDARY STATEMENT
+    //derivatives of the complex field, no the rho coordinate
+    vector<double> rschwv = thegrid.rschw.get(elemnum);
+    double * rarr = &rschwv[0];
+    double * dphidrre, dphidrim, dphidtre, dphidtim;
+
+    //HERE rarr is not an array. actually at the position of the boundary. 
+    if(params.opts.useSource){
+      dPhi_dr(modenum, rarr, dphidrre,dphidrim);
+      dPhi_dt(modenum, rarr, dphidtre, dphidtim);
+    }
+    double alpha = 
+
     
     //were Array1D
     vector<complex<double>> uintL(params.grid.Ddim); //internal u at left boundary
