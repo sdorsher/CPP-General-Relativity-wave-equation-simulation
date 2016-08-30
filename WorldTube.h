@@ -7,15 +7,17 @@
 #include "ConfigParams.h"
 #include "GridFunction.h"
 
-enum PMzero{-1,0,1};
 
 
 class WorldTube{
 
   vector<bool> timeDepTrans;
-  vector<PMzero> addSingFieldtoLeft;
+  vector<bool> addSingFieldtoLeftElemExt;
+  vector<bool> addSingFiledtoRightElemExt;
+  vector<bool> subSingFieldFromLeftElemExt;
+  vector<bool> subSingFiledFromRightElemExt;
   vector<bool> inWorldTube;
-  vector<int> elem_index;
+  //vector<int> elem_index;
   
   
   WorldTube(Grid thegrid, Coordinates coords);

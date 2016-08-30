@@ -469,18 +469,35 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int vminL = vmaxL - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
     int vmaxR = params.grid.Adim - 1;
     int vminR = vmaxR - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
-    //SHOULD BE INSIDE IF BOUNDARY STATEMENT
-    //derivatives of the complex field, no the rho coordinate
-    vector<double> rschwv = thegrid.rschw.get(elemnum);
-    double * rarr = &rschwv[0];
-    double * dphidrre, dphidrim, dphidtre, dphidtim;
 
-    //HERE rarr is not an array. actually at the position of the boundary. 
-    if(params.opts.useSource){
-      dPhi_dr(modenum, rarr, dphidrre,dphidrim);
-      dPhi_dt(modenum, rarr, dphidtre, dphidtim);
+    double sstre, sstim, ssrre, ssrim, alpha;
+    //SHOULD BE INSIDE IF BOUNDARY STATEMENT
+    
+    if((wt.addSingFieldtoLeftElemExt.at(elemnum))||(wt.subSingFieldFromLeftExt.at(elemnum))){
+      dPhi_dt(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), sstre, sstim);
+      dPhi_dr(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), ssrre, ssrim);
+      alpha = (thegrid.rschw.get(elemnum,params.grid.elemorder)-2.*params.schw.mass)
+	/thegrid.rschw.get(elemnum,params.grid.elemorder);
+      sstre = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstre;
+      sstim = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstim;
+      ssrre = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrre;
+      ssrim = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrim;
     }
-    double alpha = 
+
+        if((wt.addSingFieldtoLeftElemExt.at(elemnum))||(wt.subSingFieldFromLeftExt.at(elemnum))){
+      dPhi_dt(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), sstre, sstim);
+      dPhi_dr(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), ssrre, ssrim);
+      alpha = (thegrid.rschw.get(elemnum,params.grid.elemorder)-2.*params.schw.mass)
+	/thegrid.rschw.get(elemnum,0);
+      sstre = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstre;
+      sstim = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstim;
+      ssrre = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrre;
+      ssrim = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrim;
+    }
+    
+    
+      
+    //HERE rarr is not an array. actually at the position of the boundary. 
 
     
     //were Array1D
