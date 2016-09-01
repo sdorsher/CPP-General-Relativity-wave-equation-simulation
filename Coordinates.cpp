@@ -1,7 +1,7 @@
 #include "Coordinates.h"
 
 
-Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0}{
+Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0},dxidbL{params.grid.elemorder+1,0.},dxidbR{params.grid.elemorder+1,0.}{
   
     R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
     R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;

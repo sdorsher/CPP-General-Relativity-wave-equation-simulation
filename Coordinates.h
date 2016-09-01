@@ -18,6 +18,8 @@ class Coordinates{
 
   double R1, R2, W1, W2, a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi;
   vector<double> dxdxib;
+  vector<double> dxidbL;
+  vector<double> dxidbR;
   
   Coordinates();
   

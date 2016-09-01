@@ -416,8 +416,10 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &
   }
 
   //finds right side of element boundary in time dependent region. for dxdt and dxdxi
-  dxdxib.at(0)=dxdt.at(params.grid.elemorder);
-  dxdxib.at(1)=dxdxi.at(params.grid.elemorder);
+  coords.dxdxib.at(0)=dxdt.at(0);
+  coords.dxdxib.at(1)=dxdxi.at(0);
+  coords.dxdxib.at(2)=dxdt.at(params.grid.elemorder);
+  coords.dxdxib.at(3)=dxdxi.at(params.grid.elemorder);
 
   if(abs(thegrid.rho.at(elemnum,0)-xip)<1e-10){
     orb.drdlambda_particle=dxdt.at(0);
@@ -471,41 +473,49 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int vminR = vmaxR - params.grid.Ddim + 1; //neglect zero rows at top of A matrix
 
     double sstre, sstim, ssrre, ssrim, alpha;
-    //SHOULD BE INSIDE IF BOUNDARY STATEMENT
+ 
+    int nodenumFound;
+    bool left = wt.addSingFieldtoLeftElemExt.at(elemnum)||wt.subSingFieldFromLeftElemExt.at(elemnum);
+    bool right = wt.addSingFieldtoRightElemExt.at(elemnum)||wt.subSingFieldFromRightElemExt.at(elemnum);
+
+    bool add = wt.addSingFieldtoLeftElemExt.at(elemnum)||wt.addSingFieldtoRightElemExt.at(elemnum);
+    bool sub = wt.subSingFieldFromLeftElemExt.at(elemnum)||wt.subSingFieldFromRightElemExt.at(elemnum);
     
-    if((wt.addSingFieldtoLeftElemExt.at(elemnum))||(wt.subSingFieldFromLeftExt.at(elemnum))){
-      dPhi_dt(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), sstre, sstim);
-      dPhi_dr(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), ssrre, ssrim);
-      alpha = (thegrid.rschw.get(elemnum,params.grid.elemorder)-2.*params.schw.mass)
-	/thegrid.rschw.get(elemnum,params.grid.elemorder);
-      sstre = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstre;
-      sstim = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstim;
-      ssrre = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrre;
-      ssrim = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrim;
+    if(left){
+      nodenumFound=params.grid.elemorder;
+    }else if(right){
+      nodenumFound=0;
     }
 
-        if((wt.addSingFieldtoLeftElemExt.at(elemnum))||(wt.subSingFieldFromLeftExt.at(elemnum))){
-      dPhi_dt(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), sstre, sstim);
-      dPhi_dr(modenum, thegrid.rschw.get(elemnum,params.grid.elemorder), ssrre, ssrim);
-      alpha = (thegrid.rschw.get(elemnum,params.grid.elemorder)-2.*params.schw.mass)
-	/thegrid.rschw.get(elemnum,0);
-      sstre = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstre;
-      sstim = ((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*sstim;
-      ssrre = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrre;
-      ssrim = alpha *((double) wt.addSingFieldtoLeftElemExt.at(elemnum))*ssrim;
+    double ssign;
+    if(add){
+      ssign=1.;
+    }else if(sub){
+      ssign = -1.;
     }
-    
-    
+
       
-    //HERE rarr is not an array. actually at the position of the boundary. 
 
+    bool found = left || right;
     
+    if(found){
+      dPhi_dt(modenum, thegrid.rschw.get(elemnum,nodenumFound), sstre, sstim);
+      dPhi_dr(modenum, thegrid.rschw.get(elemnum,nodenumFound), ssrre, ssrim);
+      alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
+	/thegrid.rschw.get(elemnum,nodenumFound);
+      
+      sstre = ssign*sstre;
+      sstim = ssign*sstim;
+      ssrre = alpha *ssign*ssrre;
+      ssrim = alpha *ssign*ssrim;
+    }
+    
+	
     //were Array1D
     vector<complex<double>> uintL(params.grid.Ddim); //internal u at left boundary
     vector<complex<double>> uintR(params.grid.Ddim); //internal u at right boundary
     vector<complex<double>> uextL(params.grid.Ddim); //external u at left boundary
     vector<complex<double>> uextR(params.grid.Ddim); //external u at right boundary
-    
     
     
     uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0); 
@@ -540,7 +550,46 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //	cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
     //}
 
+    if(params.grid.schwarzschild){
+    //specializing to schwazschild case
+      if(params.grid.use_generic_orbit){
+	if(left&&sub){//position 1
+	  uext.at(0) = uext.at(0)/dxdxibL0.at(elemnum+1);
+	  uext.at(1)= uext.at(1)-dxdxibL1.at(elemnum+1)*uext.at(1);
+	}else if (right&&add){//position 4
+	  uext.at(0)=uext.at(0)/dxdxibR0.at(elemnum-1);
+	  uext.at(1)=uext.at(1)-dxdxibR1.at*uext.at(1);
+	}
+      }
+    }
+	//inside the world tube, first handle the singular field.
+
+    if(params.grid.schwarzschild){
+      if(params.opts.use_world_tube){
+	if(found){
+	  if(params.opts.use_source){
+	    uext.at(1)=uext.at(1)+{sstre,sstim};
+	    uext.at(0)=uext.at(0)+{ssrre,ssrim};
+	  }
+	}
+      }
+    }
+
+   
+    if(params.grid.schwarzschild){
+    //specializing to schwazschild case
+      if(params.grid.use_generic_orbit){
+	if(left&&add){
+	  uext.at(1)=uext.at(1)+uext.at(0)*dxdxibL1.at(elemnum);
+	  uext.at(0)=uext.at(0)+uext.at(0)*dxdxibL0.at(elemnum);
+	}else if(right&&sub){
+	  uext.at(1)=uext.at(1)+uext.at(0)*dxdxibR1.at(elemnum);
+	  uext.at(0)=uext.at(0)*dxdxibR0.at(elemnum);
+	}
+      }
+    }
     
+	  
     
     //below were Array2Ds
     //Initialize plus and minus components of lambda matrix to zero at both
@@ -879,10 +928,14 @@ void DiffEq::modeRHS(Grid& thegrid,
   if(params.opts.use_generic_orbit){
     orb.orb_of_t();
     timedep_to_rstar(orb);
-
+    
     for(int elemnum=1; i<params.grid.numelems; elemnum++){
       if(wt.timeDepTrans.at(elemnum-1)){
-	set_coefficients(thegrid, orb, coords, maxspeed, dxdxib, elemnum);
+	set_coefficients(thegrid, orb, coords, maxspeed, elemnum);
+	coords.dxdxibL0.at(elemnum)=coords.dxdxib.at(1);
+	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
+	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
+	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
 	vector<double> rschwv = thgrid.rschw.get(elemnum);
 	vector<double> windowv = thegrid.window.get(elemnum);
 	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
@@ -898,10 +951,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 	}
 	max_speed=max(maxspeed,max_speed);
       }
-    // elem_index
-    // set_coefficients
-    // calc_window_coeffs
-    // 
+
     
   
   if(params.opts.useSource) {
@@ -942,7 +992,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     //  double max_speed = 1.0;
-    RHS(modenum, thegrid, uh, RHStdvgf, t, output);
+    RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords);
   }
 }
 
