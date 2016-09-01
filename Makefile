@@ -34,10 +34,10 @@ FLGS = -g -lm -std=c++11 -O3 -fopenmp
 #GridFunction, VectorGridFunction, and TwoDVectorGridFunction lines are missing
 
 dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o  orbit.o namespaces.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o Coordinates.o WorldTube.o Orbit.o
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o orbit.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o $(LCONF) $(LGSL) $(LCPP) EllipticalOrbit.o CircularOrbit.o Coordinates.o WorldTube.o Orbit.o -o dg1D
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o $(LCONF) $(LGSL) $(LCPP) EllipticalOrbit.o CircularOrbit.o Coordinates.o WorldTube.o Orbit.o -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h Coordinates.h EllipticalOrbits.h CircularOrbits.h WorldTube.h Orbit.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h Orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h Coordinates.h EllipticalOrbit.h CircularOrbit.h WorldTube.h CharacteristicFlux.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 
@@ -81,11 +81,7 @@ DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorG
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
-$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
-
-Coordinates.o: Coordinates.cpp Coordinates.h globals.h 
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Coordinates.cpp
-
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
 
 
 Modes.o: Modes.cpp Modes.h TwoDVectorGridFunction.h ConfigParams.h namespaces.h TwoDVectorGridFunction.tpp ConfigParams.h Orbit.h

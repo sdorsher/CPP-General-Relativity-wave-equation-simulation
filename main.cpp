@@ -13,7 +13,7 @@
 #include "TwoDVectorGridFunction.h"
 #include "Modes.h"
 #include "namespaces.h"
-#include "orbit.h"
+#include "Orbit.h"
 #include <complex>
 #include "source_interface.h"
 #include "WriteFile.h"

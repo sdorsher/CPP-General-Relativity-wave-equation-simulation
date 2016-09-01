@@ -84,12 +84,12 @@ namespace source_interface {
 
 
     //Same thing as fill_source_all, but for ony one node.
-    void fill_source(Grid& thegrid, double& time, int& nummodes,
+    /*void fill_source(Grid& thegrid, double& time, int& nummodes,
 		     VectorGridFunction<complex<double>>& source,
 		     GridFunction<double>& window,
 		     GridFunction<double>& dwindow,
 		     GridFunction<double>& d2window);
-
+    */
     //An overarching routine that handles setting particle position, setting up the time
     //window, evaluating the source, and
     // setting the source in the DiffEq object for all modes and nodes within an element.

@@ -104,14 +104,14 @@ namespace source_interface
       *dphidtre = std::real(dphidt);
       *dphidtim = std::imag(dphidt);
     }
-  void fill_source(Grid& thegrid, double& time, int& nummodes,
+  /*void fill_source(Grid& thegrid, double& time, int& nummodes,
 		   VectorGridFunction<complex<double>>& source,
 		   GridFunction<double>& window,
 		   GridFunction<double>& dwindow,
 		   GridFunction<double>& d2window)
     {
 
-      using namespace orbit;
+      //using namespace orbit
       complex<double> src; 
       phi = phi_of_t(time);
       set_particle(p,e,chi,phi,nummodes);
@@ -129,7 +129,7 @@ namespace source_interface
         }
       }
     }
-
+  */
   void fill_source_all(Grid& thegrid, double time, int nummodes,
 		       VectorGridFunction<complex<double>>& source,
 		       GridFunction<double>& window,

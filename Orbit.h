@@ -1,5 +1,5 @@
 #ifndef ORBIT_H
-#definte ORBIT_H
+#define ORBIT_H
 
 class Orbit{
  protected:
