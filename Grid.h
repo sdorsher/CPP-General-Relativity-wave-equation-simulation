@@ -8,6 +8,9 @@
 #include "VectorGridFunction.h"
 #include "TwoDVectorGridFunction.h"
 #include <complex>
+#include "DiffEq.h"
+#include "CharacteristicFlux.h"
+
 
 //Indices of the grid (i) and of the nodes (j) where data will be output
 // at a finite radius and at Splus. Based on params.grid.outputradius

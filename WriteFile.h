@@ -7,8 +7,10 @@
 #include <string>
 #include <complex>
 #include <limits>
-#include "orbit.h"
+#include "Orbit.h"
 #include "namespaces.h"
+
+//might need updating to use Orbit.h rather than orbit.h
 
 
 //Output data at a fixed time

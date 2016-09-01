@@ -8,7 +8,6 @@
 #include "Grid.h"
 #include "VectorGridFunction.h"
 #include "Modes.h"
-#include "HyperboloidalCoords.h"
 #include <cfloat>
 #include "namespaces.h"
 #include <complex>

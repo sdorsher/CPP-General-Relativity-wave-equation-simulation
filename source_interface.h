@@ -9,11 +9,13 @@
 #include "Modes.h"
 #include "numerics.h"
 #include "namespaces.h"
-#include "orbit.h"
+#include "Orbit.h"
 #include "Grid.h"
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
 #include <omp.h>
+
+//might require modifying to use Orbit.h instead of orbit.h
 
 /*Interfaces with Barry Wardell's effective source package. Mostly
   copied directly (copy and paste) from source_interface.cc in the
