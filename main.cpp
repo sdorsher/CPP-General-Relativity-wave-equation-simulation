@@ -26,7 +26,7 @@
 
 using namespace std;
 using namespace layers;
-using namespace orbit;
+//using namespace orbit;
 using namespace window;
 using namespace source_interface;
 
@@ -45,11 +45,13 @@ int main()
 {
 
   cout << "Start" << endl;
+   //setup the modes
+  Modes lmmodes(params.modes.lmax);
+
+
   Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
                lowlim, uplim);
   cout << "grid established " << endl;
-   //setup the modes
-  Modes lmmodes(params.modes.lmax);
 
   Orbit orb;
   
@@ -237,7 +239,7 @@ int main()
     outputcount++;
     
     //Increment the time integration
-    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, max_speed);
+    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed);
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
 

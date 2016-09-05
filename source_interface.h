@@ -94,10 +94,10 @@ namespace source_interface {
     //window, evaluating the source, and
     // setting the source in the DiffEq object for all modes and nodes within an element.
     void fill_source_all(Grid& thegrid, double time, int nummodes,
-		     VectorGridFunction<complex<double>>& source,
-		     GridFunction<double>& window,
-		     GridFunction<double>& dwindow,
-		     GridFunction<double>& d2window);
+			 VectorGridFunction<complex<double>>& source,
+			 GridFunction<double>& window,
+			 GridFunction<double>& dwindow,
+			 GridFunction<double>& d2window);
 }
 
 

@@ -23,7 +23,7 @@ class WorldTube{
   WorldTube(Grid thegrid, Coordinates coords);
   
   void set_world_tube_window(Grid thegrid, Coordinates coords);
-}
+};
 
 
 #endif

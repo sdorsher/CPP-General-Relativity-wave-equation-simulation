@@ -8,7 +8,7 @@
 #include "VectorGridFunction.h"
 #include "TwoDVectorGridFunction.h"
 #include <complex>
-#include "DiffEq.h"
+//#include "DiffEq.h"
 #include "CharacteristicFlux.h"
 
 

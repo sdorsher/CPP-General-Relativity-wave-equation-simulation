@@ -12,13 +12,13 @@
 class CircularOrbit:public Orbit{
  public:
   //set parameters in orbit namespace
-  void CircularOrbit();
+  CircularOrbit();
   
   //calculate phi as a function of time
-  double CircularOrbit::phi_of_t(double t);
+  double phi_of_t(double t);
   
   //calculate chi as a function of time
-  double CircularOrbit::chi_of_t(double t);
+  double chi_of_t(double t);
   
 };
  

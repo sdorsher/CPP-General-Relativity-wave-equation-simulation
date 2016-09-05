@@ -20,6 +20,7 @@
 #include "Orbit.h"
 #include "EllipticalOrbit.h"
 #include "CircularOrbit.h"
+#include "WorldTube.h"
 
 using namespace TNT;
 using namespace layers;
@@ -84,6 +85,7 @@ class DiffEq
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
                double t, bool output, Orbit& orb, WorldTube& wt, Coordinates coords, double & max_speed); 
+
 };
 
 #endif
