@@ -31,8 +31,7 @@ class Grid
   GridFunction<double> rschw;//Schwarzschild coordinate
   GridFunction<double> rstar; //tortoise coordinate
 
-  Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
-       double upperlim);
+  Grid(int elemorder, int numelements, int nummodes);
   ReferenceElement refelem; //member variable: the reference element
 
   //find the radii at which to output the data (returns grid and node indices)

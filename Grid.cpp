@@ -2,8 +2,7 @@
 
 //du/dt + A du/dx + Bu = 0
 
-Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim, 
-           double upperlim):
+Grid::Grid(int elemorder, int numelements, int nummodes):
   order{elemorder},
   NumElem{numelements},
   nodeLocs{0,elemorder + 1}, 
@@ -23,21 +22,28 @@ Grid::Grid(int elemorder, int numelements, int nummodes, double lowerlim,
 
 
     
-    if(params.opts.useSource) {
-      set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
-    }
+  if(params.opts.useSource) {
+    set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
   }
+
   
   double lowlim, uplim; 
   
   //setup the grid and the reference element
-  if (params.metric.flatspacetime) {
-    lowlim = params.grid.lowerlim;
-    uplim = params.grid.upperlim;
-    
-   } else if (params.metric.schwarschild) {
-    lowlim = Sminus;
-    uplim = Splus;
+// if (params.metric.flatspacetime) {
+    // params.grid.lowerlim;
+    //params.grid.upperlim;
+
+  if(params.metric.flatspacetime){
+    lowerlim=params.grid.lowerlim;
+    upperlim=params.grid.upperlim;
+  }
+  
+  if (params.metric.schwarschild) {
+    params.grid.lowerlim = Sminus;
+    params.grid.upperlim = Splus;
+    lowerlim=Sminus;
+    upperlim=Splus;
   }
 
 

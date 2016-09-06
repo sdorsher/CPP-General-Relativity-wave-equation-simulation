@@ -10,7 +10,7 @@
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 
                    TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
-                   double t, double deltat, double & max_speed)
+                   double t, double deltat, WorldTube& wt, double & max_speed)
 {
 
   
@@ -38,7 +38,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   double chik, phik;
 
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, max_speed);//true for debugging output
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, wt, max_speed);//true for debugging output
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
 
@@ -50,7 +50,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   
   //steps 2-5
   for(int i=2; i<=5; i++){
-    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, max_speed); // true for debugging output
+    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, wt, max_speed); // true for debugging output
     k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
 

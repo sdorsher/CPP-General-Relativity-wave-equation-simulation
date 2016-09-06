@@ -49,17 +49,21 @@ int main()
   Modes lmmodes(params.modes.lmax);
 
 
-  Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal,
-               lowlim, uplim);
+  Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal);
   cout << "grid established " << endl;
 
-  Orbit orb;
+  Orbit * orb;
   
   if(params.opts.use_generic_orbit){
     orb = new EllipticalOrbit();
+    EllipticalOrbit * orb = dynamic_cast<EllipticalOrbit *>(orb);
   }else{
     orb= new CircularOrbit();
+    CircularOrbit * orb = dynamic_cast<CircularOrbit *>(orb);
   }
+
+  
+
   
   if(params.opts.useSource) {
     init_source( lmmodes, params.schw.mass);
@@ -69,10 +73,10 @@ int main()
   
   
   if(params.opts.use_generic_orbit){
-    orb.orb_of_t(rp,drpdt,d2rpdt2);
-    cout << "rp = " << rp << " drpdt = " << drpt << " d2rpdt2 = " d2rpdt2 << endl;
+    orb->orb_of_t();
+    
     if(params.opts.useSource){
-      set_particle(p,e,chi,phi,nmodes);
+      set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.nmodes);
     }
   }
   

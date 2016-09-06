@@ -144,8 +144,7 @@ namespace source_interface
       phi= phi_of_t(time);
 
       //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
-
-      set_particle(p,e,chi,phi,nummodes);
+      set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.nmodes);
 
 
       if(params.opts.turn_on_source_smoothly){

@@ -9,7 +9,7 @@ class Orbit{
   double chi; //angular parameter for radial oscillations
   double phi; //angular parameter for angular oscillations
   double drdlambda_particle, drdxi_particle;
- public:
+  virtual ~Orbit(){};
   Orbit();
 
 };
