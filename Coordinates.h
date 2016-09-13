@@ -15,8 +15,8 @@
 using namespace std;
 
 class Coordinates{
-
-  double R1, R2, W1, W2, a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi;
+ public:
+  double a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi, Sminus, Splus;
   vector<double> dxdxib;
   vector<double> dxidbL;
   vector<double> dxidbR;

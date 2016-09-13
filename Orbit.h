@@ -1,8 +1,10 @@
+
+
 #ifndef ORBIT_H
 #define ORBIT_H
 
 class Orbit{
- protected:
+ public:
   double rp, drpdt, d2rpdt2;
   double p; //simulatus rectum
   double e; //eccentricity -- zero for circular orbits

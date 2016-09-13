@@ -9,6 +9,8 @@
 #include <limits>
 #include "Orbit.h"
 #include "namespaces.h"
+#include "EllipticalOrbit.h"
+#include "CircularOrbit.h"
 
 //might need updating to use Orbit.h rather than orbit.h
 
@@ -19,7 +21,7 @@ void write_fixed_time(int k, double t,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                       string filename,
-		      int type);
+		      int type, Orbit * orb);
 
 //Output data at a fixed radius
 void write_fixed_radius(OutputIndices& ijoutput, int& k, double t,

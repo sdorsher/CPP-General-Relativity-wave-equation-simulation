@@ -8,6 +8,8 @@
 #include "gsl/gsl_sf_legendre.h"
 #include "ConfigParams.h"
 #include "Orbit.h"
+#include "EllipticalOrbit.h"
+#include "CircularOrbit.h"
 
 //might require modifying to use Orbit.h instead of orbit.h
 
@@ -25,7 +27,7 @@ class Modes {
   
   int ntotal; //total number of modes used in computation
   Modes(int lmax);
-  void sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,int index1,int index2);
+  void sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,int index1,int index2, Orbit * orb);
   // sum the modes to form psi, dpsi/dt, dpsi/dr, and dpsi/dphi at a certain radius
   
  private:

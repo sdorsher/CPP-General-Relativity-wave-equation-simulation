@@ -6,7 +6,7 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                       string filename,
-		      int type)
+		      int type, Orbit * orb)
 
 
 {
@@ -80,7 +80,7 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	} else {
 	  mfoldfactor={2.0,0.};
 	}
-	phi=phi_of_t(t);
+	phi=orb->phi_of_t(t);
 	complex<double> phase{cos(lmmodes.mm[k]*phi),sin(lmmodes.mm[k]*phi)};
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
 						      lmmodes.mm[k],0.0);

@@ -10,12 +10,17 @@
 #include <complex>
 //#include "DiffEq.h"
 #include "CharacteristicFlux.h"
+#include "namespaces.h"
 
 
 //Indices of the grid (i) and of the nodes (j) where data will be output
 // at a finite radius and at Splus. Based on params.grid.outputradius
 struct OutputIndices
 {int ifinite, jfinite, iSplus, jSplus;};
+
+using namespace std;
+using namespace window;
+using namespace layers;
 
 class Grid
 {

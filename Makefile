@@ -48,7 +48,7 @@ EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h ConfigPara
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c EllipticalOrbits.cpp
 
 CircularOrbit.o: CircularOrbit.cpp CircularOrbit.h namespaces.h ConfigParams.h Orbit.h
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CircularOrbits.cpp
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CircularOrbit.cpp
 
 Coordinates.o: Coordinates.cpp Coordinates.h globals.h ConfigParams.h Orbit.h CircularOrbit.h EllipticalOrbit.h Grid.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Coordinates.cpp
@@ -65,10 +65,10 @@ ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 #VectorGridFunction.o: VectorGridFunction.cpp VectorGridFunction.h GridFunction.h TNT2.h
 #	$(CXX) $(FLGS) $(ITNT) $(IGEN) -c VectorGridFunction.cpp
 
-Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp  VectorGridFunction.h VectorGridFunction.tpp
+Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp  VectorGridFunction.h VectorGridFunction.tpp namespaces.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Grid.cpp
 
-Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h DiffEq.h WorldTube.h
+Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h DiffEq.h WorldTube.h Orbit.h CircularOrbit.h EllipticalOrbit.h Coordinates.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h
@@ -84,7 +84,7 @@ CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CharacteristicFlux.cpp
 
 
-Modes.o: Modes.cpp Modes.h TwoDVectorGridFunction.h ConfigParams.h namespaces.h TwoDVectorGridFunction.tpp ConfigParams.h Orbit.h
+Modes.o: Modes.cpp Modes.h TwoDVectorGridFunction.h ConfigParams.h namespaces.h TwoDVectorGridFunction.tpp ConfigParams.h Orbit.h EllipticalOrbit.h CircularOrbit.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Modes.cpp
 
 namespaces.o: namespaces.cpp namespaces.h
@@ -93,10 +93,10 @@ namespaces.o: namespaces.cpp namespaces.h
 numerics.o: numerics.cpp numerics.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c numerics.cpp
 
-source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h EffectiveSource.h VectorGridFunction.tpp GridFunction.tpp Orbit.h Grid.h
+source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h EffectiveSource.h VectorGridFunction.tpp GridFunction.tpp Orbit.h Grid.h EllipticalOrbit.h CircularOrbit.h Coordinates.h namespaces.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
 
-WriteFile.o: WriteFile.cpp WriteFile.h TwoDVectorGridFunction.h Grid.h DiffEq.h Orbit.h namespaces.h
+WriteFile.o: WriteFile.cpp WriteFile.h TwoDVectorGridFunction.h Grid.h DiffEq.h Orbit.h namespaces.h EllipticalOrbit.h CircularOrbit.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c WriteFile.cpp
 
 clean:

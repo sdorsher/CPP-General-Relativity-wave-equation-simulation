@@ -14,6 +14,9 @@
 #include "GridFunction.h"
 #include "VectorGridFunction.h"
 #include <omp.h>
+#include "EllipticalOrbit.h"
+#include "CircularOrbit.h"
+#include "Coordinates.h"
 
 //might require modifying to use Orbit.h instead of orbit.h
 
@@ -25,7 +28,7 @@
 namespace source_interface {
 
   using namespace std;
-  
+  using namespace window;
 
   //vector for all lmmodes that contains EffectiveSource objects from Barry Wardell's
   //effective source package.
@@ -41,6 +44,8 @@ namespace source_interface {
 		      const double& s1, const double& r2, const double& w2,
 		      const double& q2, const double& s2, const int& nmodes );
 
+    void set_window_params(Coordinates & coords);
+    
     //Calculates the window that is applied to the effective source
     void calc_window ( const int& n, const double r[],
 		       double Win[], double dWin[], double d2Win[] );
@@ -97,7 +102,7 @@ namespace source_interface {
 			 VectorGridFunction<complex<double>>& source,
 			 GridFunction<double>& window,
 			 GridFunction<double>& dwindow,
-			 GridFunction<double>& d2window);
+			 GridFunction<double>& d2window, Orbit & orb);
 }
 
 

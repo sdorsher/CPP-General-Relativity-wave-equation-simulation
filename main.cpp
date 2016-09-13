@@ -48,35 +48,34 @@ int main()
    //setup the modes
   Modes lmmodes(params.modes.lmax);
 
-
+  
   Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal);
   cout << "grid established " << endl;
 
-  Orbit * orb;
+  EllipticalOrbit * eorb;
+  CircularOrbit * corb;
   
   if(params.opts.use_generic_orbit){
-    orb = new EllipticalOrbit();
-    EllipticalOrbit * orb = dynamic_cast<EllipticalOrbit *>(orb);
+    eorb = new EllipticalOrbit();
   }else{
-    orb= new CircularOrbit();
-    CircularOrbit * orb = dynamic_cast<CircularOrbit *>(orb);
+    corb= new CircularOrbit();
   }
 
   
+  Coordinates coords;
 
   
   if(params.opts.useSource) {
     init_source( lmmodes, params.schw.mass);
   }
 
-  Coordinates coords();
   
   
   if(params.opts.use_generic_orbit){
-    orb->orb_of_t();
+    eorb->orb_of_t();
     
     if(params.opts.useSource){
-      set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.nmodes);
+      set_particle(eorb->p,eorb->e,eorb->chi,eorb->phi,lmmodes.ntotal);
     }
   }
   
@@ -85,7 +84,7 @@ int main()
   OutputIndices ijoutput;
   if(params.metric.schwarschild){
     //  int ifinite, iSplus, jfinite, jSplus;
-    thegrid.find_extract_radii(coordobj.rstar_of_r(params.grid.outputradius,
+    thegrid.find_extract_radii(coords.rstar_of_r(params.grid.outputradius,
 					  params.schw.mass), Splus, 
 			       ijoutput);
     cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
@@ -98,7 +97,7 @@ int main()
   
   cout << "defining the differential equation" << endl;
   //setup the differential equation
-  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal, coordobj);
+  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal, coords);
 
   cout << "diff eq established" << endl;
 
@@ -124,6 +123,7 @@ int main()
 						   params.grid.numelems,
 						   params.grid.elemorder + 1,
 						   {0.0,0.0}); 
+  WorldTube * wt;
 
   
   //Setup initial conditions and initialize window
@@ -134,11 +134,10 @@ int main()
   } else if(params.metric.schwarschild) {
     initialSchwarzchild(uh, thegrid, theequation);
 
-    WorldTube worldtb;
     
     if(params.opts.use_world_tube){
-      worldtb = new WorldTube(thegrid, coords);
-      worldtb.set_world_tube_window(thegrid,coords);
+      wt = new WorldTube(thegrid, coords);
+      wt->set_world_tube_window(thegrid,coords);
     }
     
   }
@@ -157,17 +156,20 @@ int main()
 
   uh0 = uh;
 
-
+  double max_speed=1.0;
 
   //output coords
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
-  
-  theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true);
 
+  if(params.opts.use_generic_orbit){
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed);
+  }else{
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed);
+  }
   cout << "first call to RHS succeeded" << endl;
   
-  double deltat, max_speed;
+  double deltat;
 
   double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
   
@@ -189,7 +191,11 @@ int main()
 
   
   if (params.metric.schwarschild){
-    lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite);
+    if (params.opts.use_generic_orbit){ 
+      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
+    } else {
+      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
+    }
   }
 
   
@@ -197,12 +203,20 @@ int main()
     if(params.file.outputtimefixed) {
 
 
-      write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
-		       theequation,lmmodes,true,
-		       params.file.pdesolution,1);
-      write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
-		       theequation,lmmodes,true,"rhs",3);
-	     /*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+      if(params.opts.use_generic_orbit){
+	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 params.file.pdesolution,1, eorb);
+	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,"rhs",3, eorb);
+      } else{
+	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,
+			 params.file.pdesolution,1, corb);
+	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			 theequation,lmmodes,true,"rhs",3, corb);
+      }
+	/*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"source",2);
      write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"up",4);
@@ -243,7 +257,11 @@ int main()
     outputcount++;
     
     //Increment the time integration
-    rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed);
+    if(params.opts.use_generic_orbit){
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords);
+    }else{
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,corb,coords);
+    }
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
 
@@ -257,17 +275,24 @@ int main()
      for(int k = 0; k < uh.TDVGFdim(); k++) {
         if(params.file.outputtimefixed) {
 
-	  write_fixed_time(k,t,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,
-			   params.file.pdesolution,1);
-	  write_fixed_time(k,t,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,"rhs",3);
+	  if (params.opts.use_generic_orbit){
+	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     params.file.pdesolution,1,eorb);
+	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,"rhs",3,eorb);
+	  }else{
+	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     params.file.pdesolution,1,corb);
+	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,"rhs",3,corb);
 	  /*	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"source",2);
 	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"up",4);
 	  */
-	  
+	  }
 	 
 	}
       
@@ -276,7 +301,11 @@ int main()
 			     theequation,lmmodes, true,
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
-	    lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite);
+	    if(params.opts.use_generic_orbit){
+	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
+	    }else{
+	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
+	    }
 	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
 			     "psil",1);
@@ -330,10 +359,14 @@ int main()
   
 clean_source();
 
- delete orb;
+ if(params.opts.use_generic_orbit){
+   delete eorb;
+ }else{
+   delete corb;
+ }
 
  if(params.opts.use_world_tube){
-   delete worldtb;
+   delete wt;
  }
  
 }

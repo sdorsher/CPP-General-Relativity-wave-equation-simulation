@@ -720,8 +720,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
     //The B matrix component of the RHS.
 
-    //HERE
-    
     //was Array2D
     vector<complex<double>> RHSB(uh.GFarrDim() 
                                  *params.grid.Adim);
@@ -759,7 +757,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
 
     }//end node loop
-    //PAST HERE
 
     //    if (output){
     //for(int i=0; i<RHSB.size(); i++){
@@ -790,7 +787,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //}
     //}
 
-    //GOOD THROUGH HERE
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
     for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++)
       {
@@ -846,7 +842,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     // }
     //}
 
-    //GOOD UNTIL HERE FOR SURE
     temp =matmul(Lift,du,uh.GFarrDim(),2,2);
     vector<complex<double>> RHSA2 = scalarmult(thegrid.jacobian(elemnum),temp);
 
@@ -858,7 +853,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //}
 
 
-    //RHSA2 matches. Problem was transposed conversion from vectors to TNT in CharacteristicFlux.cpp. After HERE. trimmedA may still not match to 1e-7 not sure
+    //RHSA2 matches. Problem was transposed conversion from vectors to TNT in CharacteristicFlux.cpp. trimmedA may still not match to 1e-7 not sure
     
       //  if(output){
     // cout << elemnum << "\t" << du[0].real() << "\t" << du[1].real() << "\t" << du[2].real()<< "\t" << du[3].real() << endl;
@@ -921,12 +916,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                     double t, bool output, Orbit& orb, WorldTube& wt, Coordinates& coords, double& max_speed)
+                     double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed)
 {
   double max_speed=1.0;
   double maxspeed;
   if(params.opts.use_generic_orbit){
-    orb.orb_of_t();
+    orb->orb_of_t();
     timedep_to_rstar(orb);
     
     for(int elemnum=1; i<params.grid.numelems; elemnum++){

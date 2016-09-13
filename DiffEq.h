@@ -57,7 +57,7 @@ class DiffEq
   GridFunction<double> d2window; //second derivative of the window function
 
  public:
-  DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal);
+  DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates & coords);
   vector<double> getA(int gridindex, int pointsindex);
   vector<double> getB(int modesindex, int gridindex, int pointsindex);
   CharacteristicFlux getAleft(int elemnum);
@@ -84,7 +84,7 @@ class DiffEq
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
-               double t, bool output, Orbit& orb, WorldTube& wt, Coordinates coords, double & max_speed); 
+               double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double & max_speed); 
 
 };
 

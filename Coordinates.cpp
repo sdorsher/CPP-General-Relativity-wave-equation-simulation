@@ -1,20 +1,7 @@
 #include "Coordinates.h"
 
 
-Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0},dxidbL{params.grid.elemorder+1,0.},dxidbR{params.grid.elemorder+1,0.}{
-  
-    R1= invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
-    R2 = invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
-    w1 = params.schw.p_orb-(invert_tortoise(2.0*deltar, params.schw.mass)
-                          +2.0*params.schw.mass)-R1;
-    w2 = R2 - (params.schw.p_orb + invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
-    nmodes = lmmodes.ntotal;
-
-
-    cout << "R1 R2 w1 w2" << endl;
-    cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
-}
-
+Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0},dxidbL{params.grid.elemorder+1,0.},dxidbR{params.grid.elemorder+1,0.}{}
 
 double Coordinates::rstar_of_r(double r, double mass)
 {

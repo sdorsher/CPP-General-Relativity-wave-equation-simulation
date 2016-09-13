@@ -22,12 +22,8 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
 
 
     
-  if(params.opts.useSource) {
-    set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
-  }
-
   
-  double lowlim, uplim; 
+  double lowerlim, upperlim; 
   
   //setup the grid and the reference element
 // if (params.metric.flatspacetime) {
@@ -40,8 +36,6 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
   }
   
   if (params.metric.schwarschild) {
-    params.grid.lowerlim = Sminus;
-    params.grid.upperlim = Splus;
     lowerlim=Sminus;
     upperlim=Splus;
   }

@@ -17,6 +17,7 @@ struct OptionsParams{
   bool turn_on_source_smoothly; //use a window function in time to turn on
   //the effective source smoothly
   bool use_generic_orbit;
+  bool use_world_tube;
 };
 
 struct MetricParams{

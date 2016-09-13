@@ -21,7 +21,9 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 							 "options",
 							 "turn_on_source_smoothly");
   opts.use_generic_orbit=getConfigFromFile<bool>(configFileName, "options",
-						 "use_generic_orbit");							
+						 "use_generic_orbit");
+  opts.use_world_tube=getConfigFromFile<bool>(configFileName, "options",
+						 "use_world_tube");							
 
   //Read parameters associated with the metric
   metric.flatspacetime = getConfigFromFile<bool>(configFileName, "metric", 

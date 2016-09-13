@@ -22,7 +22,27 @@ namespace source_interface
       for (auto& x : effsource) 
 	x->set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
   }
-    void calc_window ( const int& n, const double r[],
+
+  void set_window_params(Coordinates & coords){
+    R1= coords.invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
+    R2 = coords.invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
+    w1 = params.schw.p_orb-(coords.invert_tortoise(2.0*deltar, params.schw.mass)
+			    +2.0*params.schw.mass)-R1;
+    w2 = R2 - (params.schw.p_orb + coords.invert_tortoise(2.0*deltar, params.schw.mass\
+						   )+2.0*params.schw.mass);
+    nmodes = lmmodes.ntotal;
+
+
+    cout << "R1 R2 w1 w2" << endl;
+    cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
+    if(params.opts.useSource) {
+      set_window(R1, w1, 1.0, 1.5, R2, w2, 1.0, 1.5, lmmodes.ntotal);
+    }
+    
+
+  }
+  
+  void calc_window ( const int& n, const double r[],
 		       double Win[], double dWin[], double d2Win[] ) {
       assert(!effsource.empty());
       auto & temp = effsource.at(0);
@@ -134,14 +154,14 @@ namespace source_interface
 		       VectorGridFunction<complex<double>>& source,
 		       GridFunction<double>& window,
 		       GridFunction<double>& dwindow,
-		       GridFunction<double>& d2window)
+		       GridFunction<double>& d2window, Orbit & orb)
   {
   
     //using namespace orbit;
 
       double tfac, dtfac_dt, d2tfac_dt2;
      
-      phi= phi_of_t(time);
+      phi= orb->phi_of_t(time);
 
       //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
       set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.nmodes);

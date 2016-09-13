@@ -42,7 +42,7 @@ void Modes::set_lm_mode_info(int lmax) {
   }
 }
 
-void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,int index1,int index2)
+void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,int index1,int index2, Orbit * orb)
 {
   double m_fold_factor, y_lm, omega, ecosfac, radius;
   complex<double> phase, phifactor;
@@ -57,7 +57,9 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
   }
   ecosfac = 1.0 + e*cos(chi);
   radius = (params.schw.mass*p)/ecosfac;
-  phi=phi_of_t(time);
+  if(!params.opts.use_generic_orbit){
+    phi=orb->phi_of_t(time);
+  }
   for (int i=0; i<mm.size(); i++){
     if(mm.at(i)==0) {
       m_fold_factor = 1.0;

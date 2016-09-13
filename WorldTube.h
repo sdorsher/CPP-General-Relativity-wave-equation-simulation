@@ -11,6 +11,7 @@
 
 class WorldTube{
 
+ public:
   vector<bool> timeDepTrans;
   vector<bool> addSingFieldtoLeftElemExt;
   vector<bool> addSingFiledtoRightElemExt;
