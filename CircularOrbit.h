@@ -20,6 +20,8 @@ class CircularOrbit:public Orbit{
   //calculate chi as a function of time
   double chi_of_t(double t);
   
+
+  OrbitType orbType();
 };
  
 #endif

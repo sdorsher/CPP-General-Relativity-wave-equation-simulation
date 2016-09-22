@@ -52,7 +52,7 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coord
 
 
     printf("setting up A and B matrices\n");
-    setupABmatrices(thegrid, lmmodes);
+    setupABmatrices(thegrid, lmmodes,coordobj);
     printf("A and B matrices established\n");
     
     //Get all characteristic equation information for each boundary node
@@ -340,7 +340,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
   }//end if schw
 }//end function setab
 
-void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &coords, double& maxspeed, vector<double> & dxdxib, int elemnum)
+void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &coords, double& maxspeed, int elemnum)
 
 
 {
@@ -349,7 +349,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &
 
   vector<double> rm2m(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xd2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(coords, thegrid, dxdxi, d2dxdt2, d2dxdxi2, d2xdtdxi, elemnum);
+  coords.coord_trans(coords, thegrid, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
   for(int i = 0; i<=ne; i++){
     double dxdiinv = 1.0/dxdxi.at(i);
     double dxdxiinv2 = dxdxiinv*dxdxiinv;
@@ -360,7 +360,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &
     double coeff2 = -2.*dxdt.at(i)*dxdiinv;
     double coeff3 = -(d2xdxi2.at(i)*(dxd2-1.)
 		      +dxdxi.at(i)*(-2.*dxdt.at(i)*d2xdtdxi.at(i)
-				    +dxdxi.at(i)*d2dxdt2.at(i)))*dxdxiinv3;
+				    +dxdxi.at(i)*d2xdt2.at(i)))*dxdxiinv3;
     double coeff4 = 0.0;
     Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
     Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);

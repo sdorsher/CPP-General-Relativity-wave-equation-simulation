@@ -3,7 +3,11 @@
 #ifndef ORBIT_H
 #define ORBIT_H
 
+enum OrbitType{circular, elliptical};
+
 class Orbit{
+ protected:
+  OrbitType otype;
  public:
   double rp, drpdt, d2rpdt2;
   double p; //simulatus rectum
@@ -13,7 +17,8 @@ class Orbit{
   double drdlambda_particle, drdxi_particle;
   virtual ~Orbit(){};
   Orbit();
-
+  virtual OrbitType orbType();
+  
 };
 
 

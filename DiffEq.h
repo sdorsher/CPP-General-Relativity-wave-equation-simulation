@@ -48,7 +48,7 @@ class DiffEq
   //the function to setup the A and B matricies, written specificially for
   //the differential equation in question (with options based on parameters
   //for different differential equations)
-  void setupABmatrices(Grid& thegrid, Modes& lmmodes);
+  void setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordobj);
 
  public:
   VectorGridFunction<complex<double>> source; //the effective source

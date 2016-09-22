@@ -2,6 +2,7 @@
 
 EllipticalOrbit::EllipticalOrbit(Coordinates coordobj){
 
+  otype = elliptical;
   double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
   double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
   double xip = 0.5*(rmin+rmax);
@@ -68,3 +69,6 @@ void EllipticalOrbit::orb_of_t(){
 
 
 
+OrbitType CircularOrbit::orbType(){
+  return otype;
+}

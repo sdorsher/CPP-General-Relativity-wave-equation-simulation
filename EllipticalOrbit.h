@@ -15,6 +15,8 @@ class EllipticalOrbit:public Orbit{
   void dorbdchi();
   void dorbdt();
   void orb_of_t();
+
+  OrbitType orbType();
 };
 #endif
 

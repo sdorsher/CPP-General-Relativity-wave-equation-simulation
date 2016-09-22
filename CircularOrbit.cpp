@@ -2,6 +2,7 @@
 
 //Set initial orbit parameters
 CircularOrbit() {
+  otype = circular;
   p = params.schw.p_orb/params.schw.mass; //semi-latus rectum
   e = params.schw.ecc; //eccentricity
   chi = acos(-1.0); //2pi in one full radial oscillation
@@ -36,3 +37,6 @@ double CircularOrbit::chi_of_t(double t)
   return chiomega*t;
 }
 
+OrbitType CircularOrbit::orbType(){
+  return otype;
+}
