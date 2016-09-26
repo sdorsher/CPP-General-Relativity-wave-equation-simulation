@@ -36,6 +36,10 @@ class Grid
   GridFunction<double> rschw;//Schwarzschild coordinate
   GridFunction<double> rstar; //tortoise coordinate
 
+  GridFunction<double> window;
+  GridFunction<double> dwindow;
+  GridFunction<double> d2window;
+  
   Grid(int elemorder, int numelements, int nummodes);
   ReferenceElement refelem; //member variable: the reference element
 

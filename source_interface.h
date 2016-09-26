@@ -102,7 +102,7 @@ namespace source_interface {
 			 VectorGridFunction<complex<double>>& source,
 			 GridFunction<double>& window,
 			 GridFunction<double>& dwindow,
-			 GridFunction<double>& d2window, Orbit & orb);
+			 GridFunction<double>& d2window, Orbit * orb);
 }
 
 

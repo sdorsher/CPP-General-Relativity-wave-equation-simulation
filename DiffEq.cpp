@@ -930,11 +930,13 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
+
   double maxspeed;
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t();
     coords.timedep_to_rstar(eorb);
+
     
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(wt->timeDepTrans.at(elemnum-1)){
@@ -943,19 +945,30 @@ void DiffEq::modeRHS(Grid& thegrid,
 	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
 	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
 	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
-	vector<double> rschwv = thegrid.rschw.get(elemnum);
-	vector<double> windowv = thegrid.window.get(elemnum);
-	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
-	vector<double> d2windowv = thegrid.d2window.get(elemnum);
 
-	double * rarr = &rschwv[0];
-	double * winarr = &windowv[0];
-	double * dwinarr = &dwindowv[0];
-	double * d2winarr = &d2windowv[0];
+	       
+
+	if(!params.opts.use_world_tube){
+	  vector<double> rschwv = thegrid.rschw.get(elemnum);
+	  double * rarr = &rschwv[0];
+	  
 	
-	if(!params.grid.use_world_tube){
+	  vector<double> windowv = thegrid.window.get(elemnum);
+	  vector<double> dwindowv = thegrid.dwindow.get(elemnum);
+	  vector<double> d2windowv = thegrid.d2window.get(elemnum);
+	  
+	  
+	  double * winarr = &windowv[0];
+	  double * dwinarr = &dwindowv[0];
+	  double * d2winarr = &d2windowv[0];
+	  
+
 	  calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
+	  thegrid.window.set(elemnum,windowv);
+	  thegrid.dwindow.set(elemnum,dwindowv);
+	  thegrid.d2window.set(elemnum,d2windowv);
 	}
+	
 	max_speed=max(maxspeed,max_speed);
       }
 
@@ -963,8 +976,8 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   if(params.opts.useSource) {
     
-   fill_source_all(thegrid, t, uh.TDVGFdim(), source, window,
-		    dwindow, d2window);
+   fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
+		   thegrid.dwindow, thegrid.d2window, orb);
   }
   //  for(int i=0; i<source.GFvecDim(); i++){
   //for(int j=0; j<source.GFarrDim(); j++){

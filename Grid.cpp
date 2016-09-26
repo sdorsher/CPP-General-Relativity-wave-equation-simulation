@@ -8,7 +8,11 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
   nodeLocs{0,elemorder + 1}, 
   refelem{elemorder},
   rschw{numelements,elemorder+1},
-  rstar{numelements,elemorder+1}
+  rstar{numelements,elemorder+1},
+  window{numelements,elemorder+1},
+  dwindow{numelements,elemorder+1},
+  d2window{numelements,elemorder+1}
+    
 {
 
 
