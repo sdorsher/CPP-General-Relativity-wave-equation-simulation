@@ -340,97 +340,103 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
   }//end if schw
 }//end function setab
 
-void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &coords, double& maxspeed, int elemnum)
+void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &coords, double& maxspeed, int elemnum, Modes& lmmodes)
 
 
 {
   maxspeed = 1.0;
   double ne = params.grid.elemorder;
 
-  vector<double> rm2m(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xd2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
+  vector<double> rm2m(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
   coords.coord_trans(coords, thegrid, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
+
+  
   for(int i = 0; i<=ne; i++){
-    double dxdiinv = 1.0/dxdxi.at(i);
+    double dxdxiinv = 1.0/dxdxi.at(i);
     double dxdxiinv2 = dxdxiinv*dxdxiinv;
     double dxdxiinv3 = dxdxiinv2*dxdxiinv;
     double dxdt2 = dxdt.at(i)*dxdt.at(i);
     
     double coeff1 = -(1.-dxdt2)*dxdxiinv2;
-    double coeff2 = -2.*dxdt.at(i)*dxdiinv;
-    double coeff3 = -(d2xdxi2.at(i)*(dxd2-1.)
+    double coeff2 = -2.*dxdt.at(i)*dxdxiinv;
+    double coeff3 = -(d2xdxi2.at(i)*(dxdt2-1.)
 		      +dxdxi.at(i)*(-2.*dxdt.at(i)*d2xdtdxi.at(i)
 				    +dxdxi.at(i)*d2xdt2.at(i)))*dxdxiinv3;
     double coeff4 = 0.0;
     Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
     Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
-    Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeff3);
-    Bmatrices.set(2*params.grid.Adim+2,elemnum,i,coeff4);
+    for(int modenum=0; modenum< lmmodes.ntotal; modenum++){
+      Bmatrices.set(modenum,1*params.grid.Adim+2,elemnum,i,coeff3);
+      Bmatrices.set(modenum,2*params.grid.Adim+2,elemnum,i,coeff4);
+    }
     trimmedAmatrices.set(0*params.grid.Ddim+1,elemnum,i,coeff1);
     trimmedAmatrices.set(1*params.grid.Ddim+1,elemnum,i,coeff2);
 
     int boundary;
     
     if(i==0){
-      AleftBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
-      AleftBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
-      maxspeed=max(max(abs(AleftBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)),abs(AleftBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1))),maxspeed);
-      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
-      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
-      AleftBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
-      AleftBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=1.0;
-      AleftBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+1)=1.0;
-      AleftBoundaries[elemnum].SinvV(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
-      AleftBoundaries[elemnum].SinvV(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
-      AleftBoundaries[elemnum].SinvV(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
-      AleftBoundaries[elemnum].SinvV(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
+      AleftBoundaries[elemnum].LambdaV.at(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].LambdaV.at(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
+      maxspeed=max(max(abs(AleftBoundaries[elemnum].LambdaV.at(0*params.grid.Ddim+0)),abs(AleftBoundaries[elemnum].LambdaV.at(1*params.grid.Ddim+1))),maxspeed);
+      AleftBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV.at(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
+      AleftBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+1)=1.0;
+      AleftBoundaries[elemnum].SmatrixV.at(1*params.grid.Ddim+1)=1.0;
+      AleftBoundaries[elemnum].SinvV.at(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
+      AleftBoundaries[elemnum].SinvV.at(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
+      AleftBoundaries[elemnum].SinvV.at(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
+      AleftBoundaries[elemnum].SinvV.at(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
     } else if(i==params.grid.elemorder){
-      ArightBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
-      ArightBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
-      maxspeed=max(max(abs(ArightBoundaries[elemnum].LambdaV(0*params.grid.Ddim+0)),abs(ArightBoundaries[elemnum].LambdaV(1*params.grid.Ddim+1))),maxspeed);
-      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
-      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
-      ArightBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
-      ArightBoundaries[elemnum].SmatrixV(0*params.grid.Ddim+1)=1.0;
-      ArightBoundaries[elemnum].SmatrixV(1*params.grid.Ddim+1)=1.0;
-      ArightBoundaries[elemnum].SinvV(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
-      ArightBoundaries[elemnum].SinvV(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
-      ArightBoundaries[elemnum].SinvV(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
-      ArightBoundaries[elemnum].SinvV(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
+      ArightBoundaries[elemnum].LambdaV.at(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].LambdaV.at(1*params.grid.Ddim+1)=(1.-dxdt.at(i))*dxdxiinv;
+      maxspeed=max(max(abs(ArightBoundaries[elemnum].LambdaV.at(0*params.grid.Ddim+0)),abs(ArightBoundaries[elemnum].LambdaV.at(1*params.grid.Ddim+1))),maxspeed);
+      ArightBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+0)=(1.+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+1)=(1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV.at(1*params.grid.Ddim+0)=(-1.0+dxdt.at(i))*dxdxiinv;
+      ArightBoundaries[elemnum].SmatrixV.at(0*params.grid.Ddim+1)=1.0;
+      ArightBoundaries[elemnum].SmatrixV.at(1*params.grid.Ddim+1)=1.0;
+      ArightBoundaries[elemnum].SinvV.at(0*params.grid.Ddim+0)=0.5*dxdxi.at(i);
+      ArightBoundaries[elemnum].SinvV.at(0*params.grid.Ddim+1)=0.5*(1.0-dxdt.at(i));
+      ArightBoundaries[elemnum].SinvV.at(1*params.grid.Ddim+0)=-0.5*dxdxi.at(i);
+      ArightBoundaries[elemnum].SinvV.at(1*params.grid.Ddim+1)=0.5*(1.+dxdt.at(i));
 
     }
   }
 
+  double mass = params.schw.mass;
+  
   for(int i=0; i<=params.grid.elemorder; i++){
 
-    rm2m.at(i)= invert_tortoise(thegrid.rstar.get(elemnum,i),mass);
+    rm2m.at(i)= coords.invert_tortoise(thegrid.rstar.get(elemnum,i),mass);
   }
 
   for(int i=0; i<=params.grid.elemorder; i++){
     thegrid.rschw.set(elemnum,i,2.0*mass+rm2m.at(i));
-    rfac=rm2m.at(i)/pow(thegrid.get(elemnum,i),4.);
-    for(int k=0; k<params.grid.modenum; k++){
-      double coeffl = (lmmodes.ll(k)*(lmmodes.ll(k)+1)*thegrid.rschw.get(elemnum,i)+2.*mass)*rfac;
-      Bmatrices.set(1*params.grid.Adim+2,elemnum,i,coeffl);
+    double rfac=rm2m.at(i)/pow(thegrid.rschw.get(elemnum,i),4.);
+    for(int k=0; k<lmmodes.ntotal; k++){
+      double coeffl = (lmmodes.ll.at(k)*(lmmodes.ll.at(k)+1)*thegrid.rschw.get(elemnum,i)+2.*mass)*rfac;
+      Bmatrices.set(k,1*params.grid.Adim+2,elemnum,i,coeffl);
     }
   }
 
   //finds right side of element boundary in time dependent region. for dxdt and dxdxi
-  coords.dxdxib.at(0)=dxdt.at(0);
-  coords.dxdxib.at(1)=dxdxi.at(0);
-  coords.dxdxib.at(2)=dxdt.at(params.grid.elemorder);
-  coords.dxdxib.at(3)=dxdxi.at(params.grid.elemorder);
+  coords.dxdxibL0.at(elemnum)=dxdt.at(0);
+  coords.dxdxibL1.at(elemnum)=dxdxi.at(0);
+  coords.dxdxibR0.at(elemnum)=dxdt.at(params.grid.elemorder);
+  coords.dxdxibR1.at(elemnum)=dxdxi.at(params.grid.elemorder);
 
-  if(abs(thegrid.rho.at(elemnum,0)-xip)<1e-10){
-    orb.drdlambda_particle=dxdt.at(0);
-    orb.drdxi_particle=dxdxi.at(0);
+  if(abs(thegrid.gridNodeLocations().get(elemnum,0)-coords.xip)<1e-10){
+    orb->drdlambda_particle=dxdt.at(0);
+    orb->drdxi_particle=dxdxi.at(0);
   }
 }
 
   
 void DiffEq::RHS(int modenum, Grid& thegrid,
                  TwoDVectorGridFunction<complex<double>>& uh, 
-                 TwoDVectorGridFunction<complex<double>>& RHStdvgf, double t, bool output)
+                 TwoDVectorGridFunction<complex<double>>& RHStdvgf, double t, bool output, Coordinates& coords, WorldTube* wt)
 {
 
 
@@ -475,11 +481,11 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool left = wt.addSingFieldtoLeftElemExt.at(elemnum)||wt.subSingFieldFromLeftElemExt.at(elemnum);
-    bool right = wt.addSingFieldtoRightElemExt.at(elemnum)||wt.subSingFieldFromRightElemExt.at(elemnum);
+    bool left = wt->addSingFieldtoLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
+    bool right = wt->addSingFieldtoRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
 
-    bool add = wt.addSingFieldtoLeftElemExt.at(elemnum)||wt.addSingFieldtoRightElemExt.at(elemnum);
-    bool sub = wt.subSingFieldFromLeftElemExt.at(elemnum)||wt.subSingFieldFromRightElemExt.at(elemnum);
+    bool add = wt->addSingFieldtoLeftElemExt.at(elemnum)||wt->addSingFieldtoRightElemExt.at(elemnum);
+    bool sub = wt->subSingFieldFromLeftElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
     
     if(left){
       nodenumFound=params.grid.elemorder;
@@ -499,8 +505,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     bool found = left || right;
     
     if(found){
-      dPhi_dt(modenum, thegrid.rschw.get(elemnum,nodenumFound), sstre, sstim);
-      dPhi_dr(modenum, thegrid.rschw.get(elemnum,nodenumFound), ssrre, ssrim);
+
+      double node = thegrid.rschw.get(elemnum, nodenumFound);
+      dPhi_dt(&modenum, &node, &sstre, &sstim);
+      dPhi_dr(&modenum, &node, &ssrre, &ssrim);
       alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
 	/thegrid.rschw.get(elemnum,nodenumFound);
       
@@ -550,41 +558,45 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //	cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
     //}
 
-    if(params.grid.schwarzschild){
+    if(params.metric.schwarschild){
     //specializing to schwazschild case
-      if(params.grid.use_generic_orbit){
+      if(params.opts.use_generic_orbit){
 	if(left&&sub){//position 1
-	  uext.at(0) = uext.at(0)/dxdxibL0.at(elemnum+1);
-	  uext.at(1)= uext.at(1)-dxdxibL1.at(elemnum+1)*uext.at(1);
+	  uextL.at(0) = uextL.at(0)/coords.dxdxibL0.at(elemnum+1);
+	  uextL.at(1)= uextL.at(1)-coords.dxdxibL1.at(elemnum+1)*uextL.at(1);
 	}else if (right&&add){//position 4
-	  uext.at(0)=uext.at(0)/dxdxibR0.at(elemnum-1);
-	  uext.at(1)=uext.at(1)-dxdxibR1.at*uext.at(1);
+	  uextR.at(0)=uextR.at(0)/coords.dxdxibR0.at(elemnum-1);
+	  uextR.at(1)=uextR.at(1)-coords.dxdxibR1.at(elemnum-1)*uextR.at(1);
 	}
       }
     }
 	//inside the world tube, first handle the singular field.
 
-    if(params.grid.schwarzschild){
+    if(params.metric.schwarschild){
       if(params.opts.use_world_tube){
 	if(found){
-	  if(params.opts.use_source){
-	    uext.at(1)=uext.at(1)+{sstre,sstim};
-	    uext.at(0)=uext.at(0)+{ssrre,ssrim};
+	  if(params.opts.useSource){
+	    complex<double> sst(sstre, sstim);
+	    complex<double> ssr(ssrre,ssrim);
+	    uextL.at(1)=uextL.at(1)+sst;
+	    uextL.at(0)=uextL.at(0)+ssr;
+	    uextR.at(1)=uextL.at(1)+sst;
+	    uextR.at(0)=uextL.at(0)+ssr;
 	  }
 	}
       }
     }
 
    
-    if(params.grid.schwarzschild){
+    if(params.metric.schwarschild){
     //specializing to schwazschild case
-      if(params.grid.use_generic_orbit){
+      if(params.opts.use_generic_orbit){
 	if(left&&add){
-	  uext.at(1)=uext.at(1)+uext.at(0)*dxdxibL1.at(elemnum);
-	  uext.at(0)=uext.at(0)+uext.at(0)*dxdxibL0.at(elemnum);
+	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibL1.at(elemnum);
+	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibL0.at(elemnum);
 	}else if(right&&sub){
-	  uext.at(1)=uext.at(1)+uext.at(0)*dxdxibR1.at(elemnum);
-	  uext.at(0)=uext.at(0)*dxdxibR0.at(elemnum);
+	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibR1.at(elemnum);
+	  uextR.at(0)=uextR.at(0)*coords.dxdxibR0.at(elemnum);
 	}
       }
     }
@@ -916,22 +928,22 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& uh,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                     double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed)
+                     double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
-  double max_speed=1.0;
   double maxspeed;
-  if(params.opts.use_generic_orbit){
-    orb->orb_of_t();
-    timedep_to_rstar(orb);
+  if(orb->orbType()==elliptical){
+    EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
+    eorb->orb_of_t();
+    coords.timedep_to_rstar(eorb);
     
-    for(int elemnum=1; i<params.grid.numelems; elemnum++){
-      if(wt.timeDepTrans.at(elemnum-1)){
-	set_coefficients(thegrid, orb, coords, maxspeed, elemnum);
+    for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
+      if(wt->timeDepTrans.at(elemnum-1)){
+	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes);
 	coords.dxdxibL0.at(elemnum)=coords.dxdxib.at(1);
 	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
 	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
 	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
-	vector<double> rschwv = thgrid.rschw.get(elemnum);
+	vector<double> rschwv = thegrid.rschw.get(elemnum);
 	vector<double> windowv = thegrid.window.get(elemnum);
 	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
 	vector<double> d2windowv = thegrid.d2window.get(elemnum);

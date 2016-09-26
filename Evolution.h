@@ -23,6 +23,6 @@ using namespace std;
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 
                    TwoDVectorGridFunction<complex<double>>& RHSvgf, 
-                   double t, double deltat, WorldTube* wt, double & max_speed, Orbit * orb, Coordinates & coords);
+                   double t, double deltat, WorldTube* wt, double & max_speed, Orbit * orb, Coordinates & coords, Modes& lmmodes);
 
 #endif

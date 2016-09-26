@@ -107,12 +107,12 @@ void Coordinates::transition(double rho, double R, double S, double& fT, double&
 }
 
 
-void Coordinates::timedep_to_rstar(Orbit& orb){
-  orb.d2rpdt2 = ( -2.0 * params.schw.mass * pow(orb.drpdt,2.) 
-	      + orb.rp * ( orb.rp - 2.0 * params.schw.mass ) * orb.d2rpdt2 )
-    /pow(( orb.rp - 2.0 * params.schw.mass ),2.);
-  orb.drpdt = orb.rp / ( orb.rp - 2.0 * params.schw.mass ) * orb.drpdt;
-  orb.rp = rstar_of_r ( orb.rp, params.schw.mass );
+void Coordinates::timedep_to_rstar(Orbit* orb){
+  orb->d2rpdt2 = ( -2.0 * params.schw.mass * pow(orb->drpdt,2.) 
+	      + orb->rp * ( orb->rp - 2.0 * params.schw.mass ) * orb->d2rpdt2 )
+    /pow(( orb->rp - 2.0 * params.schw.mass ),2.);
+  orb->drpdt = orb->rp / ( orb->rp - 2.0 * params.schw.mass ) * orb->drpdt;
+  orb->rp = rstar_of_r ( orb->rp, params.schw.mass );
 }
 
 

@@ -18,8 +18,10 @@ class Coordinates{
  public:
   double a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi, Sminus, Splus;
   vector<double> dxdxib;
-  vector<double> dxidbL;
-  vector<double> dxidbR;
+  vector<double> dxdxibL0;
+  vector<double> dxdxibL1;
+  vector<double> dxdxibR0;
+  vector<double> dxdxibR1;
   
   Coordinates();
   
@@ -39,7 +41,7 @@ class Coordinates{
   //the transition between the hyperboloidal and tortoise regions
   
 
-  void timedep_to_rstar(Orbit& orb);
+  void timedep_to_rstar(Orbit* orb);
 
   //HERE (OSCULATING ORBITS COORDINATE TRANSFORM)
   void coord_trans(Coordinates &coords, Grid& thegrid, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxdxi2,vector<double> & d2xdtdxi, int elemnum);

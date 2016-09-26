@@ -163,9 +163,9 @@ int main()
   //		   theequation,lmmodes,true,"coords",5);
 
   if(params.opts.use_generic_orbit){
-    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed);
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
   }else{
-    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed);
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
   }
   cout << "first call to RHS succeeded" << endl;
   
@@ -258,9 +258,9 @@ int main()
     
     //Increment the time integration
     if(params.opts.use_generic_orbit){
-      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords);
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords, lmmodes);
     }else{
-      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,corb,coords);
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,corb,coords, lmmodes);
     }
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.

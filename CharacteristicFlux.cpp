@@ -68,7 +68,7 @@ CharacteristicFlux::CharacteristicFlux(vector<double> Amatrix,
 
   SmatrixV=Array2DtoVector(Smatrix);
   SinvV=Array2DtoVector(Sinv);
-  LambV=Array2DtoVector(Lamb);
+  LambdaV=Array2DtoVector(Lamb);
   AtrimmedV=Array2DtoVector(Atrimmed);
   AV=Array2DtoVector(A);
 
@@ -87,7 +87,7 @@ vector<double> CharacteristicFlux::getSinv(){
 }
 
 vector<double> CharacteristicFlux::getLambda(){
-  return LambV;
+  return LambdaV;
 }
 
 vector<double> CharacteristicFlux::getAtrimmed(){

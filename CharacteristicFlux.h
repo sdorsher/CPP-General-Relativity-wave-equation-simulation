@@ -18,7 +18,7 @@ class CharacteristicFlux
   vector<double> AtrimmedV; //part of A that has nonzero derivative dependence
   vector<double> SmatrixV; //matrix with eigenvectors of A in columns
   vector<double> SinvV; //inverse of S matrix
-  vector<double> LambV; //eigenvalue of A matrix (characteristic form)
+  vector<double> LambdaV; //eigenvalue of A matrix (characteristic form)
   //  Array2D<double> trimA(); 
   int Adimension; //dimension of A
   int Ddimension; //dimension of non-zero derivative variables

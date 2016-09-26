@@ -64,7 +64,7 @@ class DiffEq
   CharacteristicFlux getAright(int elemnum);
   vector<double> getAtrimmed(int gridindex, int pointsindex);
 
-  void set_coefficients(Grid &thegrid, EllipticalOrbit &orb, Coordinates &coords, double &maxspeed, int elemnum);
+  void set_coefficients(Grid &thegrid, EllipticalOrbit *orb, Coordinates &coords, double &maxspeed, int elemnum, Modes& lmmodes);
   
   //Returns du, for the characteristic flux.
   vector<vector<complex<double>>> characteristicflux(double t,
@@ -76,7 +76,7 @@ class DiffEq
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<complex<double>>& uh, 
            TwoDVectorGridFunction<complex<double>>& RHSvgf, 
-           double t, bool output, Coordinates coords);
+           double t, bool output, Coordinates& coords, WorldTube* wt);
 
   //loops over the modes to get the effective source,
   //get the characteristic flux, then calculate the RHS of the
@@ -84,7 +84,7 @@ class DiffEq
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
-               double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double & max_speed); 
+               double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double & max_speed, Modes& lmmodes); 
 
 };
 
