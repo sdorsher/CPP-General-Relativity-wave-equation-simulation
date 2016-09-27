@@ -62,7 +62,7 @@ int main()
   }
 
   
-  Coordinates coords;
+  Coordinates coords();
 
   
   if(params.opts.useSource) {

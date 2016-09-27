@@ -55,10 +55,11 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
     psiphil.at(i)=0.0;
     psirl.at(i)=0.0;
   }
-  ecosfac = 1.0 + e*cos(chi);
-  radius = (params.schw.mass*p)/ecosfac;
-  if(!params.opts.use_generic_orbit){
-    phi=orb->phi_of_t(time);
+  ecosfac = 1.0 + orb->e*cos(orb->chi);
+  radius = (params.schw.mass*orb->p)/ecosfac;
+  if(orb->orbType()==circular){
+    CircularOrbit * corb = dynamic_cast<CircularOrbit *>(orb);
+    orb->phi=corb->phi_of_t(time);
   }
   for (int i=0; i<mm.size(); i++){
     if(mm.at(i)==0) {
@@ -67,7 +68,8 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
       m_fold_factor = 2.0;
     }
     phifactor = zi*mm.at(i);
-    phase = {cos(mm.at(i)*phi), sin(mm.at(i)*phi)};
+    complex<double> tempphase(cos(mm.at(i)*orb->phi), sin(mm.at(i)*orb->phi));
+    phase = tempphase;
     y_lm = gsl_sf_legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
     //y_lm = legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
     psil.at(ll.at(i))= psil.at(ll.at(i))

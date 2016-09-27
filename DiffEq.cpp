@@ -347,9 +347,9 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
   maxspeed = 1.0;
   double ne = params.grid.elemorder;
 
-  vector<double> rm2m(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
+  vector<double> rm2m(ne+1), x(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(coords, thegrid, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
+  coords.coord_trans(coords, thegrid, x, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
 
   
   for(int i = 0; i<=ne; i++){
@@ -930,13 +930,13 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
-
+  
   double maxspeed;
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t();
     coords.timedep_to_rstar(eorb);
-
+    
     
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(wt->timeDepTrans.at(elemnum-1)){
@@ -945,9 +945,9 @@ void DiffEq::modeRHS(Grid& thegrid,
 	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
 	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
 	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
-
-	       
-
+	
+	
+	
 	if(!params.opts.use_world_tube){
 	  vector<double> rschwv = thegrid.rschw.get(elemnum);
 	  double * rarr = &rschwv[0];
@@ -962,32 +962,33 @@ void DiffEq::modeRHS(Grid& thegrid,
 	  double * dwinarr = &dwindowv[0];
 	  double * d2winarr = &d2windowv[0];
 	  
-
+	  
 	  calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
 	  thegrid.window.set(elemnum,windowv);
 	  thegrid.dwindow.set(elemnum,dwindowv);
 	  thegrid.d2window.set(elemnum,d2windowv);
 	}
 	
-	max_speed=max(maxspeed,max_speed);
       }
+      max_speed=max(maxspeed,max_speed);
 
+    }
+  }
     
-  
   if(params.opts.useSource) {
     
-   fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
-		   thegrid.dwindow, thegrid.d2window, orb);
+    fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
+		    thegrid.dwindow, thegrid.d2window, orb);
   }
-  //  for(int i=0; i<source.GFvecDim(); i++){
-  //for(int j=0; j<source.GFarrDim(); j++){
-  //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
-  //}
-  //}
-  
-  
-  /*if (output&&params.opts.useSource){
-    for (int k = 0; k<source.VGFdim(); k++){
+    //  for(int i=0; i<source.GFvecDim(); i++){
+      //for(int j=0; j<source.GFarrDim(); j++){
+    //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
+    //}
+    //}
+    
+    
+    /*if (output&&params.opts.useSource){
+      for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;
       fs.precision(16);
       ostringstream oss;
@@ -995,24 +996,24 @@ void DiffEq::modeRHS(Grid& thegrid,
       fs.open(oss.str(),ios::app);
       fs << endl << endl;
       fs << " #time = " << t << endl;
-   
+      
       
       for (int i = 0; i < source.GFvecDim(); i++){
-	for(int j = 0; j < source.GFarrDim(); j++){
-	  //Print out at select time steps
-	  fs << thegrid.gridNodeLocations().get(i, j) << " "
-	     << source.get(k, i, j).real() << " " 
-	     << source.get(k, i, j).imag() <<endl;
-	}
+      for(int j = 0; j < source.GFarrDim(); j++){
+      //Print out at select time steps
+      fs << thegrid.gridNodeLocations().get(i, j) << " "
+      << source.get(k, i, j).real() << " " 
+      << source.get(k, i, j).imag() <<endl;
       }
-    }
-    }*/
-  
-  
-  //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
+      }
+      }
+      }*/
+    
+    
+    //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
-    //  double max_speed = 1.0;
-    RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords);
+      //  double max_speed = 1.0;
+    RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
 }
 

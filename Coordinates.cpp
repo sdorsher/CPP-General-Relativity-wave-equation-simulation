@@ -1,7 +1,7 @@
 #include "Coordinates.h"
 
 
-Coordinates::Coordinates(),dxdxib{params.grid.numelems,0.0},dxidbL{params.grid.elemorder+1,0.},dxidbR{params.grid.elemorder+1,0.}{}
+Coordinates::Coordinates():dxdxib(params.grid.numelems,0.0),dxdxibL0(params.grid.elemorder+1,0.),dxdxibR0(params.grid.elemorder+1,0.),dxdxibL1(params.grid.elemorder+1,0.),dxdxibR1(params.grid.elemorder+1,0.),timeDepTrans(params.grid.numelems,false){};
 
 double Coordinates::rstar_of_r(double r, double mass)
 {
@@ -116,39 +116,45 @@ void Coordinates::timedep_to_rstar(Orbit* orb){
 }
 
 
-void Coordinates::coord_trans(Coordinates &coords, Grid& thegrid, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxdxi2,vector<double> & d2xdtdxi, int elemnum){
+void Coordinates::coord_trans(Coordinates &coords, Grid& thegrid, vector<double> &x, vector<double> &dxdt, vector<double> & dxdxi, vector<double> & d2dxdt2,vector<double> & d2xdtdxi, int elemnum){
   //time dep coord transf
   double xpma, xipma, xima, bmxp, bmxip, bmxi, bma, ximxip, xipmxp, xipmainv, xipamulbmxipinv, dtfac;
-  for(int i=0; i<xi.size(); i++){
+  if((elemnum==0)||(!timeDepTrans.at(elemnum-1))){
+    cout << "Not in time dependent transform region in coord_trans" << endl;
+  } else {
     
-    //UNFINISHED HERE. Size is one params.grid.elemorder+1. pass in one element at a time. look at reference for arrays peter gave me. 
+    for(int i=0; i<=params.grid.elemorder; i++){
 
-    j= elemnum;
-    double a = coords.a;
-    double b = coords.b;
-    double xp = coords.xp;
-    xi=thegrid.rho.get(j);
-    x = thegrid.rstar.get(j);
-    
-    xpma=xp-a;
-    xipma=xp-a;
-    xima=xi.at(i)-a;
-    bmxp=b-xp;
-    bmxi=b-xi.at(i);
-    bmxip=b-xip;
-    bma=b-a;
-    ximxip=xi.at(i)-xip;
-    xipmainv=1./xipma;
-    xipmamulbmxipinv=xipmainv/bmxip;
-    xipmxp=xip-xp;
-    xi.at(i)=a+xpma*xipmainv*xima
-      +(bmxp*xipma-xpma*bmxip)*xipmamulbmxipinv/bma*xima*ximxip;
-    dtfac=xima*bmxi*xipmamulbmxipinv;
-    dxdt.at(i)=dtfac*dxpdt;
-    dxdxi.at(i)=((2.*xi.at(i)-xip-a)*xipmxp+xpma*bmxip)
-      *xipmamulbmxipinv;
-    d2xdt2.at(i)=dtfac*d2xpdt2;
-    d2xdxi2.at(i)=2.*xipmxp*xipmamulbmxipinv;
-    d2dtdxi(i)=(a+b+2.*xi.at(i))*xipmamulbmxipinv*dxpdt;
+      //xi and lambda are tortoise coordinates
+      //x and t are time dependent coordinates
+      //UNFINISHED HERE. Size is one params.grid.elemorder+1. pass in one element at a time. look at reference for arrays peter gave me. 
+      
+      j= elemnum;
+      double a = coords.a;
+      double b = coords.b;
+      double xp = coords.xp;
+      xi=thegrid.rho.get(j);
+      x = thegrid.rstar.get(j);
+      
+      xpma=xp-a;
+      xipma=xp-a;
+      xima=xi.at(i)-a;
+      bmxp=b-xp;
+      bmxi=b-xi.at(i);
+      bmxip=b-xip;
+      bma=b-a;
+      ximxip=xi.at(i)-xip;
+      xipmainv=1./xipma;
+      xipmamulbmxipinv=xipmainv/bmxip;
+      xipmxp=xip-xp;
+      x.at(i)=a+xpma*xipmainv*xima
+	+(bmxp*xipma-xpma*bmxip)*xipmamulbmxipinv/bma*xima*ximxip;
+	       dtfac=xima*bmxi*xipmamulbmxipinv;
+      dxdt.at(i)=dtfac*dxpdt;
+      dxdxi.at(i)=((2.*xi.at(i)-xip-a)*xipmxp+xpma*bmxip)
+	*xipmamulbmxipinv;
+      d2xdt2.at(i)=dtfac*d2xpdt2;
+      d2xdxi2.at(i)=2.*xipmxp*xipmamulbmxipinv;
+      d2dtdxi(i)=(a+b+2.*xi.at(i))*xipmamulbmxipinv*dxpdt;
+    }
   }
-}
