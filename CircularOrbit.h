@@ -21,7 +21,6 @@ class CircularOrbit:public Orbit{
   double chi_of_t(double t);
   
 
-  OrbitType orbType();
 };
  
 #endif

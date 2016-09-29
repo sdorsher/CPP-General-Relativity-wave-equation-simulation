@@ -37,6 +37,4 @@ double CircularOrbit::chi_of_t(double t)
   return chiomega*t;
 }
 
-OrbitType CircularOrbit::orbType(){
-  return otype;
-}
+

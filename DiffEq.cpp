@@ -346,7 +346,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
   vector<double> rm2m(ne+1), x(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(coords, thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
+  coords.coord_trans(thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
 
   
   for(int i = 0; i<=ne; i++){
@@ -478,10 +478,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool left = wt->addSingFieldtoLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
-    bool right = wt->addSingFieldtoRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+    bool left = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
+    bool right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
 
-    bool add = wt->addSingFieldtoLeftElemExt.at(elemnum)||wt->addSingFieldtoRightElemExt.at(elemnum);
+    bool add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum);
     bool sub = wt->subSingFieldFromLeftElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
     
     if(left){

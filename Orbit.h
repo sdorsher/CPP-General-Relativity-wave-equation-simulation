@@ -3,6 +3,10 @@
 #ifndef ORBIT_H
 #define ORBIT_H
 
+#include "globals.h"
+#include "ConfigParams.h"
+
+
 enum OrbitType{circular, elliptical};
 
 class Orbit{
@@ -17,7 +21,8 @@ class Orbit{
   double drdlambda_particle, drdxi_particle;
   virtual ~Orbit(){};
   Orbit();
-  virtual OrbitType orbType();
+  OrbitType orbType();
+  
   
 };
 

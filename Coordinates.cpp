@@ -116,7 +116,7 @@ void Coordinates::timedep_to_rstar(Orbit* orb){
 }
 
 
-void Coordinates::coord_trans(Coordinates &coords, Grid& thegrid, vector<double> &x, vector<double> &dxdt, vector<double> & dxdxi, vector<double> & d2xdt2,vector<double> & d2xdxi2, vector<double> & d2xdtdxi, int elemnum){
+void Coordinates::coord_trans(Grid& thegrid, vector<double> &x, vector<double> &dxdt, vector<double> & dxdxi, vector<double> & d2xdt2,vector<double> & d2xdxi2, vector<double> & d2xdtdxi, int elemnum){
   //time dep coord transf
   double xpma, xipma, xima, bmxp, bmxip, bmxi, bma, ximxip, xipmxp, xipmainv, xipamulbmxipinv, dtfac;
   if((elemnum==0)||(!timeDepTrans.at(elemnum-1))){
@@ -130,9 +130,6 @@ void Coordinates::coord_trans(Coordinates &coords, Grid& thegrid, vector<double>
       //UNFINISHED HERE. Size is one params.grid.elemorder+1. pass in one element at a time. look at reference for arrays peter gave me. 
       
       int j= elemnum;
-      double a = coords.a;
-      double b = coords.b;
-      double xp = coords.xp;
       vector<double> xi=thegrid.gridNodeLocations().get(j);
       vector<double> x = thegrid.rstar.get(j);
       

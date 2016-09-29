@@ -33,18 +33,18 @@ FLGS = -g -lm -std=c++11 -O3 -fopenmp
 
 #GridFunction, VectorGridFunction, and TwoDVectorGridFunction lines are missing
 
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o Coordinates.o WorldTube.o Orbit.o
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o Coordinates.o WorldTube.o Orbit.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
 main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h Orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h Coordinates.h EllipticalOrbit.h CircularOrbit.h WorldTube.h CharacteristicFlux.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 
-Orbit.o: Orbit.cpp Orbit.h
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c EllipticalOrbits.cpp
+Orbit.o: Orbit.cpp Orbit.h globals.h ConfigParams.h
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Orbit.cpp
 
-EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h ConfigParams.h Orbit.h Coordinates.o
+EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h ConfigParams.h Orbit.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c EllipticalOrbit.cpp
 
 CircularOrbit.o: CircularOrbit.cpp CircularOrbit.h namespaces.h ConfigParams.h Orbit.h
@@ -53,7 +53,7 @@ CircularOrbit.o: CircularOrbit.cpp CircularOrbit.h namespaces.h ConfigParams.h O
 Coordinates.o: Coordinates.cpp Coordinates.h globals.h ConfigParams.h Orbit.h CircularOrbit.h EllipticalOrbit.h Grid.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Coordinates.cpp
 
-WorldTube.o: WorldTube.cpp WorldTube.h Coordinates.h globals.h ConfigParams.h GridFunction.h Grid.h
+WorldTube.o: WorldTube.cpp WorldTube.h Coordinates.h globals.h ConfigParams.h GridFunction.h Grid.h namespaces.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c WorldTube.cpp
 
 ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h

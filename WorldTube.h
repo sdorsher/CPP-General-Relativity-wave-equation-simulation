@@ -6,8 +6,10 @@
 #include "globals.h"
 #include "ConfigParams.h"
 #include "GridFunction.h"
+#include "namespaces.h"
 
 
+using namespace layers;
 
 class WorldTube{
 
@@ -16,8 +18,8 @@ class WorldTube{
   WorldTube(Grid &thegrid, Coordinates &coords);
 
   vector<bool> timeDepTrans;
-  vector<bool> addSingFieldtoLeftElemExt;
-  vector<bool> addSingFieldtoRightElemExt;
+  vector<bool> addSingFieldToLeftElemExt;
+  vector<bool> addSingFieldToRightElemExt;
   vector<bool> subSingFieldFromLeftElemExt;
   vector<bool> subSingFieldFromRightElemExt;
   vector<bool> inWorldTube;

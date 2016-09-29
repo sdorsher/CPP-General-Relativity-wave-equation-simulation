@@ -38,7 +38,3 @@ void EllipticalOrbit::orb_of_t(){
 }
 
 
-
-OrbitType CircularOrbit::orbType(){
-  return otype;
-}
