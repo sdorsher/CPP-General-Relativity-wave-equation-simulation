@@ -52,10 +52,7 @@ class DiffEq
 
  public:
   VectorGridFunction<complex<double>> source; //the effective source
-  GridFunction<double> window; //the window function that factors into the effective source
-  GridFunction<double> dwindow; //derivative of the window function
-  GridFunction<double> d2window; //second derivative of the window function
-
+  
  public:
   DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates & coords);
   vector<double> getA(int gridindex, int pointsindex);

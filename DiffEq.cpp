@@ -42,11 +42,8 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coord
   Bmatrices{nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
 	    params.grid.elemorder + 1,0.},
   trimmedAmatrices{params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.},
-  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}},
-  window{params.grid.numelems, params.grid.elemorder+1,0.0},
-  dwindow{params.grid.numelems, params.grid.elemorder+1,0.0},
-  d2window{params.grid.numelems, params.grid.elemorder+1,0.0}
-
+  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}}
+  
   {
     //set up the A and B matrices
 

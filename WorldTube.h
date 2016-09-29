@@ -12,6 +12,9 @@
 class WorldTube{
 
  public:
+
+  WorldTube(Grid &thegrid, Coordinates &coords);
+
   vector<bool> timeDepTrans;
   vector<bool> addSingFieldtoLeftElemExt;
   vector<bool> addSingFieldtoRightElemExt;
@@ -20,10 +23,10 @@ class WorldTube{
   vector<bool> inWorldTube;
   //vector<int> elem_index;
   
+
+  void init_world_tube(Grid &thegrid, Coordinates & coords);
   
-  WorldTube(Grid thegrid, Coordinates coords);
-  
-  void set_world_tube_window(Grid thegrid, Coordinates coords);
+  void set_world_tube_window(Grid &thegrid, Coordinates &coords);
 };
 
 

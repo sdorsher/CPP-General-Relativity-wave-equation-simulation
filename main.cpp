@@ -185,6 +185,7 @@ int main()
     
     if(params.opts.use_world_tube){
       wt = new WorldTube(thegrid, coords);
+      wt->init_world_tube(thegrid,coords);
       wt->set_world_tube_window(thegrid,coords);
     }
     
@@ -196,8 +197,8 @@ int main()
   for(int i=0; i<params.grid.numelems; i++) {
     for(int j = 0; j<params.grid.elemorder+1; j++) {
       fs << thegrid.gridNodeLocations().get(i,j) << " " 
-         << theequation.window.get(i,j) << " " << theequation.dwindow.get(i,j) << " "
-         << theequation.d2window.get(i,j) << endl;
+         << thegrid.window.get(i,j) << " " << thegrid.dwindow.get(i,j) << " "
+         << thegrid.d2window.get(i,j) << endl;
     }
   }
   cout << "window output" << endl;
@@ -485,20 +486,20 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
    
     if(params.opts.useSource){
       vector<double> rschw = grd.rschw.get(i);
-      vector<double> window = eqn.window.get(i);
-      vector<double> dwindow = eqn.dwindow.get(i);
-      vector<double> d2window = eqn.d2window.get(i);
+      vector<double> window = grd.window.get(i);
+      vector<double> dwindow = grd.dwindow.get(i);
+      vector<double> d2window = grd.d2window.get(i);
       double * r = &rschw[0];
       double * win = &window[0];
       double * dwin = &dwindow[0];
       double * d2win = &d2window[0];
       calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
       vector<double> win3(win, win+params.grid.elemorder+1);
-      eqn.window.set(i,win3);
+      grd.window.set(i,win3);
       vector<double> dwin3(dwin, dwin+params.grid.elemorder+1);
-      eqn.dwindow.set(i,dwin3);
+      grd.dwindow.set(i,dwin3);
       vector<double> d2win3(d2win, d2win+params.grid.elemorder+1);
-      eqn.d2window.set(i,d2win3);
+      grd.d2window.set(i,d2win3);
     }
     
     double dxmin = fabs(nodes.get(0,0)
