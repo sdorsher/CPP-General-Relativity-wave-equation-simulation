@@ -171,6 +171,7 @@ int main()
 						   params.grid.numelems,
 						   params.grid.elemorder + 1,
 						   {0.0,0.0}); 
+
   WorldTube * wt;
 
   
@@ -182,13 +183,13 @@ int main()
   } else if(params.metric.schwarschild) {
     initialSchwarzchild(uh, thegrid, theequation);
 
-    
+        
     if(params.opts.use_world_tube){
       wt = new WorldTube(thegrid, coords);
       wt->init_world_tube(thegrid,coords);
       wt->set_world_tube_window(thegrid,coords);
+      
     }
-    
   }
 
   //output window function
