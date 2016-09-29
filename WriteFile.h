@@ -37,6 +37,6 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
 		      string filename,
-		      int type);
+		      int type, Orbit * orb);
 
 #endif

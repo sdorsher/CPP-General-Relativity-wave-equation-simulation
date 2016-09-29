@@ -3,6 +3,7 @@
 #include "namespaces.h"
 #include "ConfigParams.h"
 #include "Orbit.h"
+#include "Coordinates.h"
 
 using namespace std;
 //using namespace orbit;

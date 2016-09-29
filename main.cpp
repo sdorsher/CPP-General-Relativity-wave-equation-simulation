@@ -54,22 +54,70 @@ int main()
 
   EllipticalOrbit * eorb;
   CircularOrbit * corb;
-  
+
   if(params.opts.use_generic_orbit){
     eorb = new EllipticalOrbit();
   }else{
     corb= new CircularOrbit();
   }
+  Coordinates coords;
 
+
+  double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
+  double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
+  double xip = 0.5*(rmin+rmax);
+  Sminus = params.hyperb.Sminus;
+  double rstar_orb = coords.rstar_of_r(xip, params.schw.mass);
   
-  Coordinates coords();
+
+
+  double deltar = (rstar_orb - Sminus)* 2.0/params.grid.numelems; 
+  Splus = rstar_orb +round(0.5* params.grid.numelems) *deltar;
+  Rminus = rstar_orb 
+    - round(0.175 * params.grid.numelems) * deltar;
+  Rplus = rstar_orb 
+    + round(0.125 * params.grid.numelems) * deltar;
+  Wminus = Rminus + params.window.noffset * deltar;
+  Wplus = Rplus - params.window.noffset * deltar;
+  
+  cout << "R_star orbit" << endl;
+  cout << rstar_orb << endl << endl;
+  
+  cout << "Sminus Rminus Rplus Splus Wminus Wplus" << endl;
+  cout << Sminus << " " << Rminus << " " 
+       << Rplus <<" " << Splus << " " 
+       << Wminus << " " << Wplus << endl;
+  cout << endl;
+
+  //end initialize orbit
+
+  if(params.opts.use_generic_orbit){
+    
+    cout << "p =" << eorb->p << endl;
+    cout << "e =" << eorb->e << endl;
+    cout << "chi =" << eorb->chi << endl;
+    cout << "phi = " << eorb->phi << endl;
+    cout << endl;
+  } else{
+    cout << "p =" << corb->p << endl;
+    cout << "e =" << corb->e << endl;
+    cout << "chi =" << corb->chi << endl;
+    cout << "phi = " << corb->phi << endl;
+    cout << endl;
+  }
+   
 
   
   if(params.opts.useSource) {
     init_source( lmmodes, params.schw.mass);
   }
 
-  
+  if(params.metric.schwarschild){
+    set_window_params(coords,thegrid, lmmodes);
+    if(params.opts.useSource){
+      set_window(R1,w1,1.0,1.5,R2,w2,1.0,1.5,lmmodes.ntotal);
+    }
+  }
   
   if(params.opts.use_generic_orbit){
     eorb->orb_of_t();
@@ -229,18 +277,33 @@ int main()
 			 params.file.fixedradiusfilename,1);
 
       if(k==params.modes.lmax){
-	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			 theequation,lmmodes,true,
-			 "psil",1);
-	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			 theequation,lmmodes,true,
-			 "psitl",2);
-	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			 theequation,lmmodes,true,
-			 "psiphil",3);
-	write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			 theequation,lmmodes,true,
-			 "psirl",4);
+	if(params.opts.use_generic_orbit){
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			   "psil",1, eorb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			   "psitl",2, eorb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			 "psiphil",3, eorb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,
+			   "psirl",4, eorb);
+	}else{
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			   "psil",1, corb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			   "psitl",2, corb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes, true,
+			 "psiphil",3, corb);
+	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+			   theequation,lmmodes,true,
+			   "psirl",4, corb);
+	}
       }//end if k==lmax
     }//end if outputradiusfixed
   }//end for k
@@ -306,18 +369,35 @@ int main()
 	    }else{
 	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
 	    }
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+
+	    if(params.opts.use_generic_orbit){
+	      
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psil",1,eorb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psitl",2,eorb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psiphil",3,eorb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
-			     "psil",1);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       "psirl",4,eorb);
+	    }else{
+	      	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psil",1,corb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psitl",2,corb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			       theequation,lmmodes,true,
+			       "psiphil",3,corb);
+	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
-			     "psitl",2);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes,true,
-			     "psiphil",3);
-	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes,true,
-			     "psirl",4);
+			       "psirl",4,corb);
+	    }
 	  }//end if k==lmax
 	}//end if outputradiusfixed
       }//end for k

@@ -80,8 +80,11 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	} else {
 	  mfoldfactor={2.0,0.};
 	}
-	phi=orb->phi_of_t(t);
-	complex<double> phase{cos(lmmodes.mm[k]*phi),sin(lmmodes.mm[k]*phi)};
+	if(orb->orbType()==circular){
+	  CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
+	  orb->phi=corb->phi_of_t(t);
+	}
+	complex<double> phase(cos(lmmodes.mm[k]*orb->phi),sin(lmmodes.mm[k]*orb->phi));
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
 						      lmmodes.mm[k],0.0);
 
@@ -208,9 +211,9 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
 //write a file for psi summed over modes, possibly with some derivative. 
 void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
-                        Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
+		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes,             bool append, 
                         string filename,
-                        int type)
+		      int type, Orbit* orb)
 {
   typedef numeric_limits<double> dbl;
   ofstream fs;
@@ -228,7 +231,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
     case 1: //psi
       //	  if(k==params.modes.lmax){
       //	    oss7 << "psil.txt";
-      fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+      fs << t << " " << orb->chi <<  " " << orb->phi << " " << orb->p  << " " << orb->e << " ";
       for(int n = 0; n<lmmodes.psil.size(); n++){
 	fs << lmmodes.psil.at(n) << " ";
       }
@@ -236,7 +239,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       break;
     case 2: //dpsi/dt
       //oss8 << "psitl.txt";
-      fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+      fs << t << " " << orb->chi <<  " " << orb->phi << " " << orb->p  << " " << orb->e << " ";
       for(int n = 0; n<lmmodes.psitl.size(); n++){
 	fs << lmmodes.psitl.at(n) << " ";
       }
@@ -244,7 +247,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       break;
     case 3: //dpsi/dphi
       //      oss9 << "psiphil.txt";
-      fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+      fs << t << " " << orb->chi <<  " " << orb->phi << " " <<orb->p  << " " << orb->e << " ";
       for(int n = 0; n<lmmodes.psiphil.size(); n++){
 	fs << lmmodes.psiphil.at(n) << " ";
       }
@@ -252,7 +255,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
       break;
     case 4: //dpsi/dr
       //oss10 << "psirl.txt";
-      fs << t << " " << chi <<  " " << phi << " " << p  << " " << e << " ";
+      fs << t << " " << orb->chi <<  " " << orb->phi << " " << orb->p  << " " << orb->e << " ";
       for(int n = 0; n<lmmodes.psirl.size(); n++){
 	fs << lmmodes.psirl.at(n) << " ";
       }

@@ -1,6 +1,6 @@
 #include "WorldTube.h"
 
-WorldTube(Grid thegrid, Coordinates coords),addSingFieldToLeftElemExt{params.grid.numelems,false},addSingFieldToRightElemExt{params.grid.numelems,false},subSingFieldFromLeftElemExt{params.grid.numelems,false},subSingFieldFromRightElemExt{params.grid.numelems,false}
+WorldTube::WorldTube(Grid& thegrid, Coordinates &coords):addSingFieldToLeftElemExt{params.grid.numelems,false},addSingFieldToRightElemExt{params.grid.numelems,false},subSingFieldFromLeftElemExt{params.grid.numelems,false},subSingFieldFromRightElemExt{params.grid.numelems,false}
 {
   for (int j=1; j<params.grid.numelem; j++){
     double rho = thegrid.gridNodeLocations().get(j,0);

@@ -1,7 +1,7 @@
 #include "CircularOrbit.h"
 
 //Set initial orbit parameters
-CircularOrbit() {
+CircularOrbit::CircularOrbit() {
   otype = circular;
   p = params.schw.p_orb/params.schw.mass; //semi-latus rectum
   e = params.schw.ecc; //eccentricity

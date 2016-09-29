@@ -349,7 +349,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
   vector<double> rm2m(ne+1), x(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(coords, thegrid, x, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
+  coords.coord_trans(coords, thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
 
   
   for(int i = 0; i<=ne; i++){
@@ -978,7 +978,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   if(params.opts.useSource) {
     
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
-		    thegrid.dwindow, thegrid.d2window, orb);
+		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
     //  for(int i=0; i<source.GFvecDim(); i++){
       //for(int j=0; j<source.GFarrDim(); j++){

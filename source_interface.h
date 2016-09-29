@@ -44,7 +44,7 @@ namespace source_interface {
 		      const double& s1, const double& r2, const double& w2,
 		      const double& q2, const double& s2, const int& nmodes );
 
-    void set_window_params(Coordinates & coords);
+    void set_window_params(Coordinates & coords, Grid & thegrid, Modes & lmmodes);
     
     //Calculates the window that is applied to the effective source
     void calc_window ( const int& n, const double r[],
@@ -102,7 +102,7 @@ namespace source_interface {
 			 VectorGridFunction<complex<double>>& source,
 			 GridFunction<double>& window,
 			 GridFunction<double>& dwindow,
-			 GridFunction<double>& d2window, Orbit * orb);
+			 GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes);
 }
 
 

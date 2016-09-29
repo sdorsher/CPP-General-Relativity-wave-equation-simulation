@@ -23,7 +23,8 @@ namespace source_interface
 	x->set_window ( r1, w1, q1, s1, r2, w2, q2, s2 );
   }
 
-  void set_window_params(Coordinates & coords){
+  void set_window_params(Coordinates & coords,Grid& thegrid, Modes & lmmodes){
+    double deltar = thegrid.gridNodeLocations().get(0,1)-thegrid.gridNodeLocations().get(0,0);
     R1= coords.invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
     R2 = coords.invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
     w1 = params.schw.p_orb-(coords.invert_tortoise(2.0*deltar, params.schw.mass)
@@ -154,17 +155,18 @@ namespace source_interface
 		       VectorGridFunction<complex<double>>& source,
 		       GridFunction<double>& window,
 		       GridFunction<double>& dwindow,
-		       GridFunction<double>& d2window, Orbit * orb)
+		       GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes)
   {
   
     //using namespace orbit;
 
       double tfac, dtfac_dt, d2tfac_dt2;
-     
-      phi= orb->phi_of_t(time);
-
+      if(orb->orbType()==circular){
+	CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
+	orb->phi= corb->phi_of_t(time);
+      }
       //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
-      set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.nmodes);
+      set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.ntotal);
 
 
       if(params.opts.turn_on_source_smoothly){
