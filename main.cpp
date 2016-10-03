@@ -202,7 +202,6 @@ int main()
          << thegrid.d2window.get(i,j) << endl;
     }
   }
-  cout << "window output" << endl;
 
   uh0 = uh;
 
@@ -213,6 +212,8 @@ int main()
   //		   theequation,lmmodes,true,"coords",5);
 
   if(params.opts.use_generic_orbit){
+
+    cout << "here" << endl;
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
   }else{
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);

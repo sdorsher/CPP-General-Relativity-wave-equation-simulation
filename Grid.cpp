@@ -7,11 +7,11 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
   NumElem{numelements},
   nodeLocs{0,elemorder + 1}, 
   refelem{elemorder},
-  rschw{numelements,elemorder+1},
-  rstar{numelements,elemorder+1},
-  window{numelements,elemorder+1},
-  dwindow{numelements,elemorder+1},
-  d2window{numelements,elemorder+1}
+  rschw{numelements,elemorder+1, 0.0},
+  rstar{numelements,elemorder+1, 0.0},
+  window{numelements,elemorder+1, 0.0},
+  dwindow{numelements,elemorder+1, 0.0},
+  d2window{numelements,elemorder+1, 0.0}
     
 {
 
