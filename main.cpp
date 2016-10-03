@@ -187,8 +187,9 @@ int main()
     if(params.opts.use_world_tube){
       wt = new WorldTube(thegrid, coords);
       wt->init_world_tube(thegrid,coords);
-      wt->set_world_tube_window(thegrid,coords);
-      
+      wt->set_world_tube_window(thegrid,coords); 
+      cout << "use world tube " << (coords.timeDepTrans).size() << endl;
+     
     }
   }
 

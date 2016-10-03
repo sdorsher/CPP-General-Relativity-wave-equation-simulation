@@ -498,7 +498,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     }
 
       
-
     bool found = left || right;
     
     if(found){
@@ -933,42 +932,39 @@ void DiffEq::modeRHS(Grid& thegrid,
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t();
     coords.timedep_to_rstar(eorb);
-    
-    
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
-      if(wt->timeDepTrans.at(elemnum-1)){
+      
+      if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes);
 	coords.dxdxibL0.at(elemnum)=coords.dxdxib.at(1);
 	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
 	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
 	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
-	
-	
-	
-	if(!params.opts.use_world_tube){
-	  vector<double> rschwv = thegrid.rschw.get(elemnum);
-	  double * rarr = &rschwv[0];
-	  
-	
-	  vector<double> windowv = thegrid.window.get(elemnum);
-	  vector<double> dwindowv = thegrid.dwindow.get(elemnum);
-	  vector<double> d2windowv = thegrid.d2window.get(elemnum);
-	  
-	  
-	  double * winarr = &windowv[0];
-	  double * dwinarr = &dwindowv[0];
-	  double * d2winarr = &d2windowv[0];
-	  
-	  
-	  calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
-	  thegrid.window.set(elemnum,windowv);
-	  thegrid.dwindow.set(elemnum,dwindowv);
-	  thegrid.d2window.set(elemnum,d2windowv);
-	}
-	
       }
-      max_speed=max(maxspeed,max_speed);
+	
+      if(!params.opts.use_world_tube){
+	vector<double> rschwv = thegrid.rschw.get(elemnum);
+	double * rarr = &rschwv[0];
+	  
+	
+	vector<double> windowv = thegrid.window.get(elemnum);
+	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
+	vector<double> d2windowv = thegrid.d2window.get(elemnum);
+	  
+	  
+	double * winarr = &windowv[0];
+	double * dwinarr = &dwindowv[0];
+	double * d2winarr = &d2windowv[0];
+	  
+	  
+	calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
+	thegrid.window.set(elemnum,windowv);
+	thegrid.dwindow.set(elemnum,dwindowv);
+	thegrid.d2window.set(elemnum,d2windowv);
+      }
 
+      max_speed=max(maxspeed,max_speed);
+      
     }
   }
     
@@ -977,16 +973,16 @@ void DiffEq::modeRHS(Grid& thegrid,
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
-    //  for(int i=0; i<source.GFvecDim(); i++){
-      //for(int j=0; j<source.GFarrDim(); j++){
-    //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
-    //}
-    //}
-    
-    
-    /*if (output&&params.opts.useSource){
-      for (int k = 0; k<source.VGFdim(); k++){
-      ofstream fs;
+  //  for(int i=0; i<source.GFvecDim(); i++){
+  //for(int j=0; j<source.GFarrDim(); j++){
+  //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
+  //}
+  //}
+  
+  
+  /*if (output&&params.opts.useSource){
+    for (int k = 0; k<source.VGFdim(); k++){
+    ofstream fs;
       fs.precision(16);
       ostringstream oss;
       oss << "source" << "." << k << ".txt";
@@ -1005,12 +1001,17 @@ void DiffEq::modeRHS(Grid& thegrid,
       }
       }
       }*/
-    
-    
-    //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
+  
+  
+  //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
+
+  cout << "Just before RHS" << endl;
+
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
-      //  double max_speed = 1.0;
+    //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
+  cout << "Just after RHS" << endl;
+
 }
 
