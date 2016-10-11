@@ -244,9 +244,9 @@ int main()
   
   if (params.metric.schwarschild){
     if (params.opts.use_generic_orbit){ 
-      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
+      //lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
     } else {
-      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
+      //lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
     }
   }
 
@@ -262,11 +262,12 @@ int main()
 	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,"rhs",3, eorb);
       } else{
-	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+	/*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,
 			 params.file.pdesolution,1, corb);
 	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,"rhs",3, corb);
+	*/
       }
 	/*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 		       theequation,lmmodes,true,"source",2);
@@ -275,7 +276,9 @@ int main()
 	     */
     }
 
+
     if(params.file.outputradiusfixed){
+      //PROBLEM IS IN WRITE FIXED RADIUS. WORKING HERE
       write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes, true,
 			 params.file.fixedradiusfilename,1);
@@ -307,7 +310,9 @@ int main()
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,
 			   "psirl",4, corb);
+	  
 	}
+	 
       }//end if k==lmax
     }//end if outputradiusfixed
   }//end for k
@@ -369,9 +374,9 @@ int main()
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
 	    if(params.opts.use_generic_orbit){
-	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
+	      //lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
 	    }else{
-	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
+	      //lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
 	    }
 
 	    if(params.opts.use_generic_orbit){

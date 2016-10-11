@@ -53,9 +53,9 @@ template <typename T>
 T GridFunction<T>::get(int vcoord, int acoord)
 {
   if((0>vcoord) || (vcoord>=GFvectorDim)) {
-    cout <<"Grid coordinate out of range in get(int,int)";
+    cout <<"Grid coordinate out of range in get(int,int): " << vcoord << " " << acoord << endl;
   } else if((0>acoord) || (acoord>=GFarrayDim)) {
-    cout << "Grid function coordinate out of range in get(int,int)";
+    cout << "Grid function coordinate out of range in get(int,int): " << vcoord << " " << acoord << endl;
   } else {
     return data.at(vcoord).at(acoord);
   }

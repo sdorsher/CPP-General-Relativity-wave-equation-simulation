@@ -157,7 +157,8 @@ namespace source_interface
 		       GridFunction<double>& dwindow,
 		       GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes)
   {
-  
+
+
     //using namespace orbit;
 
       double tfac, dtfac_dt, d2tfac_dt2;

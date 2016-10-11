@@ -478,12 +478,26 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool left = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
-    bool right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
-
-    bool add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum);
-    bool sub = wt->subSingFieldFromLeftElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+    bool left,right,add, sub;
+    //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
+    if(elemnum==0){
+      left=false;
+      right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+      add = wt->addSingFieldToRightElemExt.at(elemnum);
+      sub= wt->subSingFieldFromRightElemExt.at(elemnum);
+    } else if (elemnum==NumElem-1){
+      right = false;
+      left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+      add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
+      sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+    }else {
+      left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+      right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+      add = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum);
+      sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1)||wt->subSingFieldFromRightElemExt.at(elemnum);
+    }
     
+     
     if(left){
       nodenumFound=params.grid.elemorder;
     }else if(right){
@@ -926,7 +940,7 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
-  
+
   double maxspeed;
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
@@ -967,7 +981,8 @@ void DiffEq::modeRHS(Grid& thegrid,
       
     }
   }
-    
+
+  
   if(params.opts.useSource) {
     
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
