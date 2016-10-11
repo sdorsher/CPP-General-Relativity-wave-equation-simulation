@@ -42,9 +42,10 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
   if (params.metric.schwarschild) {
     lowerlim=Sminus;
     upperlim=Splus;
+    cout << Sminus << " " << Splus << " set schw" << endl;
   }
 
-
+  //HERE. WHY IS PARAMS>METRIC>SCHWARSZCHILD NEVER REACHED?
 
   //assign evenly spaced element boundaries
   for(int i = 0; i <= numelements; i++) {
@@ -108,7 +109,7 @@ int Grid::numberElements()
 void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput){
   //Find the grid and element indices that correspond the the computational
   //coordinates rfinite and rSplus.
-
+  
   bool foundfinite = false;
   bool foundSplus = false;
   for(int elem=0; elem<NumElem; elem++){
@@ -123,6 +124,15 @@ void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijou
         ijoutput.jSplus = node;
         foundSplus = true;
       }
+
+
     }
+   
+  }
+  if(!foundSplus){
+    cout << "Splus output coordinate not found!"<<endl;
+  }
+  if(!foundfinite){
+    cout << "Finite output coordinate not found!" <<endl;
   }
 }

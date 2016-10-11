@@ -22,7 +22,7 @@
 #include "Coordinates.h"
 #include "WorldTube.h"
 #include "CircularOrbit.h"
-
+#include "OutputIndices.h"
 
 using namespace std;
 using namespace layers;
@@ -47,20 +47,6 @@ int main()
   cout << "Start" << endl;
    //setup the modes
   Modes lmmodes(params.modes.lmax);
-
-  
-  Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal);
-  cout << "grid established " << endl;
-
-  EllipticalOrbit * eorb;
-  CircularOrbit * corb;
-
-  if(params.opts.use_generic_orbit){
-    eorb = new EllipticalOrbit();
-  }else{
-    corb= new CircularOrbit();
-  }
-  Coordinates coords;
 
 
   double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
@@ -89,7 +75,20 @@ int main()
        << Wminus << " " << Wplus << endl;
   cout << endl;
 
-  //end initialize orbit
+  
+  Grid thegrid(params.grid.elemorder, params.grid.numelems, lmmodes.ntotal);
+  cout << "grid established " << endl;
+
+  EllipticalOrbit * eorb;
+  CircularOrbit * corb;
+
+  if(params.opts.use_generic_orbit){
+    eorb = new EllipticalOrbit();
+  }else{
+    corb= new CircularOrbit();
+  }
+  Coordinates coords;
+
 
   if(params.opts.use_generic_orbit){
     
@@ -128,8 +127,8 @@ int main()
   }
   
     
-  //find the indices associated with the radii to extract the solution at
   OutputIndices ijoutput;
+
   if(params.metric.schwarschild){
     //  int ifinite, iSplus, jfinite, jSplus;
     thegrid.find_extract_radii(coords.rstar_of_r(params.grid.outputradius,
