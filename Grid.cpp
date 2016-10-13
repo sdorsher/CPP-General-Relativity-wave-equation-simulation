@@ -20,12 +20,6 @@ Grid::Grid(int elemorder, int numelements, int nummodes):
   //inclusion in the file
   //modify such that hyperboloidal and tortoise boundaries
   // occur at element boundaries
-
-
-
-
-
-    
   
   double lowerlim, upperlim; 
   

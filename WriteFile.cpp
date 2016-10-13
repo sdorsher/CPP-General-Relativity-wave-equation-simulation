@@ -160,7 +160,6 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
   switch(type)
     {
     case 1: //uh
-      cout << ijoutput.ifinite << "/t" << ijoutput.jfinite << endl;
       fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite) << " " 
 	 << t << " "
 	 << uh.get(k, 0, ijoutput.ifinite, ijoutput.jfinite).real() << " " 

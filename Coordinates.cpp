@@ -1,7 +1,7 @@
 #include "Coordinates.h"
 
 
-Coordinates::Coordinates():dxdxib(params.grid.numelems,0.0),dxdxibL0(params.grid.elemorder+1,0.),dxdxibR0(params.grid.elemorder+1,0.),dxdxibL1(params.grid.elemorder+1,0.),dxdxibR1(params.grid.elemorder+1,0.),timeDepTrans(params.grid.numelems,false){};
+Coordinates::Coordinates():dxdxib(params.grid.numelems,0.0),dxdxibL0(params.grid.numelems+1,0.),dxdxibR0(params.grid.numelems+1,0.),dxdxibL1(params.grid.numelems+1,0.),dxdxibR1(params.grid.numelems+1,0.),timeDepTrans(params.grid.numelems,false){};
 
 double Coordinates::rstar_of_r(double r, double mass)
 {

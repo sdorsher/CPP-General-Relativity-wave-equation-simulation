@@ -945,9 +945,8 @@ void DiffEq::modeRHS(Grid& thegrid,
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t();
-    coords.timedep_to_rstar(eorb);
+     coords.timedep_to_rstar(eorb);
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
-      
       if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes);
 	coords.dxdxibL0.at(elemnum)=coords.dxdxib.at(1);
@@ -976,13 +975,12 @@ void DiffEq::modeRHS(Grid& thegrid,
 	thegrid.dwindow.set(elemnum,dwindowv);
 	thegrid.d2window.set(elemnum,d2windowv);
       }
-
       max_speed=max(maxspeed,max_speed);
       
     }
   }
 
-  
+
   if(params.opts.useSource) {
     
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
@@ -1020,13 +1018,11 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
 
-  cout << "Just before RHS" << endl;
 
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
-  cout << "Just after RHS" << endl;
 
 }
 

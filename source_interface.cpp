@@ -169,7 +169,6 @@ namespace source_interface
       //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
       set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.ntotal);
 
-
       if(params.opts.turn_on_source_smoothly){
         time_window(time, params.timewindow.tsigma, params.timewindow.torder, 
                     tfac, dtfac_dt, d2tfac_dt2);
