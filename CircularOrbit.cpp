@@ -18,12 +18,7 @@ double CircularOrbit::phi_of_t(double t)
   //  cout << setprecision(15);
   //  cout << t << endl;
   
-  ofstream fstest;
-  fstest.open("test.txt", ios::app);
   double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
-  cout.precision(15);
-  fstest << t << " " << omega*t << endl;
-  fstest.close();
   //  cout << setprecision(15);
   //  cout << "before: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << omega*t << endl;
 
