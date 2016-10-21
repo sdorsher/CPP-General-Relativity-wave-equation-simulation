@@ -38,13 +38,8 @@ void WorldTube::set_world_tube_window(Grid &thegrid, Coordinates &coords){
   for(int j=0; j<params.grid.numelems; j++){
     for(int i=0; i<=params.grid.elemorder; i++){
     
-      if((j==0)&&(i!=params.grid.elemorder)){
+      if(j==0){
 	thegrid.window.set(j,i,0.);
-	thegrid.dwindow.set(j,i,0.);
-	thegrid.d2window.set(j,i,0.);
-      }
-      else if((j==params.grid.numelems-1)&&(i==0)&&inWorldTube.at(j-1)){
- 	thegrid.window.set(j,i,1.);
 	thegrid.dwindow.set(j,i,0.);
 	thegrid.d2window.set(j,i,0.);
       }
@@ -52,25 +47,7 @@ void WorldTube::set_world_tube_window(Grid &thegrid, Coordinates &coords){
  	thegrid.window.set(j,i,0.);
 	thegrid.dwindow.set(j,i,0.);
 	thegrid.d2window.set(j,i,0.);
-      }else if 
-	  ((j==0)&&(inWorldTube.at(j))&&(i==params.grid.elemorder)){
-	thegrid.window.set(j,i,1.);
-	thegrid.dwindow.set(j,i,0.);
-       thegrid.d2window.set(j,i,0.);
-      }else if
-       	  ((j==0)&&(!inWorldTube.at(j))&&(i=params.grid.elemorder)){
-	thegrid.window.set(j,i,0.);
-	thegrid.dwindow.set(j,i,0.);
-       thegrid.d2window.set(j,i,0.);
-      }else if((!inWorldTube.at(j-1))&&(inWorldTube.at(j))&&(i==params.grid.elemorder)){
-	thegrid.window.set(j,i,1.);
-	thegrid.dwindow.set(j,i,0.);
-	thegrid.d2window.set(j,i,0.);
-      } else if ((inWorldTube.at(j-1))&&(!inWorldTube.at(j))&&(i==0)){
-  	thegrid.window.set(j,i,1.);
-	thegrid.dwindow.set(j,i,0.);
-	thegrid.d2window.set(j,i,0.);
-      } else if (inWorldTube.at(j-1)&&(inWorldTube.at(j))){
+      } else if (inWorldTube.at(j-1)||(inWorldTube.at(j))){
 	thegrid.window.set(j,i,1.);
 	thegrid.dwindow.set(j,i,0.);
 	thegrid.d2window.set(j,i,0.);

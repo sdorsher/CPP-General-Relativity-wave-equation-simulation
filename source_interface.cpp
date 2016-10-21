@@ -167,6 +167,7 @@ namespace source_interface
 	orb->phi= corb->phi_of_t(time);
       }
       //cout << time << " "<< p << " " << e<< " "<< chi << " " << phi << " " << nummodes << endl;
+ 
       set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.ntotal);
 
       if(params.opts.turn_on_source_smoothly){

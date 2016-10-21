@@ -586,6 +586,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       if(params.opts.use_world_tube){
 	if(found){
 	  if(params.opts.useSource){
+	    //cout << "DiffEq:use_world_tube:ss " << sstre << " " << sstim << " " << ssrre << " " << ssrim << endl;
 	    complex<double> sst(sstre, sstim);
 	    complex<double> ssr(ssrre,ssrim);
 	    uextL.at(1)=uextL.at(1)+sst;
@@ -986,6 +987,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
+
   //  for(int i=0; i<source.GFvecDim(); i++){
   //for(int j=0; j<source.GFarrDim(); j++){
   //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;

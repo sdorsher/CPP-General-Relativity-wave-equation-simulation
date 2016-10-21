@@ -126,7 +126,7 @@ int main()
     }
   }
   
-    
+  
   OutputIndices ijoutput;
 
   if(params.metric.schwarschild){
@@ -207,6 +207,22 @@ int main()
 
   double max_speed=1.0;
 
+  if(params.opts.use_generic_orbit){
+    write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+		     theequation,lmmodes,true,
+		     "coords",5, eorb);
+     write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+		      theequation,lmmodes,true,
+		     "window",6, eorb);
+  }else{
+    write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+		     theequation,lmmodes,true,
+		     "coords",5, corb);
+    write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
+		     theequation,lmmodes,true,
+		     "window",6, corb);
+  }
+
   //output coords
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
@@ -274,7 +290,6 @@ int main()
 
 
     if(params.file.outputradiusfixed){
-      //PROBLEM IS IN WRITE FIXED RADIUS. WORKING HERE
       write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes, true,
 			 params.file.fixedradiusfilename,1);
@@ -318,8 +333,7 @@ int main()
   int outputcount =0;
   double t= params.time.t0;
 
-  
-  //  for(double t = params.time.t0; t < params.time.tmax + deltat; t += deltat) {
+  //BEGIN MAIN LOOP
   while(t<params.time.tmax){
     //Increment the count to determine whether or not to output
     outputcount++;
@@ -335,6 +349,7 @@ int main()
 
     //increment time
     t+=deltat;
+
     
     //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){
@@ -363,7 +378,7 @@ int main()
 	  }
 	 
 	}
-      
+
 	if(params.file.outputradiusfixed){
 	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes, true,
@@ -426,10 +441,10 @@ int main()
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/max_speed;
     //deltat = params.time.dt;
-    cout << "set and actual time step, based on courant factor" << endl;
+    //    cout << "set and actual time step, based on courant factor" << endl;
     
     //temporary
-    cout << dx << " " << deltat << endl << endl;
+    // cout << dx << " " << deltat << endl << endl;
   }else if(params.metric.flatspacetime){
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
@@ -438,6 +453,12 @@ int main()
     cout << dx << " " << deltat << endl;
   }
 
+  ofstream fstimes;
+  fstimes.open("times.out",ios::app);
+  fstimes.precision(15);
+  fstimes << t << "\t" << deltat << "\t" << dx <<"\t" << max_speed << endl;
+  fstimes.close();
+  
   }//end while loop
 
   cout.flush();

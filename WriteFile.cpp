@@ -127,6 +127,18 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
       }
     }
     break;
+  case 6:
+    {
+      for (int i = 0; i< thegrid.window.GFvecDim(); i++){
+	for(int j=0; j< thegrid.window.GFarrDim(); j++){
+	  fs << thegrid.gridNodeLocations().get(i,j) << " "
+	     << thegrid.window.get(i,j) << " " 
+	     << thegrid.dwindow.get(i,j) << " " 
+	     << thegrid.d2window.get(i,j) << " " << endl;
+	}
+      }
+    }
+    break;
     
   default:
     {
