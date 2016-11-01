@@ -437,6 +437,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 {
 
 
+  
   int NumElem = thegrid.numberElements();
   int vmaxAB = params.grid.Adim-1;
   int vminA = vmaxAB - params.grid.Ddim +1;
@@ -478,56 +479,58 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool left,right,add, sub;
+    bool left,right,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
-    if(elemnum==0){
-      left=false;
-      right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
-      add = wt->addSingFieldToRightElemExt.at(elemnum);
-      sub= wt->subSingFieldFromRightElemExt.at(elemnum);
-    } else if (elemnum==NumElem-1){
-      right = false;
-      left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-      add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
-      sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-    }else {
-      left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-      right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
-      add = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum);
-      sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1)||wt->subSingFieldFromRightElemExt.at(elemnum);
-    }
+    if(params.opts.use_world_tube){
+      if(elemnum==0){
+	left=false;
+	right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	add = wt->addSingFieldToRightElemExt.at(elemnum);
+	sub= wt->subSingFieldFromRightElemExt.at(elemnum);
+      } else if (elemnum==NumElem-1){
+	right = false;
+	left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
+	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+      }else {
+	left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	add = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum);
+	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1)||wt->subSingFieldFromRightElemExt.at(elemnum);
+      }
     
      
-    if(left){
-      nodenumFound=params.grid.elemorder;
-    }else if(right){
-      nodenumFound=0;
-    }
+      if(left){
+	nodenumFound=params.grid.elemorder;
+      }else if(right){
+	nodenumFound=0;
+      }
+      
+      double ssign;
+      if(add){
+	ssign=1.;
+      }else if(sub){
+	ssign = -1.;
+      }
 
-    double ssign;
-    if(add){
-      ssign=1.;
-    }else if(sub){
-      ssign = -1.;
-    }
+
+      found = left || right;
 
       
-    bool found = left || right;
-    
-    if(found){
+      if(found){
 
-      double node = thegrid.rschw.get(elemnum, nodenumFound);
-      dPhi_dt(&modenum, &node, &sstre, &sstim);
-      dPhi_dr(&modenum, &node, &ssrre, &ssrim);
-      alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
-	/thegrid.rschw.get(elemnum,nodenumFound);
-      
-      sstre = ssign*sstre;
-      sstim = ssign*sstim;
-      ssrre = alpha *ssign*ssrre;
-      ssrim = alpha *ssign*ssrim;
+	double node = thegrid.rschw.get(elemnum, nodenumFound);
+	dPhi_dt(&modenum, &node, &sstre, &sstim);
+	dPhi_dr(&modenum, &node, &ssrre, &ssrim);
+	alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
+	  /thegrid.rschw.get(elemnum,nodenumFound);
+	
+	sstre = ssign*sstre;
+	sstim = ssign*sstim;
+	ssrre = alpha *ssign*ssrre;
+	ssrim = alpha *ssign*ssrim;
+      }
     }
-    
 	
     //were Array1D
     vector<complex<double>> uintL(params.grid.Ddim); //internal u at left boundary
@@ -691,6 +694,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<complex<double>> temp4 = scalarmult(nR,temp2);
     vector<complex<double>> duL = vecdiff(temp3,nfluxL);
     vector<complex<double>> duR = vecdiff(temp4,nfluxR);
+    
     //DU SHOULD BE ZERO AFTER FIRST CALL TO RHS BECAUSE SAME ON EITHER SIDE OF BOUNDARY
 
     //  if((elemnum==3)&&(output)){
@@ -859,12 +863,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
     //RHSA1.txt
     //if(output){
-    // for(int i=0; i<RHSA1.size(); i++){
+    //for(int i=0; i<RHSA1.size(); i++){
     //  cout << setprecision(15);
     //cout << elemnum*RHSA1.size()+i << "\t" << RHSA1.at(i).real() << endl;
-    // }
     //}
-
+    //}
+    
     temp =matmul(Lift,du,uh.GFarrDim(),2,2);
     vector<complex<double>> RHSA2 = scalarmult(thegrid.jacobian(elemnum),temp);
 
@@ -915,7 +919,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
       for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
-	complex<double> tot=-RHSB.at(nodenum*params.grid.Adim+vecnum);;
+	complex<double> tot=-RHSB.at(nodenum*params.grid.Adim+vecnum);
 	if(vecnum>=vminA){
 	 	  /*if((output)&&(modenum==1)&&(vecnum==2)){
 	    cout << setprecision(15);
@@ -924,6 +928,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	  tot+=RHSA1.at(nodenum*params.grid.Ddim+(vecnum-vminA))
 	    + RHSA2.at(nodenum*params.grid.Ddim+(vecnum-vminA));
 	}//-sign in B because it is on the left hand side of the 
+	if(vecnum==0){
+	  //	  cout << modenum << " " << nodenum << " " << tot << endl;
+	}
+	// I AM HERE
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
 	  complex<double> temp = source.get(modenum,elemnum,nodenum);
 	  tot += temp;
@@ -931,9 +939,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	  //equation in the definition supplied in DiffEq.cpp
 	}
 	RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
+	cout << setprecision(15);
+	cout << modenum << " " <<  vecnum << " " << elemnum << " " <<  nodenum << " " <<  tot.real() << " " << tot.imag() << endl;
       }
     }
+
+    
   }
+  
 }
 
 void DiffEq::modeRHS(Grid& thegrid,
@@ -946,7 +959,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t();
-     coords.timedep_to_rstar(eorb);
+    coords.timedep_to_rstar(eorb);
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes);
@@ -988,16 +1001,16 @@ void DiffEq::modeRHS(Grid& thegrid,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
 
-  //  for(int i=0; i<source.GFvecDim(); i++){
+  // for(int i=0; i<source.GFvecDim(); i++){
   //for(int j=0; j<source.GFarrDim(); j++){
   //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
   //}
   //}
   
   
-  /*if (output&&params.opts.useSource){
+  /*if (params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
-    ofstream fs;
+      ofstream fs;
       fs.precision(16);
       ostringstream oss;
       oss << "source" << "." << k << ".txt";
@@ -1007,24 +1020,21 @@ void DiffEq::modeRHS(Grid& thegrid,
       
       
       for (int i = 0; i < source.GFvecDim(); i++){
-      for(int j = 0; j < source.GFarrDim(); j++){
-      //Print out at select time steps
-      fs << thegrid.gridNodeLocations().get(i, j) << " "
-      << source.get(k, i, j).real() << " " 
-      << source.get(k, i, j).imag() <<endl;
+	for(int j = 0; j < source.GFarrDim(); j++){
+	  //Print out at select time steps
+	  fs << thegrid.gridNodeLocations().get(i, j) << " "
+	     << source.get(k, i, j).real() << " " 
+	     << source.get(k, i, j).imag() <<endl;
+	}
       }
-      }
-      }
-      }*/
+    }
+    }*/
   
   
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
-
 
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
     //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
-
 }
-

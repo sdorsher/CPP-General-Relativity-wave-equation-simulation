@@ -38,6 +38,11 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
                                    RHStdvgf.GFarrDim());
   double chik, phik;
 
+  if((orb->orbType())==elliptical){
+    EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
+    eorb->dorbdt();
+  }
+  
   //step 1
   theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, orb, wt, coords, max_speed, lmmodes);//true for debugging output
   k = deltat * RHStdvgf;
@@ -45,23 +50,24 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
 
   if((orb->orbType())==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
-    eorb->dorbdt();
     chik=deltat*(eorb->dchidt);
     phik=deltat*(eorb->dphidt);
     
   }
 
-
   
   //steps 2-5
   for(int i=2; i<=5; i++){
+    if (orb->orbType()==elliptical){
+      EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
+      eorb->dorbdt();
+    }
     theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, orb, wt, coords, max_speed, lmmodes); // true for debugging output
     k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
 
     if (orb->orbType()==elliptical){
-      EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
-      eorb->dorbdt();
+     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
       chik=rk4a[i-1]*chik+deltat*eorb->dchidt;
       phik=rk4a[i-1]*phik+deltat*eorb->dphidt;
       eorb->chi=eorb->chi+rk4b[i-1]*chik;
