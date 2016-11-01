@@ -939,8 +939,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	  //equation in the definition supplied in DiffEq.cpp
 	}
 	RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
-	cout << setprecision(15);
-	cout << modenum << " " <<  vecnum << " " << elemnum << " " <<  nodenum << " " <<  tot.real() << " " << tot.imag() << endl;
+	//cout << setprecision(15);
+	//cout << modenum << " " <<  vecnum << " " << elemnum << " " <<  nodenum << " " <<  tot.real() << " " << tot.imag() << endl;
       }
     }
 

@@ -233,7 +233,7 @@ int main()
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
   }
   cout << "first call to RHS succeeded" << endl;
-  assert(0);
+  //assert(0);
   double deltat;
 
   double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
