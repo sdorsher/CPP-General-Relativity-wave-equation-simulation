@@ -240,17 +240,10 @@ int main()
   
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/max_speed;
-    //deltat = params.time.dt;
-    cout << "set and actual time step, based on courant factor" << endl;
-    
-    //temporary
-    cout << dx << " " << deltat << endl << endl;
   }else if(params.metric.flatspacetime){
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
     deltat = params.time.dt;
-    cout << "deltat set to dt" << endl;
-    cout << dx << " " << deltat << endl;
   }
 
   
@@ -424,7 +417,7 @@ int main()
      ofstream fsL2;
      fsL2.open("L2error.txt", ios::app);
      fsL2.precision(15);
-     if (outputcount==params.opts.L2outputcount){
+     if (outputcount==params.time.comparisoncount){
        fsL2 << params.grid.elemorder << " " << params.grid.numelems << " " << deltat << " " << LTwoError(thegrid, uh0, uh) << " " << t << " " << outputcount << endl;
      }
      fsL2.close();
@@ -449,8 +442,6 @@ int main()
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
     deltat = params.time.dt;
-    cout << "deltat set to dt" << endl;
-    cout << dx << " " << deltat << endl;
   }
 
   ofstream fstimes;
