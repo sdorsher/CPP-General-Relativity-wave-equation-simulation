@@ -48,6 +48,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
 
+  
   if((orb->orbType())==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     chik=deltat*(eorb->dchidt);
@@ -63,6 +64,19 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
       eorb->dorbdt();
     }
     theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, orb, wt, coords, max_speed, lmmodes); // true for debugging output
+
+    
+    /*    for(int modenum=0; modenum<lmmodes.ntotal; modenum++){
+      write_fixed_time(modenum,t+rk4c[i-1]*deltat, uh,RHStdvgf,thegrid,theequation,lmmodes, true, 
+		     "rhs1",7, orb);
+    }
+    for(int elemnum=0; elemnum < params.grid.numelems; elemnum++){
+      for(int nodenum=0; nodenum < params.grid.elemorder+1; nodenum++){
+	cout << RHStdvgf.get(1,0,elemnum,nodenum)<< endl;
+      }
+    }
+    assert(0);
+    */
     k = rk4a[i-1] * k + deltat * RHStdvgf;
     uh = uh + rk4b[i-1] * k;
 

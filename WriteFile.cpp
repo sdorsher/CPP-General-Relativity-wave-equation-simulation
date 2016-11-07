@@ -139,7 +139,21 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
       }
     }
     break;
-    
+      case 7: //rhs first time step
+    {
+      for (int i = 0; i < uh.GFvecDim(); i++){
+	for(int j = 0; j < uh.GFarrDim(); j++){
+	  fs << thegrid.gridNodeLocations().get(i,j) << " "
+	     << RHStdvgf.get(k,0,i,j).real() << " "
+	     << RHStdvgf.get(k,1,i,j).real() << " "
+	     << RHStdvgf.get(k,2,i,j).real() << " "
+	     << RHStdvgf.get(k,0,i,j).imag() << " "
+	     << RHStdvgf.get(k,1,i,j).imag() << " "
+	     << RHStdvgf.get(k,2,i,j).imag() << endl;
+	}
+      }
+    }
+    break;
   default:
     {
     throw invalid_argument("Ivalid type in write_fixed_time");

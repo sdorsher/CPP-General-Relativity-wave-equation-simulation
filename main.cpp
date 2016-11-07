@@ -229,11 +229,21 @@ int main()
 
   if(params.opts.use_generic_orbit){
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
+  for(int k=0; k<lmmodes.ntotal;k++){
+    write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
+		     "rhs",3, eorb);
+  }
   }else{
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
+  for(int k=0; k<lmmodes.ntotal;k++){
+    write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
+		     "rhs",3, corb);
+  }
   }
   cout << "first call to RHS succeeded" << endl;
-  //assert(0);
+
+
+  
   double deltat;
 
   double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
@@ -326,6 +336,9 @@ int main()
   int outputcount =0;
   double t= params.time.t0;
 
+  // assert(0);
+
+  
   //BEGIN MAIN LOOP
   while(t<params.time.tmax){
     //Increment the count to determine whether or not to output
@@ -434,13 +447,7 @@ int main()
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/max_speed;
     //deltat = params.time.dt;
-    //    cout << "set and actual time step, based on courant factor" << endl;
-    
-    //temporary
-    // cout << dx << " " << deltat << endl << endl;
   }else if(params.metric.flatspacetime){
-    //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
-    //deltat = (params.time.tmax - params.time.t0) / nt;
     deltat = params.time.dt;
   }
 
@@ -480,21 +487,18 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
   for(int i = 0; i < uh.GFvecDim(); i++) {
     for (int j = 0; j < uh.GFarrDim(); j++) {
       for (int n = 0; n < uh.TDVGFdim(); n++) {
-        complex<double> modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
+	complex<double> modeval = exp(-0.5 * pow((rho.get(i,j) / params.schw.sigma), 2.0));
 
 	
         //uh.set(n,0,i,j,0.0);
         if(!params.opts.useSource){
-          uh.set(n,2,i,j,modeval);
+          uh.set(n,2,i,j,modeval); //time derivative of field (rho) (definitive answer here)
 
 	
-	//}else{
-	  //uh.set(n,2,i,j,0.0);
-	  //}
-        
-	  //uh.set(n,1,i,j,0.0);
 	  fs << setprecision(16);
-	  fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
+	  if(n==1){
+	    fs << rho.get(i,j) << " " << uh.get(0,2,i,j).real() << endl;
+	  }
 	}//end if
       }//end n loop modes
     }//end j loop

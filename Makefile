@@ -68,7 +68,7 @@ ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp  VectorGridFunction.h VectorGridFunction.tpp namespaces.h OutputIndices.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Grid.cpp
 
-Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h DiffEq.h WorldTube.h Orbit.h CircularOrbit.h EllipticalOrbit.h Coordinates.h
+Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h DiffEq.h WorldTube.h Orbit.h CircularOrbit.h EllipticalOrbit.h Coordinates.h Modes.h WriteFile.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h

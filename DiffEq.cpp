@@ -1034,7 +1034,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
 
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
-    //  double max_speed = 1.0;
+       //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
 }

@@ -72,7 +72,7 @@ class DiffEq
   //Returns the right hand side of the differential equation including the flux
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<complex<double>>& uh, 
-           TwoDVectorGridFunction<complex<double>>& RHSvgf, 
+           TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
            double t, bool output, Coordinates& coords, WorldTube* wt);
 
   //loops over the modes to get the effective source,

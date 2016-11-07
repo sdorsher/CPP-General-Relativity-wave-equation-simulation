@@ -13,6 +13,8 @@
 #include "EllipticalOrbit.h"
 #include "CircularOrbit.h"
 #include "Coordinates.h"
+#include "WriteFile.h"
+#include "Modes.h"
 
 //Low storage fourth order Runga Kutta routine.
 //See pg 64 of Hesthaven and Warburton.
