@@ -501,9 +501,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
      
       if(left){
-	nodenumFound=params.grid.elemorder;
-      }else if(right){
 	nodenumFound=0;
+      }else if(right){
+	nodenumFound=params.grid.elemorder;
       }
       
       double ssign;
@@ -529,6 +529,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
+	//cout << setprecision(15);
+	//cout << modenum << " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << endl;
       }
     }
 	
@@ -1001,13 +1003,27 @@ void DiffEq::modeRHS(Grid& thegrid,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
 
-  // for(int i=0; i<source.GFvecDim(); i++){
-  //for(int j=0; j<source.GFarrDim(); j++){
-  //  cout << i << " " << j << " "<< source.get(0,i,j) << endl;
-  //}
-  //}
+  typedef numeric_limits<double> dbl;
+  for(int k = 0; k<lmmodes.ntotal; k++){
+    ofstream fss;
+    fss.precision(dbl::max_digits10);
+    fss.precision(16);
+    ostringstream oss;
+    oss << "source" << "." << k << ".txt";
+    fss.open(oss.str(), ios::app);
+    fss << endl << endl;
+    fss << " #time = " << t << endl;
+    
   
   
+    for(int i=0; i<source.GFvecDim(); i++){
+      for(int j=0; j<source.GFarrDim(); j++){
+	fss << thegrid.gridNodeLocations().get(i,j) << " "<< source.get(k,i,j).real() << " " << source.get(k,i,j).imag() << endl;
+      }
+    }
+    
+    fss.close();
+  }
   /*if (params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;

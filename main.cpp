@@ -193,7 +193,7 @@ int main()
   }
 
   //output window function
-  ofstream fs;
+  /*ofstream fs;
   fs.open("window.txt");
   for(int i=0; i<params.grid.numelems; i++) {
     for(int j = 0; j<params.grid.elemorder+1; j++) {
@@ -201,7 +201,7 @@ int main()
          << thegrid.window.get(i,j) << " " << thegrid.dwindow.get(i,j) << " "
          << thegrid.d2window.get(i,j) << endl;
     }
-  }
+    }*/
 
   uh0 = uh;
 
@@ -336,7 +336,6 @@ int main()
   int outputcount =0;
   double t= params.time.t0;
 
-  // assert(0);
 
   
   //BEGIN MAIN LOOP
@@ -355,7 +354,7 @@ int main()
 
     //increment time
     t+=deltat;
-
+    assert(0);
     
     //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){
@@ -473,7 +472,7 @@ clean_source();
    delete wt;
  }
  
-}
+}//END MAIN
                          
 
 void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn) {
