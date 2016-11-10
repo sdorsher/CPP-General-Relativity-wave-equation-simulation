@@ -481,29 +481,31 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int nodenumFound;
     bool left,right,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
+    
     if(params.opts.use_world_tube){
       if(elemnum==0){
-	left=false;
-	right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	right=false;
+	left = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
 	add = wt->addSingFieldToRightElemExt.at(elemnum);
 	sub= wt->subSingFieldFromRightElemExt.at(elemnum);
       } else if (elemnum==NumElem-1){
-	right = false;
-	left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+        left = false;
+	right = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
 	add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
 	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
       }else {
-	left = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-	right = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
-	add = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum);
-	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	right = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	left = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	
+	add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1); // add ext sing field to this eleement
+	sub=wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum);
       }
     
      
       if(left){
-	nodenumFound=0;
-      }else if(right){
 	nodenumFound=params.grid.elemorder;
+      }else if(right){
+	nodenumFound=0;
       }
       
       double ssign;
@@ -529,8 +531,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
-	//cout << setprecision(15);
-	//cout << modenum << " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << endl;
+	cout << setprecision(15);
+	cout << modenum << " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << endl;
       }
     }
 	
