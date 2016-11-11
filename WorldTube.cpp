@@ -12,7 +12,7 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
   //boolean flags represent boundaries excluding scri+ and scri-
 
   
-  for (int j=1; j<params.grid.numelems-1; j++){
+  for (int j=0; j<params.grid.numelems-1; j++){
     double rho = thegrid.gridNodeLocations().get(j+1,0);
     if((abs(rho-Rminus)<1.e-10)||(abs(rho-Rplus)<1.e-10))
       {
@@ -20,12 +20,15 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
       }
     if((rho>Wminus)&&(rho<Wplus)){
       inWorldTube.at(j)=true;
-    }else if(abs(rho-Wminus)<1.e-10){
+    }
+    if(abs(rho-Wminus)<1.e-10){
+      cout << "Wminus " << j << endl;
       addSingFieldToLeftElemExt.at(j)=true;
       subSingFieldFromRightElemExt.at(j)=true;
     }else if(abs(rho-Wplus)<1.e-10){
-      addSingFieldToLeftElemExt.at(j)=true;
-      subSingFieldFromRightElemExt.at(j)=true;
+      cout << "Wplus " << j << endl;
+      addSingFieldToRightElemExt.at(j)=true;
+      subSingFieldFromLeftElemExt.at(j)=true;
     }
   }
       

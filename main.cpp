@@ -354,7 +354,7 @@ int main()
 
     //increment time
     t+=deltat;
-    assert(0);
+    //assert(0);
     
     //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){

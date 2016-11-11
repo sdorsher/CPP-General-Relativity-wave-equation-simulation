@@ -479,30 +479,36 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool left,right,add, sub, found;
+    bool bleft,right,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
     
     if(params.opts.use_world_tube){
       if(elemnum==0){
 	right=false;
-	left = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	bleft = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
 	add = wt->addSingFieldToRightElemExt.at(elemnum);
 	sub= wt->subSingFieldFromRightElemExt.at(elemnum);
       } else if (elemnum==NumElem-1){
-        left = false;
+        bleft = false;
 	right = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
 	add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
 	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
       }else {
-	right = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-	left = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
+	/*	if(wt->addSingFieldToLeftElemExt.at(elemnum)) cout << "C " << elemnum << endl;
+
+	if(wt->subSingFieldFromRightElemExt.at(elemnum-1)) cout << "D " << elemnum << endl;
+	if(wt->addSingFieldToRightElemExt.at(elemnum-1)) cout << "E " << elemnum << endl;
+	if(wt->subSingFieldFromLeftElemExt.at(elemnum)) cout << "F " << elemnum<< endl;*/
+	//right or left side of boundary (that's why elemnum or elemenum-1)
+	right = wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum-1);
+	bleft = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
 	
 	add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1); // add ext sing field to this eleement
-	sub=wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum);
+	sub=wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum); //subtract external singular field from this element
       }
     
      
-      if(left){
+      if(bleft){
 	nodenumFound=params.grid.elemorder;
       }else if(right){
 	nodenumFound=0;
@@ -516,7 +522,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }
 
 
-      found = left || right;
+      found = bleft || right;
 
       
       if(found){
@@ -531,8 +537,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
-	cout << setprecision(15);
-	cout << modenum << " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << endl;
+	//cout << setprecision(15);
+	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
       }
     }
 	
