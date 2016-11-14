@@ -538,7 +538,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
 	//cout << setprecision(15);
-	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << t << " " << node << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
+	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << " "<< ssign << " " << alpha << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
       }
     }
 	
@@ -584,7 +584,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.metric.schwarschild){
     //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	if(left&&sub){//position 1
+	//FIX THIS
+	if(bleft&&sub){//position 1
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibL0.at(elemnum+1);
 	  uextL.at(1)= uextL.at(1)-coords.dxdxibL1.at(elemnum+1)*uextL.at(1);
 	}else if (right&&add){//position 4
@@ -602,10 +603,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	    //cout << "DiffEq:use_world_tube:ss " << sstre << " " << sstim << " " << ssrre << " " << ssrim << endl;
 	    complex<double> sst(sstre, sstim);
 	    complex<double> ssr(ssrre,ssrim);
-	    uextL.at(1)=uextL.at(1)+sst;
-	    uextL.at(0)=uextL.at(0)+ssr;
-	    uextR.at(1)=uextL.at(1)+sst;
-	    uextR.at(0)=uextL.at(0)+ssr;
+	    if(right){
+	      uextL.at(1)=uextL.at(1)+sst;
+	      uextL.at(0)=uextL.at(0)+ssr;
+	    }
+	    if(bleft){
+	      uextR.at(1)=uextL.at(1)+sst;
+	      uextR.at(0)=uextL.at(0)+ssr;
+	    }
 	  }
 	}
       }
@@ -615,7 +620,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.metric.schwarschild){
     //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	if(left&&add){
+	//FIX THIS
+	if(bleft&&add){
 	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibL1.at(elemnum);
 	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibL0.at(elemnum);
 	}else if(right&&sub){
@@ -687,6 +693,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<complex<double>> nfluxR = matmul(SR,temp,params.grid.Ddim,params.grid.Ddim,1);
     
 
+    if(found&&(modenum==1)){
+      //cout << modenum << " " << elemnum << " " <<  nfluxL.at(0) << " " << nfluxL.at(1) << " " << nfluxR.at(0) << " " << nfluxR.at(1) << endl;
+    }
     
     //were Array2D's
     vector<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
@@ -717,7 +726,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     insert_1D_into_2D_vec(du,duR,2,params.grid.Ddim,1,false);
 
     //if(output){
-    // cout << elemnum << "\t" << du[0].real() << "\t" << du[1].real() << "\t" << du[2].real() << "\t"  << du[3].real() << endl;
+    //cout << modenum << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << duL[0].real() << " " << duL[1].real() << " " << duR[0].real() << " "  << duR[1].real() << endl;
     //}
 
     
