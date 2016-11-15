@@ -23,8 +23,8 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
     }
     if(abs(rho-Wminus)<1.e-10){
       cout << "Wminus " << j << endl;
-      addSingFieldToLeftElemExt.at(j)=true;
-      subSingFieldFromRightElemExt.at(j)=true;
+      addSingFieldToLeftElemExt.at(j+1)=true;
+      subSingFieldFromRightElemExt.at(j+1)=true;
     }else if(abs(rho-Wplus)<1.e-10){
       cout << "Wplus " << j << endl;
       addSingFieldToRightElemExt.at(j)=true;

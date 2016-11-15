@@ -40,7 +40,10 @@ class DiffEq
   VectorGridFunction<double> Amatrices; //used to be GridFunction array2D
   TwoDVectorGridFunction<double> Bmatrices; //used to be Vector Grid Function array2D
   VectorGridFunction<double> trimmedAmatrices; //used to be GridFunction array2D
-
+  vector<complex<double>> uintL; //internal u at left boundary
+  vector<complex<double>> uintR; //internal u at right boundary
+  vector<complex<double>> uextL; //external u at left boundary
+  vector<complex<double>> uextR; //external u at right boundary
   //vectors range over the elements, containing left and right boundaries
   vector<CharacteristicFlux> AleftBoundaries;
   vector<CharacteristicFlux> ArightBoundaries;

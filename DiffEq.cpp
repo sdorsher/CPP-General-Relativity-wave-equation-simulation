@@ -42,8 +42,9 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coord
   Bmatrices{nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
 	    params.grid.elemorder + 1,0.},
   trimmedAmatrices{params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.},
-  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}}
-  
+  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}},
+  uextL{params.grid.Ddim},uextR{params.grid.Ddim},uintL{params.grid.Ddim},
+  uintR{params.grid.Ddim}
   {
     //set up the A and B matrices
 
@@ -479,20 +480,20 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     double sstre, sstim, ssrre, ssrim, alpha;
  
     int nodenumFound;
-    bool bleft,right,add, sub, found;
+    bool bleft,bright,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
     
     if(params.opts.use_world_tube){
       if(elemnum==0){
-	right=false;
+	bright=false;
 	bleft = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
 	add = wt->addSingFieldToRightElemExt.at(elemnum);
 	sub= wt->subSingFieldFromRightElemExt.at(elemnum);
       } else if (elemnum==NumElem-1){
         bleft = false;
-	right = wt->addSingFieldToLeftElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
-	add = wt->addSingFieldToLeftElemExt.at(elemnum-1);
-	sub = wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	bright = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	add = wt->addSingFieldToLeftElemExt.at(elemnum);
+	sub = wt->subSingFieldFromLeftElemExt.at(elemnum);
       }else {
 	/*	if(wt->addSingFieldToLeftElemExt.at(elemnum)) cout << "C " << elemnum << endl;
 
@@ -500,17 +501,17 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	if(wt->addSingFieldToRightElemExt.at(elemnum-1)) cout << "E " << elemnum << endl;
 	if(wt->subSingFieldFromLeftElemExt.at(elemnum)) cout << "F " << elemnum<< endl;*/
 	//right or left side of boundary (that's why elemnum or elemenum-1)
-	right = wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->addSingFieldToRightElemExt.at(elemnum-1);
+	bright = wt->subSingFieldFromRightElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1);
 	bleft = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
 	
 	add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1); // add ext sing field to this eleement
-	sub=wt->subSingFieldFromRightElemExt.at(elemnum-1)||wt->subSingFieldFromLeftElemExt.at(elemnum); //subtract external singular field from this element
+	sub=wt->subSingFieldFromRightElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum); //subtract external singular field from this element
       }
     
      
       if(bleft){
 	nodenumFound=params.grid.elemorder;
-      }else if(right){
+      }else if(bright){
 	nodenumFound=0;
       }
       
@@ -522,9 +523,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }
 
 
-      found = bleft || right;
 
-      
       if(found){
 
 	double node = thegrid.rschw.get(elemnum, nodenumFound);
@@ -532,57 +531,53 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	dPhi_dr(&modenum, &node, &ssrre, &ssrim);
 	alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
 	  /thegrid.rschw.get(elemnum,nodenumFound);
-	
+
 	sstre = ssign*sstre;
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
+	//if((modenum==1)&found){
 	//cout << setprecision(15);
 	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << " "<< ssign << " " << alpha << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
+	//}
       }
     }
-	
-    //were Array1D
-    vector<complex<double>> uintL(params.grid.Ddim); //internal u at left boundary
-    vector<complex<double>> uintR(params.grid.Ddim); //internal u at right boundary
-    vector<complex<double>> uextL(params.grid.Ddim); //external u at left boundary
-    vector<complex<double>> uextR(params.grid.Ddim); //external u at right boundary
-    
-    
-    uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0); 
+
+
+    uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0);
     uintR = uh.getVectorRange(modenum,elemnum, indR, vminR, vmaxR, 0);
-    
-    
+
+
     if(elemnum > 0) {
-      uextL = uh.getVectorRange(modenum, elemnum - 1, indR, vminL, 
+      uextL = uh.getVectorRange(modenum, elemnum - 1, indR, vminL,
 				vmaxL, 0);
       //external u, left boundary
     }else{
-      uextL = uh.getVectorRange(modenum, NumElem - 1, indR, vminL, 
-				vmaxL, 0); 
+      uextL = uh.getVectorRange(modenum, NumElem - 1, indR, vminL,
+				vmaxL, 0);
       //periodic boundary conditions
     }
-    
-   
+
+
     if(elemnum < NumElem - 1) {
-      uextR = uh.getVectorRange(modenum, elemnum + 1, indL, vminR, 
-				vmaxR, 0); 
+      uextR = uh.getVectorRange(modenum, elemnum + 1, indL, vminR,
+				vmaxR, 0);
       //external u, right boundary
     }else{
-      uextR = uh.getVectorRange(modenum, 0, indL, vminR, vmaxR, 0); 
+      uextR = uh.getVectorRange(modenum, 0, indL, vminR, vmaxR, 0);
       //periodic boundary conditions
     }
-    
+
     //     if((elemnum==3)&&(output))
     //{
-    //	cout << "LHS0 ext=" << uextL[0] << " uint=" << uintL[0] << endl;
-    //	cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] << endl;
-    //	cout << "LHS1 ext=" << uextL[1] << " uint=" << uintL[1] << endl;
-    //	cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
+    //cout << "LHS0 ext=" << uextL[0] << " uint=" << uintL[0] << endl;
+    //cout << "RHS0 uext=" << uextR[0] << " uint=" << uintR[0] << endl;
+    //cout << "LHS1 ext=" << uextL[1] << " uint=" << uintL[1] << endl;
+    //cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
     //}
 
     if(params.metric.schwarschild){
-    //specializing to schwazschild case
+      //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
 	//FIX THIS
 	if(bleft&&sub){//position 1
@@ -594,7 +589,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	}
       }
     }
-	//inside the world tube, first handle the singular field.
+    //inside the world tube, first handle the singular field.
 
     if(params.metric.schwarschild){
       if(params.opts.use_world_tube){
@@ -603,7 +598,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	    //cout << "DiffEq:use_world_tube:ss " << sstre << " " << sstim << " " << ssrre << " " << ssrim << endl;
 	    complex<double> sst(sstre, sstim);
 	    complex<double> ssr(ssrre,ssrim);
-	    if(right){
+	    if(bright){
 	      uextL.at(1)=uextL.at(1)+sst;
 	      uextL.at(0)=uextL.at(0)+ssr;
 	    }
@@ -616,23 +611,23 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }
     }
 
-   
+
     if(params.metric.schwarschild){
-    //specializing to schwazschild case
+      //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
 	//FIX THIS
 	if(bleft&&add){
 	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibL1.at(elemnum);
 	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibL0.at(elemnum);
-	}else if(right&&sub){
+	}else if(bright&&sub){
 	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibR1.at(elemnum);
 	  uextR.at(0)=uextR.at(0)*coords.dxdxibR0.at(elemnum);
 	}
       }
     }
-    
-	  
-    
+
+
+
     //below were Array2Ds
     //Initialize plus and minus components of lambda matrix to zero at both
     //boundaries
@@ -640,63 +635,63 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<double> lambdaminusR(params.grid.Ddim*params.grid.Ddim, 0.0);
     vector<double> lambdaplusL(params.grid.Ddim*params.grid.Ddim, 0.0);
     vector<double> lambdaplusR(params.grid.Ddim*params.grid.Ddim, 0.0);
-    
+
     vector<double> lambdaL= AleftBoundaries[elemnum].getLambda();
     vector<double> lambdaR= ArightBoundaries[elemnum].getLambda();
-    
-    
+
+
     //lambda minus contains outward moving wave components
     //lambda plus contains inward moving wave components
     //Might be an incorrect summary. Trust the math, not the words
     //See pg 35 of Hesthaven and Warburten
-    
-    
+
+
     for(int j = 0; j < params.grid.Ddim; j++) {
       if(nL * lambdaL[j*params.grid.Ddim+j] <= 0) {
-        lambdaminusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
+	lambdaminusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
       } else {
-        lambdaplusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
+	lambdaplusL[j*params.grid.Ddim+j] = nL * lambdaL[j*params.grid.Ddim+j];
       }
-      
+
       if(nR * lambdaR[j*params.grid.Ddim+j] <= 0) {
-        lambdaminusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
+	lambdaminusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
       } else {
-        lambdaplusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
+	lambdaplusR[j*params.grid.Ddim+j] = nR * lambdaR[j*params.grid.Ddim+j];
       }
     }
-    
-    
+
+
     //S and S inverse matrices at both boundaries
     vector<double> sinvL = AleftBoundaries[elemnum].getSinv();
     vector<double> sinvR = ArightBoundaries[elemnum].getSinv();
     vector<double> SL = AleftBoundaries[elemnum].getS();
     vector<double> SR = ArightBoundaries[elemnum].getS();
-    
-    
-    //Numerical fluxes at both boundaries 
+
+
+    //Numerical fluxes at both boundaries
     //See Hesthaven and Warburten pg 35 (n*F)
     //were Array1D's
     vector<complex<double>> temp = matmul(sinvL, uintL,params.grid.Ddim,params.grid.Ddim,1);
     vector<complex<double>> nfluxL1 = matmul(lambdaplusL, temp, params.grid.Ddim,params.grid.Ddim,1);
     temp = matmul(sinvL, uextL,params.grid.Ddim,params.grid.Ddim,1);
     vector<complex<double>> nfluxL2 =  matmul(lambdaminusL,temp,params.grid.Ddim,params.grid.Ddim,1);
-    
+
     temp = vecsum(nfluxL1,nfluxL2);
     vector<complex<double>> nfluxL = matmul(SL,temp,params.grid.Ddim,params.grid.Ddim,1);
     temp = matmul(sinvR, uintR,params.grid.Ddim,params.grid.Ddim,1);
     vector<complex<double>> nfluxR1 = matmul(lambdaplusR,temp,params.grid.Ddim,params.grid.Ddim,1);
-    
-    
+
+
     temp = matmul(sinvR, uextR,params.grid.Ddim,params.grid.Ddim,1);
     vector<complex<double>> nfluxR2 = matmul(lambdaminusR,temp,params.grid.Ddim,params.grid.Ddim,1);
     temp = vecsum(nfluxR1,nfluxR2);
     vector<complex<double>> nfluxR = matmul(SR,temp,params.grid.Ddim,params.grid.Ddim,1);
-    
+
 
     if(found&&(modenum==1)){
       //cout << modenum << " " << elemnum << " " <<  nfluxL.at(0) << " " << nfluxL.at(1) << " " << nfluxR.at(0) << " " << nfluxR.at(1) << endl;
     }
-    
+
     //were Array2D's
     vector<double> AtrimmedL= AleftBoundaries[elemnum].getAtrimmed();
     vector<double> AtrimmedR= ArightBoundaries[elemnum].getAtrimmed();
@@ -713,12 +708,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<complex<double>> temp4 = scalarmult(nR,temp2);
     vector<complex<double>> duL = vecdiff(temp3,nfluxL);
     vector<complex<double>> duR = vecdiff(temp4,nfluxR);
-    
+
     //DU SHOULD BE ZERO AFTER FIRST CALL TO RHS BECAUSE SAME ON EITHER SIDE OF BOUNDARY
 
     //  if((elemnum==3)&&(output)){
     // for(int i=0; i<AtrimmedR.size(); i++){
-    //	cout << AtrimmedL[i] << endl;
+    //cout << AtrimmedL[i] << endl;
     // }
     // }
 
@@ -729,55 +724,55 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //cout << modenum << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << duL[0].real() << " " << duL[1].real() << " " << duR[0].real() << " "  << duR[1].real() << endl;
     //}
 
-    
+
     vector<complex<double>> uint2D(2*params.grid.Ddim);
     insert_1D_into_2D_vec(uint2D,uintL,2,params.grid.Ddim,0,false);
     insert_1D_into_2D_vec(uint2D,uintR,2,params.grid.Ddim,1,false);
-    
+
     //    if((modenum==0)&&(output)){
     // for(int i=0; i<du.size(); i++){
-    //	cout << elemnum << "\t" << du[i] << "\t" << uint2D[i] << endl;
+    //cout << elemnum << "\t" << du[i] << "\t" << uint2D[i] << endl;
     // }
     // }
 
     //du correct-- roundoff
-    
+
     /*cout << elemnum << "\t";
     for(int i = 0; i<du.size(); i++){
-      cout << du[i].real() << "\t";
+    cout << du[i].real() << "\t";
     }
     cout << endl;
     */
     //create a 2D array with one column corresponding to the left
     //boundary and one column corresponding to the right boundary
-    //of du for the the various components of u. 
-    
+    //of du for the the various components of u.
+
     //END characteristicFlux
     //BEGIN RHS
-  
+
     //pragma omp parallel if(NumElem>lmmodes.ntotal) for
 
     //#pragma omp parallel for shared(uh,modenum,thegrid,SOURCE_VECNUM,RHStdvgf,params) if(uh.TDVGFdim()<=thegrid.numberElements())
     //Maximum index for both A and B matrix
     //    int vmaxAB = ArightBoundaries[elemnum].getparams.grid.Adim() - 1;
-    //Minimum index for use with trimmed A matrix. 
+    //Minimum index for use with trimmed A matrix.
     //Minimum index for B matrix is zero
     //    int vminA = vmaxAB - ArightBoundaries[elemnum].getDdim() + 1;
-    
+
     //The B matrix component of the RHS.
 
     //was Array2D
-    vector<complex<double>> RHSB(uh.GFarrDim() 
-                                 *params.grid.Adim);
+    vector<complex<double>> RHSB(uh.GFarrDim()
+				 *params.grid.Adim);
 
-    
+
     for(int nodenum = 0; nodenum < uh.GFarrDim(); nodenum++){
       vector<complex<double>> RHSBpernode; //was Array1D
-      
-      
+
+
       //FIX THIS. THIS CAN BE SPED UP BY NOT COPYING IN GETVECTORASARRAY1D
       //Multiply the B matrix times a "vector" of u for each node
-      vector<complex<double>> temp = uh.getVectorRange(modenum,elemnum, nodenum,0, vmaxAB, 0); 
+      vector<complex<double>> temp = uh.getVectorRange(modenum,elemnum, nodenum,0, vmaxAB, 0);
 
       vector<double> tempd = Bmatrices.getVector(modenum,elemnum,nodenum);
 
@@ -788,15 +783,15 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //cout << setprecision(12);
       //cout << RHSBpernode[0] << " " << RHSBpernode[1] << " " << RHSBpernode[2] << endl;
       //}
-    
 
-      
+
+
       //Insert that result into the rows of a larger matrix
-      
+
       //if((elemnum==3)&&(output)){
-      //	for(int i =0; i<RHSBpernode.size(); i++){
-      //	  cout <<i << "\t" <<  RHSBpernode.at(i) << endl;
-      //	}
+      //for(int i =0; i<RHSBpernode.size(); i++){
+      //  cout <<i << "\t" <<  RHSBpernode.at(i) << endl;
+      //}
       //}
 
       insert_1D_into_2D_vec(RHSB, RHSBpernode,uh.GFarrDim(),params.grid.Adim,nodenum, false);
@@ -806,79 +801,79 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
     //    if (output){
     //for(int i=0; i<RHSB.size(); i++){
-    //	cout << setprecision(15);
-    //	cout << RHSB[i].real() << endl;
+    //cout << setprecision(15);
+    //cout << RHSB[i].real() << endl;
     // }
     //}
     //A contribution:
     vector<complex<double>> RHSA1(uh.GFarrDim()*params.grid.Ddim);//was Array2D
-    
+
     //The A contribution needs to be multiplied one node at a time by the
     //trimmed A matrix in a similar manner to the B contribution. But first,
-    //we take the spatial derivative across all thegrid.gridNodeLocations(). 
-    
+    //we take the spatial derivative across all thegrid.gridNodeLocations().
+
     int vecNodeDim1=params.grid.Ddim;
     int vecNodeDim2=uh.GFarrDim();
     temp = uh.getVectorNode2D(modenum, elemnum, vminA, vmaxAB, 0, vecNodeDim1,vecNodeDim2);
-    temp2 = matmul(Dmatrix,temp,uh.GFarrDim(),uh.GFarrDim(),params.grid.Ddim);		      
+    temp2 = matmul(Dmatrix,temp,uh.GFarrDim(),uh.GFarrDim(),params.grid.Ddim);
     vector<complex<double>> RHSA1preA = scalarmult(thegrid.jacobian(elemnum), temp2);
     //was Array2D
 
-    
-    
+
+
     //if((modenum==0)&&(output)){
     //for(int i=0; i<RHSA1preA.size(); i+=2){
-    //	cout << setprecision(15);
-    //	cout << thegrid.gridNodeLocations().get(elemnum,i/2) << " " << RHSA1preA.at(i).real() << " " << RHSA1preA.at(i+1).real() << endl;
+    //cout << setprecision(15);
+    //cout << thegrid.gridNodeLocations().get(elemnum,i/2) << " " << RHSA1preA.at(i).real() << " " << RHSA1preA.at(i+1).real() << endl;
     //}
     //}
 
     //Multiply each row of RHSA1preA by a different a Atrimmed matrix
     for(int nodenum=0; nodenum < uh.GFarrDim(); nodenum++)
       {
-        int M = params.grid.Ddim;
-        int N = params.grid.Ddim;
-        int K = uh.GFarrDim(); //RHSApreAdim1
-        int L = params.grid.Ddim; //RHSApreAdim2
+	int M = params.grid.Ddim;
+	int N = params.grid.Ddim;
+	int K = uh.GFarrDim(); //RHSApreAdim1
+	int L = params.grid.Ddim; //RHSApreAdim2
 
 	//M through L are the same
 
 	//cout << M << " " << N << " " << K << " " << L << endl;
-	
+
 	vector<double> tA = trimmedAmatrices.getVector(elemnum,nodenum);
 
 	//cout << tA.size() << endl;
 
 	//tA is same size
-	
+
 	//if((output)&&(modenum==0)){
-	  //cout << setprecision(15);
+	//cout << setprecision(15);
 
 	//cout << thegrid.gridNodeLocations().get(elemnum,nodenum) << " " << tA[0] << " " << tA[1] << " " << tA[2] << " " <<tA[3] << endl;
 	//}
-	
-        for (int i=0; i<M; i++){
-          complex<double> sum = 0;
+
+	for (int i=0; i<M; i++){
+	  complex<double> sum = 0;
 	  for (int k=0; k<N; k++)
-	    sum += -tA[i*N+k]
-	      * RHSA1preA.at(nodenum*L+k);
+	        sum += -tA[i*N+k]
+		  * RHSA1preA.at(nodenum*L+k);
 	  RHSA1.at(nodenum*L+i) = sum;
-        }
-        //Copied and pasted from TmatmultT in TNT2 a
-        //with modification of variable first matrix
-        //TmatmultT was copied and pasted from matmult in tnt itself
+	}
+	//Copied and pasted from TmatmultT in TNT2 a
+	//with modification of variable first matrix
+	//TmatmultT was copied and pasted from matmult in tnt itself
       }//end nodenum loop
     //Negative sign is because of definition of tA
     //A is definied to appear on the left hand side of the differential
     //equation, but this routine calculates the right hand side
-    
-    //Needs a multiplication by an A matrix before D 
-    //but A is position dependent. 
-    
+
+    //Needs a multiplication by an A matrix before D
+    //but A is position dependent.
+
     //get rid of moves?? PARALLEL PROBLEM?
     //This is the contribution due to du, or the numerical flux
-    //    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum) 
-    //					  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
+    //    Array2D<complex<double>> RHSA2 = move(thegrid.jacobian(elemnum)
+    //  *move(matmult(thegrid.refelem.getLift(), du[elemnum])));
 
     //RHSA1.txt
     //if(output){
@@ -887,74 +882,74 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //cout << elemnum*RHSA1.size()+i << "\t" << RHSA1.at(i).real() << endl;
     //}
     //}
-    
+
     temp =matmul(Lift,du,uh.GFarrDim(),2,2);
     vector<complex<double>> RHSA2 = scalarmult(thegrid.jacobian(elemnum),temp);
 
     //if(output){
     //for(int i=0; i< RHSA2.size(); i++){
     //cout << setprecision(15);
-    // 	cout << elemnum*RHSA2.size()+i << "\t" << RHSA2.at(i).real() << endl;
+    // cout << elemnum*RHSA2.size()+i << "\t" << RHSA2.at(i).real() << endl;
     //}
     //}
 
 
     //RHSA2 matches. Problem was transposed conversion from vectors to TNT in CharacteristicFlux.cpp. trimmedA may still not match to 1e-7 not sure
-    
-      //  if(output){
+
+    //  if(output){
     // cout << elemnum << "\t" << du[0].real() << "\t" << du[1].real() << "\t" << du[2].real()<< "\t" << du[3].real() << endl;
     //}
-    
+
     //if(output){
     //for(int i=0; i<temp.size(); i++){
-    //	cout << setprecision(15);
-    //	cout << elemnum*temp.size()+i << "\t" << temp.at(i).real() << endl;
+    //cout << setprecision(15);
+    //cout << elemnum*temp.size()+i << "\t" << temp.at(i).real() << endl;
     //}
     //}
-    
+
     //LIFT IS FINE
     //if(output){
     // for(int i=0; i<Lift.size(); i++){
     //cout << setprecision(15);
-    //	cout << elemnum*Lift.size()+i << "\t" << Lift.at(i) << endl;
+    //cout << elemnum*Lift.size()+i << "\t" << Lift.at(i) << endl;
 
     //}
     //}
-    
-    
+
+
     //if((elemnum==3)&&(output)){
     // for(int i=0; i<RHSA2.size(); i++){
-    //	cout << i << "\t" << RHSA2.at(i) << endl;
+    //cout << i << "\t" << RHSA2.at(i) << endl;
     // }
     //}
-    
-    //RHSA and RHSB will have different sizes due to the different 
-    //number of diffeq variables stored in each. sum them using a 
+
+    //RHSA and RHSB will have different sizes due to the different
+    //number of diffeq variables stored in each. sum them using a
     //for loop while assigning values to the RHStdvgf vector grid function
-    
+
     //    Array2D<complex<double>> RHSA = RHSA1 + RHSA2;
-    
-      //Sum the contributions from B, derivative, and flux, 
-      //accounting for different matrix dimensions
+
+    //Sum the contributions from B, derivative, and flux,
+    //accounting for different matrix dimensions
     for(int vecnum = 0; vecnum < RHStdvgf.VGFdim(); vecnum++){
       for(int nodenum = 0; nodenum < RHStdvgf.GFarrDim(); nodenum++){
 	complex<double> tot=-RHSB.at(nodenum*params.grid.Adim+vecnum);
 	if(vecnum>=vminA){
-	 	  /*if((output)&&(modenum==1)&&(vecnum==2)){
+	  /*if((output)&&(modenum==1)&&(vecnum==2)){
 	    cout << setprecision(15);
 	    cout << nodenum << " " << RHSA[nodenum][vecnum-vminA].real() << endl;
 	    }*/
 	  tot+=RHSA1.at(nodenum*params.grid.Ddim+(vecnum-vminA))
 	    + RHSA2.at(nodenum*params.grid.Ddim+(vecnum-vminA));
-	}//-sign in B because it is on the left hand side of the 
+	}//-sign in B because it is on the left hand side of the
 	if(vecnum==0){
-	  //	  cout << modenum << " " << nodenum << " " << tot << endl;
+	  //  cout << modenum << " " << nodenum << " " << tot << endl;
 	}
 	// I AM HERE
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
 	  complex<double> temp = source.get(modenum,elemnum,nodenum);
 	  tot += temp;
-	  
+
 	  //equation in the definition supplied in DiffEq.cpp
 	}
 	RHStdvgf.set(modenum, vecnum, elemnum, nodenum, tot);
@@ -963,9 +958,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }
     }
 
-    
+
   }
-  
+
 }
 
 void DiffEq::modeRHS(Grid& thegrid,
