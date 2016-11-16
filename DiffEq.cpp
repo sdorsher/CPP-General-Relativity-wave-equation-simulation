@@ -600,8 +600,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	      uextL.at(0)=uextL.at(0)+ssr;
 	    }
 	    if(bleft){
-	      uextR.at(1)=uextL.at(1)+sst;
-	      uextR.at(0)=uextL.at(0)+ssr;
+	      uextR.at(1)=uextR.at(1)+sst;
+	      uextR.at(0)=uextR.at(0)+ssr;
 	    }
 	  }
 	}
