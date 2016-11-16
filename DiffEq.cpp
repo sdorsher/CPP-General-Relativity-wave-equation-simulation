@@ -485,30 +485,26 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
     if(params.opts.use_world_tube){
       if(elemnum==0){
+	//cout << "zero" << endl;// FIX ME
 	bright=false;
-	bleft = wt->addSingFieldToRightElemExt.at(elemnum)||wt->subSingFieldFromRightElemExt.at(elemnum);
-	add = wt->addSingFieldToRightElemExt.at(elemnum);
-	sub= wt->subSingFieldFromRightElemExt.at(elemnum);
-      } else if (elemnum==NumElem-1){
-        bleft = false;
-	bright = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum-1);
+	bleft = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
 	add = wt->addSingFieldToLeftElemExt.at(elemnum);
-	sub = wt->subSingFieldFromLeftElemExt.at(elemnum);
+	sub= wt->subSingFieldFromLeftElemExt.at(elemnum);
+      } else if (elemnum==NumElem-1){
+	//cout << "max" << endl;//FIX ME
+        bleft = false;
+	bright = false;
+	add =false; //wt->addSingFieldToLeftElemExt.at(elemnum);
+	sub = false;//wt->subSingFieldFromLeftElemExt.at(elemnum);
       }else {
-	/*	if(wt->addSingFieldToLeftElemExt.at(elemnum)) cout << "C " << elemnum << endl;
-
-	if(wt->subSingFieldFromRightElemExt.at(elemnum-1)) cout << "D " << elemnum << endl;
-	if(wt->addSingFieldToRightElemExt.at(elemnum-1)) cout << "E " << elemnum << endl;
-	if(wt->subSingFieldFromLeftElemExt.at(elemnum)) cout << "F " << elemnum<< endl;*/
-	//right or left side of boundary (that's why elemnum or elemenum-1)
-	bright = wt->subSingFieldFromRightElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1);
+	//right or left side of boundary (j or j+1 in WorldTube.cpp)
+	bright = wt->subSingFieldFromRightElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum);
 	bleft = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum);
 	
-	add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum-1); // add ext sing field to this eleement
+	add = wt->addSingFieldToLeftElemExt.at(elemnum)||wt->addSingFieldToRightElemExt.at(elemnum); // add ext sing field to this eleement
 	sub=wt->subSingFieldFromRightElemExt.at(elemnum)||wt->subSingFieldFromLeftElemExt.at(elemnum); //subtract external singular field from this element
+	//cout << elemnum << " " << (bleft ? 1:0) << " " << (bright ? 1 : 0) << " " << (add ? 1:0) << " "<< (sub ? 1:0) << endl;
       }
-    
-     
       if(bleft){
 	nodenumFound=params.grid.elemorder;
       }else if(bright){
@@ -523,6 +519,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }
 
 
+      found = bleft || bright;
 
       if(found){
 
@@ -536,7 +533,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
-	//if((modenum==1)&found){
+	//	if((modenum==1)&found){
 	//cout << setprecision(15);
 	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << " "<< ssign << " " << alpha << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
 	//}
@@ -1015,6 +1012,8 @@ void DiffEq::modeRHS(Grid& thegrid,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
 
+
+
   typedef numeric_limits<double> dbl;
   for(int k = 0; k<lmmodes.ntotal; k++){
     ofstream fss;
@@ -1061,6 +1060,8 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   //#pragma omp parallel for if(uh.TDVGFdim()>thegrid.numberElements())
 
+
+  
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
        //  double max_speed = 1.0;
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);

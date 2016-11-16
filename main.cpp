@@ -222,7 +222,6 @@ int main()
 		     theequation,lmmodes,true,
 		     "window",6, corb);
   }
-
   //output coords
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
@@ -235,7 +234,7 @@ int main()
   }
   }else{
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
-  for(int k=0; k<lmmodes.ntotal;k++){
+    for(int k=0; k<lmmodes.ntotal;k++){
     write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
 		     "rhs",3, corb);
   }
@@ -354,7 +353,7 @@ int main()
 
     //increment time
     t+=deltat;
-    ///assert(0);
+    //assert(0);
     
     //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){
