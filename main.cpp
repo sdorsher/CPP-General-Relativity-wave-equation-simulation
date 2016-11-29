@@ -226,6 +226,7 @@ int main()
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
 
+  
   if(params.opts.use_generic_orbit){
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
   for(int k=0; k<lmmodes.ntotal;k++){

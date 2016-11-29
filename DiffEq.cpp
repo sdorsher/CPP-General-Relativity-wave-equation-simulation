@@ -482,6 +482,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     int nodenumFound;
     bool bleft,bright,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
+
     
     if(params.opts.use_world_tube){
       if(elemnum==0){
@@ -539,7 +540,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	//}
       }
     }
-
 
     uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0);
     uintR = uh.getVectorRange(modenum,elemnum, indR, vminR, vmaxR, 0);
@@ -609,6 +609,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     }
 
 
+
     if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
@@ -673,6 +674,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     temp = matmul(sinvL, uextL,params.grid.Ddim,params.grid.Ddim,1);
     vector<complex<double>> nfluxL2 =  matmul(lambdaminusL,temp,params.grid.Ddim,params.grid.Ddim,1);
 
+    //    cout << modenum << " " <<elemnum << " " << nfluxL1.at(0) << " " << nfluxL1.at(1) << " " << nfluxL2.at(0) << " " << nfluxL2.at(1) << endl;
+    
     temp = vecsum(nfluxL1,nfluxL2);
     vector<complex<double>> nfluxL = matmul(SL,temp,params.grid.Ddim,params.grid.Ddim,1);
     temp = matmul(sinvR, uintR,params.grid.Ddim,params.grid.Ddim,1);
@@ -1005,13 +1008,12 @@ void DiffEq::modeRHS(Grid& thegrid,
     }
   }
 
-
+  
   if(params.opts.useSource) {
     
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
-
 
 
   typedef numeric_limits<double> dbl;
@@ -1064,6 +1066,7 @@ void DiffEq::modeRHS(Grid& thegrid,
   
   for(int modenum = 0; modenum < uh.TDVGFdim(); modenum++) {
        //  double max_speed = 1.0;
+
     RHS(modenum, thegrid, uh, RHStdvgf, t, output, coords,wt);
   }
 }
