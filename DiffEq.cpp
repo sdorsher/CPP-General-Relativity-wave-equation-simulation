@@ -1017,7 +1017,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 
 
   typedef numeric_limits<double> dbl;
-  for(int k = 0; k<lmmodes.ntotal; k++){
+  /*for(int k = 0; k<lmmodes.ntotal; k++){
     ofstream fss;
     fss.precision(dbl::max_digits10);
     fss.precision(16);
@@ -1036,7 +1036,7 @@ void DiffEq::modeRHS(Grid& thegrid,
     }
     
     fss.close();
-  }
+    }*/
   /*if (params.opts.useSource){
     for (int k = 0; k<source.VGFdim(); k++){
       ofstream fs;
