@@ -229,16 +229,16 @@ int main()
   
   if(params.opts.use_generic_orbit){
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
-  for(int k=0; k<lmmodes.ntotal;k++){
-    write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
-		     "/mnt/data/sdorsher/rhs",3, eorb);
-  }
+    // for(int k=0; k<lmmodes.ntotal;k++){
+    //write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
+    //		     "/mnt/data/sdorsher/rhs",3, eorb);
+    //}
   }else{
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
-    for(int k=0; k<lmmodes.ntotal;k++){
-    write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
-		     "/mnt/data/sdorsher/rhs",3, corb);
-  }
+    //for(int k=0; k<lmmodes.ntotal;k++){
+    //write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
+    //		     "/mnt/data/sdorsher/rhs",3, corb);
+    //}
   }
   cout << "first call to RHS succeeded" << endl;
 
@@ -250,6 +250,9 @@ int main()
   
   if(params.metric.schwarschild){
     deltat = params.time.courantfac * dx/max_speed;
+
+    cout << "deltat : " << deltat  << " " << max_speed << endl;
+
   }else if(params.metric.flatspacetime){
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
@@ -274,8 +277,8 @@ int main()
 	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,
 			 params.file.pdesolution,1, eorb);
-	write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
-			 theequation,lmmodes,true,"/mnt/data/sdorsher/rhs",3, eorb);
+	//write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+	//		 theequation,lmmodes,true,"/mnt/data/sdorsher/rhs",3, eorb);
       } else{
 	/*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,
@@ -342,7 +345,7 @@ int main()
   while(t<params.time.tmax){
     //Increment the count to determine whether or not to output
     outputcount++;
-    
+
     //Increment the time integration
     if(params.opts.use_generic_orbit){
       rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords, lmmodes);

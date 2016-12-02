@@ -16,7 +16,6 @@ void EllipticalOrbit::dorbdchi(){
 }
 
 void EllipticalOrbit::dorbdt(){
-  double dtdchi, dphidchi;
   dorbdchi();
   dchidt=1.0/dtdchi; //in namespaces for now. should eventually become a member variable of the orbit object or this object
   dphidt=dphidchi*dchidt; // likewise
