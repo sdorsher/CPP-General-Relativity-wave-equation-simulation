@@ -116,7 +116,7 @@ void Coordinates::timedep_to_rstar(Orbit* orb){
 }
 
 
-void Coordinates::coord_trans(Grid& thegrid, vector<double> &x, vector<double> &dxdt, vector<double> & dxdxi, vector<double> & d2xdt2,vector<double> & d2xdxi2, vector<double> & d2xdtdxi, int elemnum){
+void Coordinates::coord_trans(double a, double b, Grid& thegrid, vector<double> &x, vector<double>& dxdt, vector<double> & dxdxi, vector<double>& d2xdt2,vector<double>& d2xdxi2, vector<double>& d2xdtdxi, int elemnum){
   //time dep coord transf
   double xpma, xipma, xima, bmxp, bmxip, bmxi, bma, ximxip, xipmxp, xipmainv, xipamulbmxipinv, dtfac;
   if((elemnum==0)||(!timeDepTrans.at(elemnum-1))){
@@ -146,7 +146,7 @@ void Coordinates::coord_trans(Grid& thegrid, vector<double> &x, vector<double> &
       double xipmxp=xip-xp;
       x.at(i)=a+xpma*xipmainv*xima
 	+(bmxp*xipma-xpma*bmxip)*xipmamulbmxipinv/bma*xima*ximxip;
-	       dtfac=xima*bmxi*xipmamulbmxipinv;
+      dtfac=xima*bmxi*xipmamulbmxipinv;
       dxdt.at(i)=dtfac*dxpdt;
       dxdxi.at(i)=((2.*xi.at(i)-xip-a)*xipmxp+xpma*bmxip)
 	*xipmamulbmxipinv;

@@ -344,6 +344,7 @@ int main()
   //BEGIN MAIN LOOP
   while(t<params.time.tmax){
     //Increment the count to determine whether or not to output
+    //max_speed=1.0;
     outputcount++;
 
     //Increment the time integration

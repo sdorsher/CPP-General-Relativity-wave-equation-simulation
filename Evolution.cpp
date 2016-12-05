@@ -41,8 +41,6 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   if((orb->orbType())==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->dorbdt();
-    cout << setprecision(15);
-    cout << eorb->dchidt << " " << eorb->dphidt << " " << orb->chi << " " << orb->phi << endl;
   }
 
   
@@ -59,9 +57,6 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
     eorb->chi=eorb->chi+rk4b[0]*chik;
     eorb->phi=eorb->phi+rk4b[0]*phik;
    cout << setprecision(15);
-   cout << eorb->dchidt << " " << eorb->dphidt << " " << orb->chi << " " << orb->phi << " " << chik << " "<< phik << " " << rk4b[0] << " " << deltat << endl;
-
-
   }
 
  

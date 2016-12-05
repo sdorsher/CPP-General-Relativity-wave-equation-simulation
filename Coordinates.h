@@ -16,7 +16,7 @@ using namespace std;
 
 class Coordinates{
  public:
-  double a, b, xp, xip, dxpdt, d2xpdt2, d2xdtdxi, Sminus, Splus;
+  double xp, xip, dxpdt, d2xpdt2, d2xdtdxi, Sminus, Splus;
   vector<bool> timeDepTrans;
   vector<double> dxdxib;
   vector<double> dxdxibL0;
@@ -45,7 +45,7 @@ class Coordinates{
   void timedep_to_rstar(Orbit* orb);
 
   //HERE (OSCULATING ORBITS COORDINATE TRANSFORM)
-  void coord_trans(Grid& thegrid, vector<double>&  x, vector<double> & dxdt, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxi2,vector<double> & d2xdtdxi, int elemnum);
+  void coord_trans(double a, double b, Grid& thegrid, vector<double>&  x, vector<double> & dxdt, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxi2,vector<double> & d2xdtdxi, int elemnum);
   
     
 };

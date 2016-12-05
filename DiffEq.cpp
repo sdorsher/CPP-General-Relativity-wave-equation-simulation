@@ -347,8 +347,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
   vector<double> rm2m(ne+1), x(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
-
+  coords.coord_trans(Rminus, Rplus, thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
   
   for(int i = 0; i<=ne; i++){
     double dxdxiinv = 1.0/dxdxi.at(i);
@@ -968,7 +967,6 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
-
   double maxspeed;
   if(orb->orbType()==elliptical){
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
