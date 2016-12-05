@@ -576,12 +576,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
 	//FIX THIS
-	if(bleft&&sub){//position 1
-	  uextL.at(0) = uextL.at(0)/coords.dxdxibL0.at(elemnum+1);
-	  uextL.at(1)= uextL.at(1)-coords.dxdxibL1.at(elemnum+1)*uextL.at(1);
-	}else if (right&&add){//position 4
-	  uextR.at(0)=uextR.at(0)/coords.dxdxibR0.at(elemnum-1);
-	  uextR.at(1)=uextR.at(1)-coords.dxdxibR1.at(elemnum-1)*uextR.at(1);
+	if(bleft&&add){//position 1
+	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
+	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(1);
+	}else if (right&&sub){//position 4
+	  uextR.at(0)=uextR.at(0)/coords.dxdxibL0.at(elemnum-1);
+	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(1);
 	}
       }
     }
@@ -613,12 +613,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
 	//FIX THIS
-	if(bleft&&add){
-	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibL1.at(elemnum);
-	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibL0.at(elemnum);
-	}else if(bright&&sub){
-	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibR1.at(elemnum);
-	  uextR.at(0)=uextR.at(0)*coords.dxdxibR0.at(elemnum);
+	if(bleft&&sub){
+	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibR1.at(elemnum);
+	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibR0.at(elemnum);
+	}else if(bright&&add){
+	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibL1.at(elemnum);
+	  uextR.at(0)=uextR.at(0)*coords.dxdxibL0.at(elemnum);
 	}
       }
     }
