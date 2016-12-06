@@ -27,4 +27,10 @@ namespace window
   extern double nmodes; //total number of modes in computation
 }
 
+namespace orbit
+{
+  extern double xip;
+  extern double rstar_orb;
+}
+
 #endif

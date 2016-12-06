@@ -3,6 +3,7 @@
 #include "namespaces.h"
 #include "ConfigParams.h"
 #include "Orbit.h"
+#include "Coordinates.h"
 
 using namespace std;
 //using namespace orbit;
@@ -14,7 +15,7 @@ class EllipticalOrbit:public Orbit{
   EllipticalOrbit();
   void dorbdchi();
   void dorbdt();
-  void orb_of_t();
+  void orb_of_t(Coordinates & coords);
 };
 #endif
 

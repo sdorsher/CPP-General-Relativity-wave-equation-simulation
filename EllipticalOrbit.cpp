@@ -21,7 +21,7 @@ void EllipticalOrbit::dorbdt(){
   dphidt=dphidchi*dchidt; // likewise
 }
 
-void EllipticalOrbit::orb_of_t(){
+void EllipticalOrbit::orb_of_t(Coordinates & coords){
   //double rp = super.rp;
   //double drpdt = super.drpdt;
   //double d2rpdt2 = super.d2rpdt2;
@@ -29,11 +29,12 @@ void EllipticalOrbit::orb_of_t(){
   ecosfac = 1.0+ e*cos(chi);
   dchidt = pow(ecosfac,2.0)*(-2.0+p-2.*e*cos(chi))/(params.schw.mass*(pow(p,2.0)*sqrt((-4.0*pow(e,2.0)+pow((-2.0+p),2.0)))/(-6.+p-2.*e*cos(chi))));
   d2chidt2 = (e*pow(ecosfac,3.0)*(2.-p+2.*e*cos(chi))+(38.0+7.*pow(e,2.)+pow(p,(-19+2*p))+e*(52-11*p)*cos(chi)+7*pow(e,2.0)*cos(2*chi))*sin(chi))/(pow(params.schw.mass,2.0)*(-4.*e,2.0)+pow((-2.+p),2.)*(pow(p,4.)));
-  rp=(params.schw.mass*p)/ecosfac;
-  drpdt = (dchidt*e*params.schw.mass*p*sin(chi))/pow(ecosfac,2.0);
-  d2rpdt2 = (e*params.schw.mass*p*(pow(dchidt,2.)*(2.*cos(chi)-e*(-3.+cos(2.*chi)))
+  coords.xp=(params.schw.mass*p)/ecosfac;
+  coords.dxpdt = (dchidt*e*params.schw.mass*p*sin(chi))/pow(ecosfac,2.0);
+  coords.d2xpdt2 = (e*params.schw.mass*p*(pow(dchidt,2.)*(2.*cos(chi)-e*(-3.+cos(2.*chi)))
 		       +2.*d2chidt2*ecosfac*sin(chi)))
     /(2.0*pow(ecosfac,3.0));
+  //check here for chi value in FUTURE
 }
 
 

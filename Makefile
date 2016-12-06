@@ -44,13 +44,13 @@ main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFu
 Orbit.o: Orbit.cpp Orbit.h globals.h ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Orbit.cpp
 
-EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h ConfigParams.h Orbit.h 
+EllipticalOrbit.o: EllipticalOrbit.cpp EllipticalOrbit.h namespaces.h ConfigParams.h Orbit.h Coordinates.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c EllipticalOrbit.cpp
 
 CircularOrbit.o: CircularOrbit.cpp CircularOrbit.h namespaces.h ConfigParams.h Orbit.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c CircularOrbit.cpp
 
-Coordinates.o: Coordinates.cpp Coordinates.h globals.h ConfigParams.h Orbit.h CircularOrbit.h EllipticalOrbit.h Grid.h
+Coordinates.o: Coordinates.cpp Coordinates.h globals.h ConfigParams.h Grid.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Coordinates.cpp
 
 WorldTube.o: WorldTube.cpp WorldTube.h Coordinates.h globals.h ConfigParams.h GridFunction.h Grid.h namespaces.h

@@ -29,6 +29,7 @@ using namespace layers;
 //using namespace orbit;
 using namespace window;
 using namespace source_interface;
+using namespace orbit;
 
 
 //Initial condition options
@@ -52,9 +53,9 @@ int main()
 
   double rmin = params.schw.p_orb / (1.0 + params.schw.ecc);
   double rmax = params.schw.p_orb / (1.0 - params.schw.ecc);
-  double xip = 0.5*(rmin+rmax);
+  xip = 0.5*(rmin+rmax);
   Sminus = params.hyperb.Sminus;
-  double rstar_orb = coords.rstar_of_r(xip, params.schw.mass);
+  rstar_orb = coords.rstar_of_r(xip, params.schw.mass);
   
 
 
@@ -119,7 +120,7 @@ int main()
   }
   
   if(params.opts.use_generic_orbit){
-    eorb->orb_of_t();
+    eorb->orb_of_t(coords);
     
     if(params.opts.useSource){
       set_particle(eorb->p,eorb->e,eorb->chi,eorb->phi,lmmodes.ntotal);

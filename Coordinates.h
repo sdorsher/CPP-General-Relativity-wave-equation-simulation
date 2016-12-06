@@ -6,9 +6,9 @@
 #include <iostream>
 #include "ConfigParams.h"
 #include <vector>
-#include "Orbit.h"
-#include "CircularOrbit.h"
-#include "EllipticalOrbit.h"
+//#include "Orbit.h"
+//#include "CircularOrbit.h"
+//#include "EllipticalOrbit.h"
 #include "Grid.h"
 
 
@@ -42,7 +42,7 @@ class Coordinates{
   //the transition between the hyperboloidal and tortoise regions
   
 
-  void timedep_to_rstar(Orbit* orb);
+  void timedep_to_rstar(double& rp , double& drpdt, double& d2rpdt2);
 
   //HERE (OSCULATING ORBITS COORDINATE TRANSFORM)
   void coord_trans(double a, double b, Grid& thegrid, vector<double>&  x, vector<double> & dxdt, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxi2,vector<double> & d2xdtdxi, int elemnum);

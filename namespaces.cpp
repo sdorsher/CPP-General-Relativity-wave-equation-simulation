@@ -13,3 +13,8 @@ namespace window
 {//Window parameters in Schwarzschild coordinates
   double R1, R2, w1, w2, s1, s2, q1, q2, nmodes;
 }
+
+namespace orbit
+{
+  double xip, rstar_orb;
+}

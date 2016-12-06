@@ -26,6 +26,7 @@ using namespace TNT;
 using namespace layers;
 using namespace source_interface;
 using namespace std;
+using namespace orbit;
 
 //User supplied functions to set up the differential equation
 // du/dt + A du/dx + Bu=0
@@ -64,7 +65,7 @@ class DiffEq
   CharacteristicFlux getAright(int elemnum);
   vector<double> getAtrimmed(int gridindex, int pointsindex);
 
-  void set_coefficients(Grid &thegrid, EllipticalOrbit *orb, Coordinates &coords, double &maxspeed, int elemnum, Modes& lmmodes);
+  void set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &coords, double& maxspeed, int elemnum, Modes& lmmodes, double xp, double xip, double dxpdt, double d2xpdt2, vector<double>& dxdt, vector<double>& dxdxi);
   
   //Returns du, for the characteristic flux.
   vector<vector<complex<double>>> characteristicflux(double t,

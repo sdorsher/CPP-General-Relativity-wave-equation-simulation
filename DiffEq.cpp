@@ -338,14 +338,14 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
   }//end if schw
 }//end function setab
 
-void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &coords, double& maxspeed, int elemnum, Modes& lmmodes)
+void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &coords, double& maxspeed, int elemnum, Modes& lmmodes, double xp, double xip, double dxpdt, double d2xpdt2, vector<double>& dxdt, vector<double>& dxdxi)
 
 
 {
   maxspeed = 1.0;
   double ne = params.grid.elemorder;
 
-  vector<double> rm2m(ne+1), x(ne+1), dxdt(ne+1), dxdxi(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
+  vector<double> rm2m(ne+1), x(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
   coords.coord_trans(Rminus, Rplus, thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
   
@@ -423,7 +423,10 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
   coords.dxdxibL1.at(elemnum)=dxdxi.at(0);
   coords.dxdxibR0.at(elemnum)=dxdt.at(params.grid.elemorder);
   coords.dxdxibR1.at(elemnum)=dxdxi.at(params.grid.elemorder);
+  // cout << setprecision(15);
+  //cout << elemnum <<  " " << dxdt.at(0) << " " << dxdxi.at(0) <<  " " << dxdt.at(params.grid.elemorder) << " " <<  dxdxi.at(params.grid.elemorder) << endl;
 
+  
   if(abs(thegrid.gridNodeLocations().get(elemnum,0)-coords.xip)<1e-10){
     orb->drdlambda_particle=dxdt.at(0);
     orb->drdxi_particle=dxdxi.at(0);
@@ -571,17 +574,23 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //cout << "LHS1 ext=" << uextL[1] << " uint=" << uintL[1] << endl;
     //cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
     //}
-
+    if(params.metric.schwarschild){
+      if(params.opts.use_generic_orbit){
+	if(modenum==0){
+	  //cout << elemnum << " " << coords.dxdxibL0.at(elemnum) << " " << coords.dxdxibL1.at(elemnum) <<  " " << coords.dxdxibR0.at(elemnum) << " " << coords.dxdxibR1.at(elemnum) << endl;
+	}
+      }
+    }
     if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
 	//FIX THIS
 	if(bleft&&add){//position 1
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
-	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(1);
-	}else if (right&&sub){//position 4
+	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(0);
+	}else if (bright&&sub){//position 4
 	  uextR.at(0)=uextR.at(0)/coords.dxdxibL0.at(elemnum-1);
-	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(1);
+	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(0);
 	}
       }
     }
@@ -615,10 +624,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	//FIX THIS
 	if(bleft&&sub){
 	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibR1.at(elemnum);
-	  uextL.at(0)=uextL.at(0)+uextL.at(0)*coords.dxdxibR0.at(elemnum);
+	  uextL.at(0)=uextL.at(0)*coords.dxdxibR0.at(elemnum);
 	}else if(bright&&add){
 	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibL1.at(elemnum);
-	  uextR.at(0)=uextR.at(0)*coords.dxdxibL0.at(elemnum);
+	  uextR.at(0)=uextR.at(0)*coords.dxdxibR0.at(elemnum);
 	}
       }
     }
@@ -969,16 +978,19 @@ void DiffEq::modeRHS(Grid& thegrid,
 {
   double maxspeed;
   if(orb->orbType()==elliptical){
+    double rp, drpdt, d2rpdt2; 
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
-    eorb->orb_of_t();
-    coords.timedep_to_rstar(eorb);
+    eorb->orb_of_t(coords);
+    coords.timedep_to_rstar(rp, drpdt, d2rpdt2);
+    vector<double> dxdt(params.grid.elemorder+1), dxdxi(params.grid.elemorder+1);
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(coords.timeDepTrans.at(elemnum-1)){
-	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes);
-	coords.dxdxibL0.at(elemnum)=coords.dxdxib.at(1);
-	coords.dxdxibL1.at(elemnum)=coords.dxdxib.at(0);
-	coords.dxdxibR0.at(elemnum)=coords.dxdxib.at(3);
-	coords.dxdxibR1.at(elemnum)=coords.dxdxib.at(2);
+	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes, rp,rstar_orb, drpdt, d2rpdt2, dxdt, dxdxi);
+	//cout << elemnum << " " << coords.dxdxib.at(1) << " " << coords.dxdxib.at(0) << " " << coords.dxdxib.at(3) << " " << coords.dxdxib.at(2) << endl;
+	coords.dxdxibL0.at(elemnum)=dxdxi.at(0);
+	coords.dxdxibL1.at(elemnum)=dxdt.at(0);
+	coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
+	coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
       }
 	
       if(!params.opts.use_world_tube){

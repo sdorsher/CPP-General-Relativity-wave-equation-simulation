@@ -48,17 +48,17 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
   theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, orb, wt, coords, max_speed, lmmodes);//true for debugging output
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
-  /*  for(int modenum = 0; modenum< lmmodes.ntotal; modenum++){
+    for(int modenum = 0; modenum< lmmodes.ntotal; modenum++){
     for(int vecnum = 0; vecnum < 2; vecnum ++){
     for(int elemnum = 0; elemnum < params.grid.numelems; elemnum++){
       for(int nodenum = 0; nodenum < params.grid.elemorder+1; nodenum++){
-	if(elemnum==10){
-	  cout << 1 << " " << modenum << " " << vecnum << " " << elemnum << " " << nodenum << " " << RHStdvgf.get(modenum, vecnum, elemnum, nodenum) << endl; 
-      }
+	
+	//	  cout << 1 << " " << modenum << " " << vecnum << " " << elemnum << " " << nodenum << " " << RHStdvgf.get(modenum, vecnum, elemnum, nodenum) << endl; 
+      
       }
     }
     }
-    }*/
+    }
 
   
   if((orb->orbType())==elliptical){
