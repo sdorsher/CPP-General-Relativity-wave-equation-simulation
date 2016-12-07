@@ -120,7 +120,8 @@ int main()
   }
   
   if(params.opts.use_generic_orbit){
-    eorb->orb_of_t(coords);
+    double rp, drpdt, d2rpdt2;
+    eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
     
     if(params.opts.useSource){
       set_particle(eorb->p,eorb->e,eorb->chi,eorb->phi,lmmodes.ntotal);
@@ -227,7 +228,6 @@ int main()
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
 
-  
   if(params.opts.use_generic_orbit){
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
     // for(int k=0; k<lmmodes.ntotal;k++){

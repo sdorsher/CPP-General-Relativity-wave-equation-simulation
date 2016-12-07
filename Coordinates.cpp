@@ -113,10 +113,12 @@ void Coordinates::timedep_to_rstar(double & rp, double & drpdt, double & d2rpdt2
     /pow(( xp - 2.0 * params.schw.mass ),2.);
   drpdt = rp / ( rp - 2.0 * params.schw.mass ) * drpdt;
   rp = rstar_of_r ( rp, params.schw.mass ); 
+  //cout << rp << " " << drpdt << " " << d2rpdt2 << endl;
+
 }
 
 
-void Coordinates::coord_trans(double a, double b, Grid& thegrid, vector<double> &x, vector<double>& dxdt, vector<double> & dxdxi, vector<double>& d2xdt2,vector<double>& d2xdxi2, vector<double>& d2xdtdxi, int elemnum){
+void Coordinates::coord_trans(double a, double b, Grid& thegrid, double& xp, double& xip, double& dxpdt, double& d2xpdt2, vector<double>& x, vector<double>& dxdt, vector<double> & dxdxi, vector<double>& d2xdt2,vector<double>& d2xdxi2, vector<double>& d2xdtdxi, int elemnum){
   //time dep coord transf
   double xpma, xipma, xima, bmxp, bmxip, bmxi, bma, ximxip, xipmxp, xipmainv, xipamulbmxipinv, dtfac;
   if((elemnum==0)||(!timeDepTrans.at(elemnum-1))){
@@ -153,6 +155,8 @@ void Coordinates::coord_trans(double a, double b, Grid& thegrid, vector<double> 
       d2xdt2.at(i)=dtfac*d2xpdt2;
       d2xdxi2.at(i)=2.*xipmxp*xipmamulbmxipinv;
       d2xdtdxi.at(i)=(a+b+2.*xi.at(i))*xipmamulbmxipinv*dxpdt;
+
+      
     }
   }
 }

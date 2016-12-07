@@ -347,8 +347,9 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
   vector<double> rm2m(ne+1), x(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
-  coords.coord_trans(Rminus, Rplus, thegrid, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
-  
+  coords.coord_trans(Rminus, Rplus, thegrid, xp, xip, dxpdt, d2xpdt2, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
+
+    
   for(int i = 0; i<=ne; i++){
     double dxdxiinv = 1.0/dxdxi.at(i);
     double dxdxiinv2 = dxdxiinv*dxdxiinv;
@@ -419,14 +420,16 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
   }
 
   //finds right side of element boundary in time dependent region. for dxdt and dxdxi
-  coords.dxdxibL0.at(elemnum)=dxdt.at(0);
-  coords.dxdxibL1.at(elemnum)=dxdxi.at(0);
-  coords.dxdxibR0.at(elemnum)=dxdt.at(params.grid.elemorder);
-  coords.dxdxibR1.at(elemnum)=dxdxi.at(params.grid.elemorder);
+  coords.dxdxibL0.at(elemnum)=dxdxi.at(0);
+  coords.dxdxibL1.at(elemnum)=dxdt.at(0);
+  coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
+  coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
+  cout << "coordsdx : " << coords.dxdxibL0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) <<" " << coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) << endl; 
+
   // cout << setprecision(15);
   //cout << elemnum <<  " " << dxdt.at(0) << " " << dxdxi.at(0) <<  " " << dxdt.at(params.grid.elemorder) << " " <<  dxdxi.at(params.grid.elemorder) << endl;
 
-  
+  //GOOD THROUGH HERE
   if(abs(thegrid.gridNodeLocations().get(elemnum,0)-coords.xip)<1e-10){
     orb->drdlambda_particle=dxdt.at(0);
     orb->drdxi_particle=dxdxi.at(0);
@@ -586,8 +589,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       if(params.opts.use_generic_orbit){
 	//FIX THIS
 	if(bleft&&add){//position 1
+	  cout << "before: " << uextL.at(0) << " " << uextL.at(1) << " " << coords.dxdxibR0.at(elemnum+1) << " " << coords.dxdxibR1.at(elemnum+1) << endl;
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
 	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(0);
+	  cout << "after: " << uextL.at(0) << " " << uextL.at(1) << endl;
 	}else if (bright&&sub){//position 4
 	  uextR.at(0)=uextR.at(0)/coords.dxdxibL0.at(elemnum-1);
 	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(0);
@@ -978,19 +983,21 @@ void DiffEq::modeRHS(Grid& thegrid,
 {
   double maxspeed;
   if(orb->orbType()==elliptical){
-    double rp, drpdt, d2rpdt2; 
+    double rp, drpdt, d2rpdt2;
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
-    eorb->orb_of_t(coords);
+    eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
     coords.timedep_to_rstar(rp, drpdt, d2rpdt2);
     vector<double> dxdt(params.grid.elemorder+1), dxdxi(params.grid.elemorder+1);
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes, rp,rstar_orb, drpdt, d2rpdt2, dxdt, dxdxi);
-	//cout << elemnum << " " << coords.dxdxib.at(1) << " " << coords.dxdxib.at(0) << " " << coords.dxdxib.at(3) << " " << coords.dxdxib.at(2) << endl;
+	//cout << elemnum << " " << dxdxi.at(0) << " " << dxdt.at(0) << " " << dxdxi.at(params.grid.elemorder) << " " << dxdt.at(params.grid.elemorder) << endl;
 	coords.dxdxibL0.at(elemnum)=dxdxi.at(0);
 	coords.dxdxibL1.at(elemnum)=dxdt.at(0);
 	coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
 	coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
+	//	cout << elemnum << " " << coords.dxdxibL0.at(elemnum) << " " << coords.dxdxibL1.at(elemnum) << " "<< coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibR1.at(elemnum) << endl;
+
       }
 	
       if(!params.opts.use_world_tube){

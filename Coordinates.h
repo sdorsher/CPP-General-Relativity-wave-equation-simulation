@@ -45,7 +45,7 @@ class Coordinates{
   void timedep_to_rstar(double& rp , double& drpdt, double& d2rpdt2);
 
   //HERE (OSCULATING ORBITS COORDINATE TRANSFORM)
-  void coord_trans(double a, double b, Grid& thegrid, vector<double>&  x, vector<double> & dxdt, vector<double> & dxdxi, vector<double> & d2dxdt2, vector<double> & d2dxi2,vector<double> & d2xdtdxi, int elemnum);
+  void coord_trans(double a, double b, Grid& thegrid, double& xp, double& xip, double& dxpdt, double& d2xpdt2, vector<double>& x, vector<double>& dxdt, vector<double> & dxdxi, vector<double>& d2xdt2,vector<double>& d2xdxi2, vector<double>& d2xdtdxi, int elemnum);
   
     
 };

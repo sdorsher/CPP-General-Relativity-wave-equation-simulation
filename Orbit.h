@@ -13,7 +13,6 @@ class Orbit{
  protected:
   OrbitType otype;
  public:
-  double rp, drpdt, d2rpdt2;
   double p; //simulatus rectum
   double e; //eccentricity -- zero for circular orbits
   double chi; //angular parameter for radial oscillations
