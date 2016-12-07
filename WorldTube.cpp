@@ -14,7 +14,7 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
   
   for (int j=0; j<params.grid.numelems-1; j++){
     double rho = thegrid.gridNodeLocations().get(j+1,0);
-    if((rho>Rminus)&&(rho<Rplus))
+    if((rho>=Rminus)&&(rho<=Rplus))
       {
 	coords.timeDepTrans.at(j)=true;
       }

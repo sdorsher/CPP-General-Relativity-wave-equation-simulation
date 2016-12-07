@@ -424,7 +424,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
   coords.dxdxibL1.at(elemnum)=dxdt.at(0);
   coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
   coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
-  cout << "coordsdx : " << coords.dxdxibL0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) <<" " << coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) << endl; 
+  cout << "coordsdx : " << elemnum << " "<< coords.dxdxibL0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) <<" " << coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) << endl; 
 
   // cout << setprecision(15);
   //cout << elemnum <<  " " << dxdt.at(0) << " " << dxdxi.at(0) <<  " " << dxdt.at(params.grid.elemorder) << " " <<  dxdxi.at(params.grid.elemorder) << endl;
@@ -589,7 +589,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       if(params.opts.use_generic_orbit){
 	//FIX THIS
 	if(bleft&&add){//position 1
-	  cout << "before: " << uextL.at(0) << " " << uextL.at(1) << " " << coords.dxdxibR0.at(elemnum+1) << " " << coords.dxdxibR1.at(elemnum+1) << endl;
+	  cout << "before: " << elemnum << " " << uextL.at(0) << " " << uextL.at(1) << " " << coords.dxdxibR0.at(elemnum) << " " << coords.dxdxibR1.at(elemnum) << endl;
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
 	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(0);
 	  cout << "after: " << uextL.at(0) << " " << uextL.at(1) << endl;
