@@ -424,7 +424,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
   coords.dxdxibL1.at(elemnum)=dxdt.at(0);
   coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
   coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
-  cout << "coordsdx : " << elemnum << " "<< coords.dxdxibL0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) <<" " << coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) << endl; 
+  //cout << "coordsdx : " << elemnum << " "<< coords.dxdxibL0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) <<" " << coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibL1.at(elemnum) << endl; 
 
   // cout << setprecision(15);
   //cout << elemnum <<  " " << dxdt.at(0) << " " << dxdxi.at(0) <<  " " << dxdt.at(params.grid.elemorder) << " " <<  dxdxi.at(params.grid.elemorder) << endl;
@@ -578,22 +578,13 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     //cout << "RHS1 uext=" << uextR[1] << " uint=" << uintR[1] << endl;
     //}
     if(params.metric.schwarschild){
-      if(params.opts.use_generic_orbit){
-	if(modenum==0){
-	  //cout << elemnum << " " << coords.dxdxibL0.at(elemnum) << " " << coords.dxdxibL1.at(elemnum) <<  " " << coords.dxdxibR0.at(elemnum) << " " << coords.dxdxibR1.at(elemnum) << endl;
-	}
-      }
-    }
-    if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	//FIX THIS
-	if(bleft&&add){//position 1
-	  cout << "before: " << elemnum << " " << uextL.at(0) << " " << uextL.at(1) << " " << coords.dxdxibR0.at(elemnum) << " " << coords.dxdxibR1.at(elemnum) << endl;
+	if(bleft&&add){//position 
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
 	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(0);
-	  cout << "after: " << uextL.at(0) << " " << uextL.at(1) << endl;
 	}else if (bright&&sub){//position 4
+
 	  uextR.at(0)=uextR.at(0)/coords.dxdxibL0.at(elemnum-1);
 	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(0);
 	}
@@ -626,7 +617,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	//FIX THIS
 	if(bleft&&sub){
 	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibR1.at(elemnum);
 	  uextL.at(0)=uextL.at(0)*coords.dxdxibR0.at(elemnum);

@@ -31,9 +31,12 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
       subSingFieldFromLeftElemExt.at(j)=true;
     }
   }
-      
+  for (int j=0; j<params.grid.numelems-1; j++){
+    if((!coords.timeDepTrans.at(j))&&(coords.timeDepTrans.at(j+1))){
+      coords.timeDepTrans.at(j)=true;
+    }
+  }
 }
-
 
 void WorldTube::set_world_tube_window(Grid &thegrid, Coordinates &coords){
 
