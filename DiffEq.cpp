@@ -349,7 +349,7 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
   coords.coord_trans(Rminus, Rplus, thegrid, xp, xip, dxpdt, d2xpdt2, x, dxdt, dxdxi, d2xdt2, d2xdxi2, d2xdtdxi, elemnum);
 
-    
+
   for(int i = 0; i<=ne; i++){
     double dxdxiinv = 1.0/dxdxi.at(i);
     double dxdxiinv2 = dxdxiinv*dxdxiinv;
@@ -362,6 +362,10 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 		      +dxdxi.at(i)*(-2.*dxdt.at(i)*d2xdtdxi.at(i)
 				    +dxdxi.at(i)*d2xdt2.at(i)))*dxdxiinv3;
     double coeff4 = 0.0;
+
+
+    cout <<  elemnum << " " << coeff1 << " " << coeff2 << " " << coeff3 << endl;
+    
     Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
     Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
     for(int modenum=0; modenum< lmmodes.ntotal; modenum++){
@@ -539,7 +543,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	sstim = ssign*sstim;
 	ssrre = alpha *ssign*ssrre;
 	ssrim = alpha *ssign*ssrim;
-	//	if((modenum==1)&found){
+	//	if((modenum==1&found){
 	//cout << setprecision(15);
 	//cout << modenum  << " " << elemnum << " " << nodenumFound<< " " << " "<< ssign << " " << alpha << " " << t << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << sstre <<  " " << sstim << " " << ssrre << " " << ssrim <<  " " << (add ? 1 : 0 ) << " " << ( sub ? 1 : 0) << " " << (bleft ? 1:0) << " " << (right ? 1:0)<< endl;
 	//}
@@ -951,6 +955,9 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	// I AM HERE
 	if((params.opts.useSource)&&(vecnum==SOURCE_VECNUM)){
 	  complex<double> temp = source.get(modenum,elemnum,nodenum);
+	  //if((modenum==1)&&(elemnum==15)&&(nodenum==16)){
+	  //  cout << t << " " << temp.real() << " " <<  temp.imag() << endl;
+	  //}
 	  tot += temp;
 
 	  //equation in the definition supplied in DiffEq.cpp

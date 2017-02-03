@@ -57,10 +57,10 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
   }
   ecosfac = 1.0 + orb->e*cos(orb->chi);
   radius = (params.schw.mass*orb->p)/ecosfac;
-  if(orb->orbType()==circular){
-    CircularOrbit * corb = dynamic_cast<CircularOrbit *>(orb);
-    orb->phi=corb->phi_of_t(time);
-  }
+  //if(orb->orbType()==circular){
+  // CircularOrbit * corb = dynamic_cast<CircularOrbit *>(orb);
+  // orb->phi=corb->phi_of_t(time);
+  //}
   for (int i=0; i<mm.size(); i++){
     if(mm.at(i)==0) {
       m_fold_factor = 1.0;
@@ -73,13 +73,13 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
     y_lm = gsl_sf_legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
     //y_lm = legendre_sphPlm(ll.at(i), mm.at(i), 0.0);
     psil.at(ll.at(i))= psil.at(ll.at(i))
-      +m_fold_factor * y_lm * (phase * uh.get(i,0,index1,index2)).real();
+      +m_fold_factor * y_lm * (phase *uh.get(i,0,index1,index2)).real();
     psitl.at(ll.at(i))=psitl.at(ll.at(i))
       +m_fold_factor*y_lm* (phase* uh.get(i,2,index1,index2)).real();
     psiphil.at(ll.at(i)) = psiphil.at(ll.at(i))
-      +m_fold_factor * y_lm* (phifactor *phase * uh.get(i,0,index1,index2)).real();
+      +m_fold_factor * y_lm* (phifactor* phase * uh.get(i,0,index1,index2)).real();
     psirl.at(ll.at(i)) = psirl.at(ll.at(i))
-      +m_fold_factor * y_lm *(phase * uh.get(i, 1, index1, index2)).real();
+      +m_fold_factor * y_lm *(phase*uh.get(i, 1, index1, index2)).real();
   }
 
   //convert to physical modes. the time and radial derivatives have not been checked in Fortran
