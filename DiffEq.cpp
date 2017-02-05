@@ -187,10 +187,10 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
               // *( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	      //Bmatrices.set(k, i, j, B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j, term1/(1.0-pow(H,2.0))*(term2+lmmodes.ll[k]*(lmmodes.ll[k]+1)));
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,-Hp / (1.0 - H));
-	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 - H));
-	      double temp=1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 - H));	      double temp=1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+
 	      //	      cout << i << " " << j << " " << k << " " << temp << endl;
 	    }
 	    
@@ -230,7 +230,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
 	       // * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	       //Bmatrices.set(k, i, j, B);
 	       Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
-	       double temp =1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1 * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	       double temp =term1 * (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	       Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
 	       //cout << i << " " << j << " " << k <<" " << temp << endl;
 	     }
@@ -281,10 +281,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
 		//* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	      //Bmatrices.set(k, i, j, B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,term1/(1.0-pow(H,2.0))*(lmmodes.ll[k]*(lmmodes.ll[k]+1)+term2));
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,Hp / (1.0 + H));
 	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 + H));
 	      double temp = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+	      //Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
 	    }
 	    break;
              }
@@ -320,6 +321,8 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
             //B[2][0]=lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
             //Bmatrices.set(k,i,j,B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
+
+	      //FIX ME: THIS DOESN"T LOOK RIGHT
 	      double temp =lmmodes.ll[k]*(lmmodes.ll[k]+1.0)/(2.0*pow(Splus,2.0));
 	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
 			  
@@ -342,7 +345,6 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 
 
 {
-  maxspeed = 1.0;
   double ne = params.grid.elemorder;
 
   vector<double> rm2m(ne+1), x(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
@@ -978,13 +980,14 @@ void DiffEq::modeRHS(Grid& thegrid,
                      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                      double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double& max_speed, Modes& lmmodes)
 {
-  double maxspeed;
+  double maxspeed=1.0; 
   if(orb->orbType()==elliptical){
     double rp, drpdt, d2rpdt2;
     EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
     eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
     coords.timedep_to_rstar(rp, drpdt, d2rpdt2);
-    vector<double> dxdt(params.grid.elemorder+1), dxdxi(params.grid.elemorder+1);
+    vector<double> dxdt(params.grid.elemorder+1),dxdxi(params.grid.elemorder+1);
+      
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes, rp,rstar_orb, drpdt, d2rpdt2, dxdt, dxdxi);
@@ -994,41 +997,44 @@ void DiffEq::modeRHS(Grid& thegrid,
 	coords.dxdxibR0.at(elemnum)=dxdxi.at(params.grid.elemorder);
 	coords.dxdxibR1.at(elemnum)=dxdt.at(params.grid.elemorder);
 	//	cout << elemnum << " " << coords.dxdxibL0.at(elemnum) << " " << coords.dxdxibL1.at(elemnum) << " "<< coords.dxdxibR0.at(elemnum) <<" " << coords.dxdxibR1.at(elemnum) << endl;
-
-      }
 	
+      }
+      
       if(!params.opts.use_world_tube){
 	vector<double> rschwv = thegrid.rschw.get(elemnum);
 	double * rarr = &rschwv[0];
-	  
+      
 	
 	vector<double> windowv = thegrid.window.get(elemnum);
 	vector<double> dwindowv = thegrid.dwindow.get(elemnum);
 	vector<double> d2windowv = thegrid.d2window.get(elemnum);
-	  
-	  
+	
+	
 	double * winarr = &windowv[0];
 	double * dwinarr = &dwindowv[0];
 	double * d2winarr = &d2windowv[0];
-	  
+	
 	  
 	calc_window(params.grid.elemorder+1, rarr, winarr, dwinarr, d2winarr);
 	thegrid.window.set(elemnum,windowv);
 	thegrid.dwindow.set(elemnum,dwindowv);
 	thegrid.d2window.set(elemnum,d2windowv);
+	thegrid.rschw.set(elemnum,rschwv);
+	//put inside if time dependent loop?
+	setupABmatrices(thegrid,lmmodes,coords);
       }
       max_speed=max(maxspeed,max_speed);
       
     }
   }
-
   
+
   if(params.opts.useSource) {
     
     fill_source_all(thegrid, t, uh.TDVGFdim(), source, thegrid.window,
 		    thegrid.dwindow, thegrid.d2window, orb, lmmodes);
   }
-
+  
 
   typedef numeric_limits<double> dbl;
   /*for(int k = 0; k<lmmodes.ntotal; k++){

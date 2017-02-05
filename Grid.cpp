@@ -108,7 +108,7 @@ void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijou
   bool foundSplus = false;
   for(int elem=0; elem<NumElem; elem++){
     for(int node =0; node<=order; node++){
-      if((fabs(thegrid.rschw.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
+      if((fabs(rschw.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
         ijoutput.ifinite = elem;
         ijoutput.jfinite = node;
         foundfinite = true;
