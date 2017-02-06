@@ -187,10 +187,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
               // *( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	      //Bmatrices.set(k, i, j, B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j, term1/(1.0-pow(H,2.0))*(term2+lmmodes.ll[k]*(lmmodes.ll[k]+1)));
+	      //Bmatrices.set(k,2*params.grid.Adim+0,i,j, term1/(1.0-pow(H,2.0))*(term2+lmmodes.ll[k]*(lmmodes.ll[k]+1)));
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,-Hp / (1.0 - H));
-	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 - H));	      double temp=1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-
+	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 - H));
+	      double temp=1.0 / (1.0 - pow(H,2.0)) * pow(Omega, 2.0) * term1*( lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
+	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,temp);
 	      //	      cout << i << " " << j << " " << k << " " << temp << endl;
 	    }
 	    
@@ -281,11 +282,11 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
 		//* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
 	      //Bmatrices.set(k, i, j, B);
 	      Bmatrices.set(k,0*params.grid.Adim+2,i,j,-1.0);
-	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,term1/(1.0-pow(H,2.0))*(lmmodes.ll[k]*(lmmodes.ll[k]+1)+term2));
+	      //Bmatrices.set(k,2*params.grid.Adim+0,i,j,term1/(1.0-pow(H,2.0))*(lmmodes.ll[k]*(lmmodes.ll[k]+1)+term2));
 	      Bmatrices.set(k,2*params.grid.Adim+1,i,j,Hp / (1.0 + H));
 	      Bmatrices.set(k,2*params.grid.Adim+2,i,j,Hp / (1.0 + H));
 	      double temp = 1.0 / (1.0 - pow(H, 2.0)) * pow(Omega, 2.0) * term1* (lmmodes.ll[k] * (lmmodes.ll[k] + 1.0) + term2);
-	      //Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
+	      Bmatrices.set(k,2*params.grid.Adim+0,i,j,temp);
 	    }
 	    break;
              }
