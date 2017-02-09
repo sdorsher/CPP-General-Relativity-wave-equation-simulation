@@ -102,7 +102,7 @@ int Grid::numberElements()
 
 void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput){
   //Find the grid and element indices that correspond the the computational
-  //coordinates rfinite and rSplus. rfinite in schwarzschild coordinates. splus in computational coordinates
+  //coordinates rfinite and rSplus.
   
   bool foundfinite = false;
   bool foundSplus = false;
