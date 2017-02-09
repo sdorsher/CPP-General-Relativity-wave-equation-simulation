@@ -108,19 +108,7 @@ void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijou
   bool foundSplus = false;
   for(int elem=0; elem<NumElem; elem++){
     for(int node =0; node<=order; node++){
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       if((fabs(rschw.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
-=======
-      if((fabs(nodeLocs.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
->>>>>>> parent of 5de6444... fixed bug where location of particle was read out in different coordinate system than input. have not tested yet.
-=======
-      if((fabs(nodeLocs.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
->>>>>>> parent of 5de6444... fixed bug where location of particle was read out in different coordinate system than input. have not tested yet.
-=======
-      if((fabs(nodeLocs.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
->>>>>>> parent of 5de6444... fixed bug where location of particle was read out in different coordinate system than input. have not tested yet.
         ijoutput.ifinite = elem;
         ijoutput.jfinite = node;
         foundfinite = true;
