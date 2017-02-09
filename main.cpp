@@ -88,6 +88,7 @@ int main()
     eorb = new EllipticalOrbit();
   }else{
     corb= new CircularOrbit();
+    cout << "circular initiated" << endl;
   }
 
 
@@ -120,6 +121,7 @@ int main()
   }
   
   if(params.opts.use_generic_orbit){
+    cout << "generic orbit set particle" << endl;
     double rp, drpdt, d2rpdt2;
     eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
     
@@ -217,6 +219,7 @@ int main()
 		      theequation,lmmodes,true,
 		     "/mnt/data/sdorsher/window",6, eorb);
   }else{
+    cout << "circular orbit write initial " << endl;
     write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
 		     theequation,lmmodes,true,
 		     "/mnt/data/sdorsher/coords",5, corb);
@@ -235,6 +238,7 @@ int main()
     //		     "/mnt/data/sdorsher/rhs",3, eorb);
     //}
   }else{
+    cout << "circ write rhs initial" << endl;
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
     //for(int k=0; k<lmmodes.ntotal;k++){
     //write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
@@ -263,9 +267,9 @@ int main()
   
   if (params.metric.schwarschild){
     if (params.opts.use_generic_orbit){ 
-      //lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
+      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
     } else {
-      //lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
+      lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
     }
   }
 
@@ -395,9 +399,9 @@ int main()
 			   params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
 	    if(params.opts.use_generic_orbit){
-	      //lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
+	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
 	    }else{
-	      //lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
+	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
 	    }
 
 	    if(params.opts.use_generic_orbit){
