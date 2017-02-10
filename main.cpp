@@ -198,7 +198,7 @@ int main()
 
   //output window function
   /*ofstream fs;
-  fs.open("/mnt/data/sdorsher/window.txt");
+  fs.open("window.txt");
   for(int i=0; i<params.grid.numelems; i++) {
     for(int j = 0; j<params.grid.elemorder+1; j++) {
       fs << thegrid.gridNodeLocations().get(i,j) << " " 
@@ -214,18 +214,18 @@ int main()
   if(params.opts.use_generic_orbit){
     write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
 		     theequation,lmmodes,true,
-		     "/mnt/data/sdorsher/coords",5, eorb);
+		     "coords",5, eorb);
      write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
 		      theequation,lmmodes,true,
-		     "/mnt/data/sdorsher/window",6, eorb);
+		     "window",6, eorb);
   }else{
     cout << "circular orbit write initial " << endl;
     write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
 		     theequation,lmmodes,true,
-		     "/mnt/data/sdorsher/coords",5, corb);
+		     "coords",5, corb);
     write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
 		     theequation,lmmodes,true,
-		     "/mnt/data/sdorsher/window",6, corb);
+		     "window",6, corb);
   }
   //output coords
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
@@ -235,14 +235,14 @@ int main()
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
     // for(int k=0; k<lmmodes.ntotal;k++){
     //write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
-    //		     "/mnt/data/sdorsher/rhs",3, eorb);
+    //		     "rhs",3, eorb);
     //}
   }else{
     cout << "circ write rhs initial" << endl;
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
     //for(int k=0; k<lmmodes.ntotal;k++){
     //write_fixed_time(k,0.0,uh,RHStdvgf,thegrid,theequation,lmmodes,false, 
-    //		     "/mnt/data/sdorsher/rhs",3, corb);
+    //		     "rhs",3, corb);
     //}
   }
   cout << "first call to RHS succeeded" << endl;
@@ -283,7 +283,7 @@ int main()
 			 theequation,lmmodes,true,
 			 params.file.pdesolution,1, eorb);
 	//write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
-	//		 theequation,lmmodes,true,"/mnt/data/sdorsher/rhs",3, eorb);
+	//		 theequation,lmmodes,true,"rhs",3, eorb);
       } else{
 	/*write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes,true,
@@ -309,29 +309,29 @@ int main()
 	if(params.opts.use_generic_orbit){
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			   "/mnt/data/sdorsher/psil",1, eorb);
+			   "psil",1, eorb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			   "/mnt/data/sdorsher/psitl",2, eorb);
+			   "psitl",2, eorb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			 "/mnt/data/sdorsher/psiphil",3, eorb);
+			 "psiphil",3, eorb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,
-			   "/mnt/data/sdorsher/psirl",4, eorb);
+			   "psirl",4, eorb);
 	}else{
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			   "/mnt/data/sdorsher/psil",1, corb);
+			   "psil",1, corb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			   "/mnt/data/sdorsher/psitl",2, corb);
+			   "psitl",2, corb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes, true,
-			 "/mnt/data/sdorsher/psiphil",3, corb);
+			 "psiphil",3, corb);
 	  write_summed_psi(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,
-			   "/mnt/data/sdorsher/psirl",4, corb);
+			   "psirl",4, corb);
 	  
 	}
 	 
@@ -377,13 +377,13 @@ int main()
 			     theequation,lmmodes,true,
 			     params.file.pdesolution,1,eorb);
 	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes,true,"/mnt/data/sdorsher/rhs",3,eorb);
+			     theequation,lmmodes,true,"rhs",3,eorb);
 	  }else{
 	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
 			     params.file.pdesolution,1,corb);
 	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes,true,"/mnt/data/sdorsher/rhs",3,corb);
+			     theequation,lmmodes,true,"rhs",3,corb);
 	  /*	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			   theequation,lmmodes,true,"source",2);
 	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
@@ -408,35 +408,35 @@ int main()
 	      
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psil",1,eorb);
+			       "psil",1,eorb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psitl",2,eorb);
+			       "psitl",2,eorb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psiphil",3,eorb);
+			       "psiphil",3,eorb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psirl",4,eorb);
+			       "psirl",4,eorb);
 	    }else{
 	      	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psil",1,corb);
+			       "psil",1,corb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psitl",2,corb);
+			       "psitl",2,corb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psiphil",3,corb);
+			       "psiphil",3,corb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
-			       "/mnt/data/sdorsher/psirl",4,corb);
+			       "psirl",4,corb);
 	    }
 	  }//end if k==lmax
 	}//end if outputradiusfixed
       }//end for k
      ofstream fsL2;
-     fsL2.open("/mnt/data/sdorsher/L2error.txt", ios::app);
+     fsL2.open("L2error.txt", ios::app);
      fsL2.precision(15);
      if (outputcount==params.time.comparisoncount){
        fsL2 << params.grid.elemorder << " " << params.grid.numelems << " " << deltat << " " << LTwoError(thegrid, uh0, uh) << " " << t << " " << outputcount << endl;
@@ -460,7 +460,7 @@ int main()
   }
 
   ofstream fstimes;
-  fstimes.open("/mnt/data/sdorsher/times.out",ios::app);
+  fstimes.open("times.out",ios::app);
   fstimes.precision(15);
   fstimes << t << "\t" << deltat << "\t" << dx <<"\t" << max_speed << endl;
   fstimes.close();
@@ -490,7 +490,7 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
   ofstream fs;
   GridFunction<double> nodes = grd.gridNodeLocations();
   if(!params.opts.useSource){
-    fs.open("/mnt/data/sdorsher/initialdata.txt");
+    fs.open("initialdata.txt");
   }
   for(int i = 0; i < uh.GFvecDim(); i++) {
     for (int j = 0; j < uh.GFarrDim(); j++) {
