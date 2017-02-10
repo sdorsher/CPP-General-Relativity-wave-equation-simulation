@@ -985,6 +985,8 @@ void DiffEq::modeRHS(Grid& thegrid,
     eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
     coords.timedep_to_rstar(rp, drpdt, d2rpdt2);
     vector<double> dxdt(params.grid.elemorder+1), dxdxi(params.grid.elemorder+1);
+
+    //Setting the coefficients, coordinate transforming, and setting rschwarzchild should perhaps be rethought to happen in the right order for elliptical orbits.
     for(int elemnum=1; elemnum<params.grid.numelems; elemnum++){
       if(coords.timeDepTrans.at(elemnum-1)){
 	set_coefficients(thegrid, eorb, coords, maxspeed, elemnum, lmmodes, rp,rstar_orb, drpdt, d2rpdt2, dxdt, dxdxi);
@@ -1016,6 +1018,7 @@ void DiffEq::modeRHS(Grid& thegrid,
 	thegrid.window.set(elemnum,windowv);
 	thegrid.dwindow.set(elemnum,dwindowv);
 	thegrid.d2window.set(elemnum,d2windowv);
+	//	thegrid.rschw.set(elemnum,rschwv);
       }
       max_speed=max(maxspeed,max_speed);
       
