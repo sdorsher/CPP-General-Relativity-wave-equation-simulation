@@ -47,8 +47,7 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
   double m_fold_factor, y_lm, omega, ecosfac, radius;
   complex<double> phase, phifactor;
   complex<double> zi{0.,1.0};
-
-
+  
   for(int i=0; i<psil.size(); i++){
     psil.at(i)= 0.0;
     psitl.at(i)=0.0;
@@ -57,10 +56,11 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
   }
   ecosfac = 1.0 + orb->e*cos(orb->chi);
   radius = (params.schw.mass*orb->p)/ecosfac;
-  //if(orb->orbType()==circular){
-  // CircularOrbit * corb = dynamic_cast<CircularOrbit *>(orb);
-  // orb->phi=corb->phi_of_t(time);
-  //}
+  if(orb->orbType()==circular){
+    CircularOrbit * corb = dynamic_cast<CircularOrbit *>(orb);
+    orb->phi=corb->phi_of_t(time);
+    //cout << "modes " << orb->phi << " " << time << endl;
+  }
   for (int i=0; i<mm.size(); i++){
     if(mm.at(i)==0) {
       m_fold_factor = 1.0;

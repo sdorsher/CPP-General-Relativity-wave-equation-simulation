@@ -264,9 +264,8 @@ int main()
     deltat = params.time.dt;
   }
 
-  
   if (params.metric.schwarschild){
-    if (params.opts.use_generic_orbit){ 
+    if(params.opts.use_generic_orbit){
       lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
     } else {
       lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, corb);
@@ -352,6 +351,7 @@ int main()
     //max_speed=1.0;
     outputcount++;
 
+    //cout << "before rk4" << endl; 
     //Increment the time integration
     if(params.opts.use_generic_orbit){
       rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords, lmmodes);
@@ -363,15 +363,16 @@ int main()
 
     //increment time
     t+=deltat;
+
     //assert(0);
     
     //might need fill_source_all here  
     if (outputcount%params.time.outputevery == 0){
       //Output in gnuplot format
     
-     for(int k = 0; k < uh.TDVGFdim(); k++) {
-        if(params.file.outputtimefixed) {
-
+      if(params.file.outputtimefixed) {
+	for(int k = 0; k < uh.TDVGFdim(); k++) {
+	  
 	  if (params.opts.use_generic_orbit){
 	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
@@ -384,44 +385,49 @@ int main()
 			     params.file.pdesolution,1,corb);
 	    write_fixed_time(k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,"rhs",3,corb);
-	  /*	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,"source",2);
-	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,"up",4);
-	  */
+	    /*	  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+		  theequation,lmmodes,true,"source",2);
+		  write_fixed_time(ijoutput,k,t,uh,RHStdvgf,thegrid,
+		  theequation,lmmodes,true,"up",4);
+	    */
 	  }
-	 
-	}
+	}//end k loop
+      }// end if over fixed time
 
-	if(params.file.outputradiusfixed){
+      if(params.file.outputradiusfixed){
+	for(int k = 0; k < uh.TDVGFdim(); k++) {
+	  
 	  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes, true,
-			   params.file.fixedradiusfilename,1);
+			     params.file.fixedradiusfilename,1);
 	  if(k==params.modes.lmax){
 	    if(params.opts.use_generic_orbit){
 	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,eorb);
 	    }else{
 	      lmmodes.sum_m_modes(uh, t, ijoutput.ifinite, ijoutput.jfinite,corb);
 	    }
+	  }//end if lmax
+	}//end k loop
+	
+	for(int k = 0; k < uh.TDVGFdim(); k++) {
 
-	    if(params.opts.use_generic_orbit){
-	      
-	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes,true,
-			       "psil",1,eorb);
-	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes,true,
-			       "psitl",2,eorb);
-	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes,true,
-			       "psiphil",3,eorb);
-	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+	  if(params.opts.use_generic_orbit){ 
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes,true,
-			       "psirl",4,eorb);
-	    }else{
-	      	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes,true,
-			       "psil",1,corb);
+			     "psil",1,eorb);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			       "psitl",2,eorb);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     "psiphil",3,eorb);
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     "psirl",4,eorb);
+	  }else{
+	    write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     "psil",1,corb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes,true,
 			       "psitl",2,corb);
@@ -429,60 +435,59 @@ int main()
 			       theequation,lmmodes,true,
 			       "psiphil",3,corb);
 	      write_summed_psi(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes,true,
+			       theequation,lmmodes,true,
 			       "psirl",4,corb);
-	    }
-	  }//end if k==lmax
-	}//end if outputradiusfixed
-      }//end for k
-     ofstream fsL2;
-     fsL2.open("L2error.txt", ios::app);
-     fsL2.precision(15);
-     if (outputcount==params.time.comparisoncount){
-       fsL2 << params.grid.elemorder << " " << params.grid.numelems << " " << deltat << " " << LTwoError(thegrid, uh0, uh) << " " << t << " " << outputcount << endl;
-     }
-     fsL2.close();
+	  }
+	}//end for k
+      }//end if outputradiusfixed
+      
+      ofstream fsL2;
+      fsL2.open("L2error.txt", ios::app);
+      fsL2.precision(15);
+      if (outputcount==params.time.comparisoncount){
+	fsL2 << params.grid.elemorder << " " << params.grid.numelems << " " << deltat << " " << LTwoError(thegrid, uh0, uh) << " " << t << " " << outputcount << endl;
+      }
+      fsL2.close();
+    }//end outputevery
+    //Set time based on smallest grid spacing. This assumes all elements
+    // are equal in size
+    
+    dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
+    
+    
+    
+    
+      
+    if(params.metric.schwarschild){
+      deltat = params.time.courantfac * dx/max_speed;
+      //deltat = params.time.dt;
+      }else if(params.metric.flatspacetime){
+      deltat = params.time.dt;
     }
-  //Set time based on smallest grid spacing. This assumes all elements
-  // are equal in size
-
-  dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
-  
-
-
-
-
-  if(params.metric.schwarschild){
-    deltat = params.time.courantfac * dx/max_speed;
-    //deltat = params.time.dt;
-  }else if(params.metric.flatspacetime){
-    deltat = params.time.dt;
-  }
-
-  ofstream fstimes;
-  fstimes.open("times.out",ios::app);
-  fstimes.precision(15);
-  fstimes << t << "\t" << deltat << "\t" << dx <<"\t" << max_speed << endl;
-  fstimes.close();
+    
+    ofstream fstimes;
+    fstimes.open("times.out",ios::app);
+    fstimes.precision(15);
+    fstimes << t << "\t" << deltat << "\t" << dx <<"\t" << max_speed << endl;
+    fstimes.close();
   
   }//end while loop
-
-  cout.flush();
   
-clean_source();
-
- if(params.opts.use_generic_orbit){
-   delete eorb;
- }else{
-   delete corb;
- }
-
- if(params.opts.use_world_tube){
-   delete wt;
- }
- 
+  
+  clean_source();
+  
+  if(params.opts.use_generic_orbit){
+      delete eorb;
+  }else{
+      delete corb;
+  }
+  
+  if(params.opts.use_world_tube){
+      delete wt;
+  }
+    
 }//END MAIN
-                         
+
 
 void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn) {
   GridFunction<double> rho(uh.GFvecDim(), uh.GFarrDim(), false);

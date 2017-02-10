@@ -164,7 +164,8 @@ namespace source_interface
       double tfac, dtfac_dt, d2tfac_dt2;
       if(orb->orbType()==circular){
 	CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
-	corb->phi= corb->phi_of_t(time);
+	orb->phi= corb->phi_of_t(time);
+	//cout << "source_interface " << orb->phi << " " << time << endl;
       }
  
       set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.ntotal);

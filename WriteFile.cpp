@@ -83,6 +83,7 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	if(orb->orbType()==circular){
 	  CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
 	  orb->phi=corb->phi_of_t(t);
+	  //cout << "write file " << orb->phi <<  " " << t << endl;
 	}
 	complex<double> phase(cos(lmmodes.mm[k]*orb->phi),sin(lmmodes.mm[k]*orb->phi));
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
@@ -255,6 +256,7 @@ void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridF
   switch(type)
     {
     case 1: //psi
+      //cout << "psil " << orb->phi << " " << t << endl;
       //	  if(k==params.modes.lmax){
       //	    oss7 << "psil.txt";
       fs << t << " " << orb->chi <<  " " << orb->phi << " " << orb->p  << " " << orb->e << " ";
