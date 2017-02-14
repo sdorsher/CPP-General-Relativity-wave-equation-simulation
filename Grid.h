@@ -40,7 +40,7 @@ class Grid
   ReferenceElement refelem; //member variable: the reference element
 
   //find the radii at which to output the data (returns grid and node indices)
-  void find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput);
+  void find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput, double dx);
   int numberElements();//Returns number of elements, calculated from input file
   GridFunction<double> gridNodeLocations();  //Returns physical node location
   vector<double> gridBoundaries(); //Returns the boundaries of the elements

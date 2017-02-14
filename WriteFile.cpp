@@ -94,7 +94,8 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	//	  }
 	//	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
 
-	
+
+	//Accounting for the fact that we are converting between tortoise and schwarzschild coordinates, and also dividing by r to account for the fact that we are evolving r times the field.
 	for(int v = 0; v< uh.VGFdim(); v++){
 	  up[v] = mfoldfactor * y_lm * phase * uh.get(k,v,i,j);
 	}
@@ -166,11 +167,11 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 
 
 //write a file at a fixed radius (known output indices), as a function of time 
-void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
+void write_fixed_radius(OutputIndices& ijoutput, int k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
                         Grid& thegrid, DiffEq& theequation, Modes& lmmodes, bool append, 
                         string filename,
-                        int type)
+                        int type, Orbit* orb)
 {
   typedef numeric_limits<double> dbl;
   ofstream fs;
@@ -226,7 +227,57 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
 	 << up[2].real()  << " " << up[0].imag() << " " << up[1].imag()
 	 << " " << up[2].imag() << endl;
 
+
 	 break;*/
+    case 2: //upt
+      {
+    vector<complex<double>> up;
+    up.resize(uh.VGFdim());
+    complex<double> mfoldfactor;
+    double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
+    if (lmmodes.mm[k]==0) {
+      mfoldfactor={1.0,0.};
+    } else {
+	  mfoldfactor={2.0,0.};
+    }
+    if(orb->orbType()==circular){
+      CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
+      orb->phi=corb->phi_of_t(t);
+    }
+    complex<double> phase(cos(lmmodes.mm[k]*orb->phi),sin(lmmodes.mm[k]*orb->phi));
+    complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
+						  lmmodes.mm[k],0.0);
+    
+    //    	if((fabs(t- 6.879125977502731)<1.0e-6)&&(i==0)&&(j==0)) {
+    //	  cout << setprecision(15);
+    //	  cout << t << " " << lmmodes.mm[k] << " " << phi <<  " " << phase.real() << " " << phase.imag() <<" " << y_lm.real() << endl;
+    //	  }
+    //	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
+    
+    
+    //Accounting for the fact that we are converting between tortoise and schwarzschild coordinates, and also dividing by r to account for the fact that we are evolving r times the field.
+    for(int v = 0; v< uh.VGFdim(); v++){
+      up[v] = mfoldfactor * y_lm * phase * uh.get(k,v,ijoutput.ifinite,ijoutput.jfinite);
+    }
+    up[1] = up[1]/(params.schw.p_orb-2.0*params.schw.mass)-up[0]/pow(params.schw.p_orb,2.0);
+    up[0]= up[0]/params.schw.p_orb;
+	up[2]= up[2]/params.schw.p_orb;
+	fs << thegrid.gridNodeLocations().get(ijoutput.ifinite, ijoutput.jfinite) << " " << t << " " 
+	   << up[0].real() << " " 
+	   << up[1].real() <<" " 
+	   << up[2].real() << " "
+	   << up[0].imag() << " "
+	   << up[1].imag() << " "
+	   << up[2].imag() << endl;
+	
+
+
+	
+     
+   
+    }
+    break;
+
     default:
       throw invalid_argument("Type out of range in write_fixed_radius");
       break;
@@ -235,7 +286,7 @@ void write_fixed_radius(OutputIndices& ijoutput, int& k, double t, TwoDVectorGri
 }
 
 //write a file for psi summed over modes, possibly with some derivative. 
-void write_summed_psi(OutputIndices& ijoutput, int& k, double t, TwoDVectorGridFunction<complex<double>>& uh,
+void write_summed_psi(OutputIndices& ijoutput, int k, double t, TwoDVectorGridFunction<complex<double>>& uh,
                         TwoDVectorGridFunction<complex<double>>& RHStdvgf,
 		      Grid& thegrid, DiffEq& theequation, Modes& lmmodes,             bool append, 
                         string filename,

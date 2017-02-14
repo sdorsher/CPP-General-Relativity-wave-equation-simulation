@@ -100,7 +100,7 @@ int Grid::numberElements()
   return NumElem;
 }
 
-void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput){
+void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijoutput, double dx){
   //Find the grid and element indices that correspond the the computational
   //coordinates rfinite and rSplus. rfinite in schwarzschild coordinates. splus in computational coordinates
   
@@ -108,11 +108,11 @@ void Grid::find_extract_radii(double rfinite, double rSplus, OutputIndices& ijou
   bool foundSplus = false;
   for(int elem=0; elem<NumElem; elem++){
     for(int node =0; node<=order; node++){
-      if((fabs(thegrid.rschw.get(elem,node)-rfinite)<1.0e-5) && (!foundfinite)) { 
+      if((fabs(nodeLocs.get(elem,node)-rfinite)<dx/2.) && (!foundfinite)) { 
         ijoutput.ifinite = elem;
         ijoutput.jfinite = node;
         foundfinite = true;
-      } else if ((fabs(nodeLocs.get(elem, node) - rSplus) < 1.0e-5) &&
+      } else if ((fabs(nodeLocs.get(elem, node) - rSplus) < dx/2.) &&
                  (!foundSplus)) {
         ijoutput.iSplus = elem;
         ijoutput.jSplus = node;
