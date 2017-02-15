@@ -69,9 +69,9 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
     break;
   case 4: //up
     {
-    vector<complex<double>> up;
-    up.resize(uh.VGFdim());
-    for (int i = 0; i < uh.GFvecDim(); i++){
+      vector<complex<double>> up;
+      up.resize(uh.VGFdim());
+      for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
 	complex<double> mfoldfactor;
 	double omega = sqrt(params.schw.mass/pow(params.schw.p_orb,3.0));
@@ -87,13 +87,7 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	complex<double> phase(cos(lmmodes.mm[k]*orb->phi),sin(lmmodes.mm[k]*orb->phi));
 	complex<double> y_lm = gsl_sf_legendre_sphPlm(lmmodes.ll[k],
 						      lmmodes.mm[k],0.0);
-
-	//    	if((fabs(t- 6.879125977502731)<1.0e-6)&&(i==0)&&(j==0)) {
-	//	  cout << setprecision(15);
-	  //	  cout << t << " " << lmmodes.mm[k] << " " << phi <<  " " << phase.real() << " " << phase.imag() <<" " << y_lm.real() << endl;
-	//	  }
-	//	  cout << "after: " << t << " " << params.schw.mass << " " << params.schw.p_orb << " " << phi << endl;
-
+	
 
 	//Accounting for the fact that we are converting between tortoise and schwarzschild coordinates, and also dividing by r to account for the fact that we are evolving r times the field.
 	for(int v = 0; v< uh.VGFdim(); v++){
@@ -109,15 +103,16 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
 	   << up[0].imag() << " "
 	   << up[1].imag() << " "
 	   << up[2].imag() << endl;
-
+	
 
 
 	
+
+      }
       }
     }
-    }
     break;
-  case 5:
+  case 5://coords
     {
       for (int i = 0; i < uh.GFvecDim(); i++){
 	for(int j = 0; j < uh.GFarrDim(); j++){

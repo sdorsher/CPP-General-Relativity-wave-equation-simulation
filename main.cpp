@@ -243,7 +243,8 @@ int main()
     deltat = params.time.courantfac * dx/max_speed;
 
     cout << "deltat : " << deltat  << " " << max_speed << endl;
-
+    cout << "dx: " << dx << endl;
+    
   }else if(params.metric.flatspacetime){
     //int nt = ceil((params.time.tmax-params.time.t0) / params.time.courantfac / dx);
     //deltat = (params.time.tmax - params.time.t0) / nt;
@@ -531,8 +532,8 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
       grd.d2window.set(i,d2win3);
     }
     
-    double dxmin = fabs(nodes.get(0,0)
-			-nodes.get(0,2));
+    //double dxmin = fabs(nodes.get(0,0)
+    //			-nodes.get(0,2));
     
   }//end i loop
 

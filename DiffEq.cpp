@@ -363,8 +363,8 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 				    +dxdxi.at(i)*d2xdt2.at(i)))*dxdxiinv3;
     double coeff4 = 0.0;
 
+    //cout <<  elemnum << " " << coeff1 << " " << coeff2 << " " << coeff3 << endl;
 
-    cout <<  elemnum << " " << coeff1 << " " << coeff2 << " " << coeff3 << endl;
     
     Amatrices.set(1*params.grid.Adim+2,elemnum,i,coeff1);
     Amatrices.set(2*params.grid.Adim+2,elemnum,i,coeff2);
