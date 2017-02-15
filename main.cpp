@@ -220,6 +220,8 @@ int main()
   //  write_fixed_time(0,params.time.t0,uh,RHStdvgf,thegrid,
   //		   theequation,lmmodes,true,"coords",5);
 
+
+
   if(params.opts.use_generic_orbit){
     theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
 
@@ -230,7 +232,9 @@ int main()
   }
   cout << "first call to RHS succeeded" << endl;
 
+  
 
+  
   
   double deltat;
 
@@ -246,7 +250,7 @@ int main()
     deltat = params.time.dt;
   }
 
-  cout << "here" << endl;
+
   if (params.metric.schwarschild){
     if (params.opts.use_generic_orbit){ 
       lmmodes.sum_m_modes(uh,0.0, ijoutput.ifinite, ijoutput.jfinite, eorb);
@@ -258,17 +262,21 @@ int main()
     if(params.file.outputtimefixed) {
       
       
-  
-      if(params.opts.use_generic_orbit){
 	for(int k = 0; k < uh.TDVGFdim(); k++) {
-	  write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
-			   theequation,lmmodes,true,
-			   params.file.pdesolution,1, eorb);
-	}
-      }
+  
+	  if(params.opts.use_generic_orbit){
+	    write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     params.file.pdesolution,1, eorb);
+	  }else{
+	     write_fixed_time(k,params.time.t0,uh,RHStdvgf,thegrid,
+			     theequation,lmmodes,true,
+			     params.file.pdesolution,1, corb);
+	  }
+	}//end for k
     }//end if outputfixed time
+    assert(0);
 
-    cout << "here2" << endl;
     
     if(params.file.outputradiusfixed){
       for(int k = 0; k < uh.TDVGFdim(); k++) {
@@ -288,7 +296,7 @@ int main()
 			     "upt",2, corb);
 	}
       }//end for k
-      cout << "here3" << endl;
+
       if(params.opts.use_generic_orbit){
 	write_summed_psi(ijoutput, params.modes.lmax,params.time.t0,uh,RHStdvgf,thegrid,
 			 theequation,lmmodes, true,
