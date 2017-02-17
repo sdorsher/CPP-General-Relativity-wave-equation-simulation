@@ -11,7 +11,6 @@
 #include <cfloat>
 #include "namespaces.h"
 #include <complex>
-#include "source_interface.h"
 #include <iomanip>
 #include <omp.h>
 #include "vecMatrixTools.h"
@@ -21,6 +20,7 @@
 #include "EllipticalOrbit.h"
 #include "CircularOrbit.h"
 #include "WorldTube.h"
+#include "EffectiveSource-acceleration.h"
 
 using namespace TNT;
 using namespace layers;
@@ -77,7 +77,7 @@ class DiffEq
   void RHS(int modenum, Grid& thegrid,
            TwoDVectorGridFunction<complex<double>>& uh, 
            TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
-           double t, bool output, Coordinates& coords, WorldTube* wt);
+           double t, bool output, Coordinates& coords, WorldTube* wt, vector<EffectiveSource*> effsource);
 
   //loops over the modes to get the effective source,
   //get the characteristic flux, then calculate the RHS of the
@@ -85,7 +85,15 @@ class DiffEq
   void modeRHS(Grid& thegrid,
                TwoDVectorGridFunction<complex<double>>& uh,
                TwoDVectorGridFunction<complex<double>>& RHStdgf, 
-               double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double & max_speed, Modes& lmmodes); 
+               double t, bool output, Orbit* orb, WorldTube* wt, Coordinates& coords, double & max_speed, Modes& lmmodes, vector<EffectiveSource*> effsource);
+
+    void fill_source_all(Grid& thegrid, double time, int nummodes,
+		       VectorGridFunction<complex<double>>& source,
+		       GridFunction<double>& window,
+		       GridFunction<double>& dwindow,
+			 GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes, vector<EffectiveSource*> effsource);
+
+  
 
 };
 

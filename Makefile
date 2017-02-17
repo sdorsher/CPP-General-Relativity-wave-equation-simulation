@@ -5,7 +5,7 @@ CXX = gcc
 IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
 ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
 LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
-ESRC = /home/sdorsher/scalar1deffectivesource
+ESRC = /home/sdorsher/scalar1deffectivesourceCurrent
 LGSL = `pkg-config --libs gsl`
 
 
@@ -77,7 +77,7 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h source_interface.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h $(ESRC)/EffectiveSource-acceleration.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
@@ -93,7 +93,7 @@ namespaces.o: namespaces.cpp namespaces.h
 numerics.o: numerics.cpp numerics.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c numerics.cpp
 
-source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h $(ESRC)/EffectiveSource.h VectorGridFunction.tpp GridFunction.tpp Orbit.h Grid.h EllipticalOrbit.h CircularOrbit.h Coordinates.h namespaces.h
+source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h $(ESRC)/EffectiveSource-acceleration.h VectorGridFunction.tpp GridFunction.tpp Orbit.h Grid.h EllipticalOrbit.h CircularOrbit.h Coordinates.h namespaces.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
 
 WriteFile.o: WriteFile.cpp WriteFile.h TwoDVectorGridFunction.h Grid.h DiffEq.h Orbit.h namespaces.h EllipticalOrbit.h CircularOrbit.h

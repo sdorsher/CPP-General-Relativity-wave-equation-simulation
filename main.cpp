@@ -109,17 +109,31 @@ int main()
    
 
   
-  if(params.opts.useSource) {
-    init_source( lmmodes, params.schw.mass);
+  vector<EffectiveSource*> effsource;
+  if(params.opts.useSource){
+    for(int i=0; i<lmmodes.ntotal; i++){
+      effsource.pushback(new EffectiveSource(lmmodes.ll[i], lmmodes.mm[i], params.schw.mass));
+    }
   }
 
   if(params.metric.schwarschild){
-    set_window_params(coords,thegrid, lmmodes);
+    double deltar = thegrid.gridNodeLocations().get(0,1)-thegrid.gridNodeLocations().get(0,0);
+    R1= coords.invert_tortoise(Rminus, params.schw.mass) + 2.0*params.schw.mass;
+    R2 = coords.invert_tortoise(Rplus, params.schw.mass) + 2.0* params.schw.mass;
+    w1 = params.schw.p_orb-(coords.invert_tortoise(2.0*deltar, params.schw.mass)
+			    +2.0*params.schw.mass)-R1;
+    w2 = R2 - (params.schw.p_orb + coords.invert_tortoise(2.0*deltar, params.schw.mass)+2.0*params.schw.mass);
+    nmodes = lmmodes.ntotal;
+
+
+    cout << "R1 R2 w1 w2" << endl;
+    cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
     if(params.opts.useSource){
-      set_window(R1,w1,1.0,1.5,R2,w2,1.0,1.5,lmmodes.ntotal);
+      for(auto& x: effsource){
+	effsource->set_window(R1,w1,1.0,1.5,R2,w2,1.0,1.5);
+      }
     }
   }
-  
   if(params.opts.use_generic_orbit){
     cout << "generic orbit set particle" << endl;
     double rp, drpdt, d2rpdt2;
@@ -223,11 +237,11 @@ int main()
 
 
   if(params.opts.use_generic_orbit){
-    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes);
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, eorb, wt, coords, max_speed, lmmodes, effsource);
 
   }else{
     cout << "circ write rhs initial" << endl;
-    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes);
+    theequation.modeRHS(thegrid, uh, RHStdvgf, 0.0, true, corb, wt, coords, max_speed, lmmodes, effsource);
 
   }
   cout << "first call to RHS succeeded" << endl;
@@ -344,9 +358,9 @@ int main()
       
       //Increment the time integration
     if(params.opts.use_generic_orbit){
-      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords, lmmodes);
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,eorb, coords, lmmodes, effsource);
     }else{
-      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,corb,coords, lmmodes);
+      rk4lowStorage(thegrid, theequation, uh, RHStdvgf, t, deltat, wt, max_speed,corb,coords, lmmodes, effsource);
     }
     //Initial conditions, numerical fluxes, boundary conditions handled inside 
     //Evolution.cpp, in RHS.
@@ -470,8 +484,16 @@ int main()
   }//end while loop
 
   cout.flush();
-  
-clean_source();
+
+  vector<complex<EffectiveSource*>>::size_type s{effsource.size()};
+  for (vector<complex<EffectiveSource*>>::size_type i=0; i<s; i++) {
+    assert(effsource.at(s-1-i)!=nullptr);
+    delete effsource.at(s-1-i);
+    effsource.pop_back(); 
+  }
+  assert(effsource.size()==0);
+
+
 
  if(params.opts.use_generic_orbit){
    delete eorb;

@@ -10,7 +10,7 @@
 void rk4lowStorage(Grid thegrid, DiffEq theequation, 
                    TwoDVectorGridFunction<complex<double>>& uh, 
                    TwoDVectorGridFunction<complex<double>>& RHStdvgf, 
-                   double t, double deltat, WorldTube* wt, double & max_speed, Orbit * orb, Coordinates & coords, Modes& lmmodes)
+                   double t, double deltat, WorldTube* wt, double & max_speed, Orbit * orb, Coordinates & coords, Modes& lmmodes, vector<EffectiveSource*> effsource)
 {
 
   
@@ -45,7 +45,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
 
   
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, orb, wt, coords, max_speed, lmmodes);//true for debugging output
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, orb, wt, coords, max_speed, lmmodes, effsource);//true for debugging output
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
     for(int modenum = 0; modenum< lmmodes.ntotal; modenum++){
@@ -76,7 +76,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
       EllipticalOrbit * eorb = dynamic_cast<EllipticalOrbit *>(orb);
       eorb->dorbdt();
     }
-    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, orb, wt, coords, max_speed, lmmodes); // true for debugging output
+    theequation.modeRHS(thegrid,uh, RHStdvgf, t + rk4c[i-1] * deltat,false, orb, wt, coords, max_speed, lmmodes, effsource); // true for debugging output
 
 
     /*  for(int modenum = 0; modenum< lmmodes.ntotal; modenum++){
