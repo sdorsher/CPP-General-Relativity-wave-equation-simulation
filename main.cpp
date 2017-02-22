@@ -15,7 +15,6 @@
 #include "namespaces.h"
 #include "Orbit.h"
 #include <complex>
-#include "source_interface.h"
 #include "WriteFile.h"
 #include "vecMatrixTools.h"
 #include "EllipticalOrbit.h"
@@ -28,14 +27,13 @@ using namespace std;
 using namespace layers;
 //using namespace orbit;
 using namespace window;
-using namespace source_interface;
 using namespace orbit;
 
 
 //Initial condition options
 void initialGaussian(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
 void initialSinusoid(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd);
-void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn);
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn, vector<EffectiveSource*>& effsource);
 
 
 //Characterization of convergence, error using L2 norm
@@ -112,7 +110,7 @@ int main()
   vector<EffectiveSource*> effsource;
   if(params.opts.useSource){
     for(int i=0; i<lmmodes.ntotal; i++){
-      effsource.pushback(new EffectiveSource(lmmodes.ll[i], lmmodes.mm[i], params.schw.mass));
+      effsource.push_back(new EffectiveSource(lmmodes.ll[i], lmmodes.mm[i], params.schw.mass));
     }
   }
 
@@ -130,43 +128,12 @@ int main()
     cout << R1 << " " << R2 << " " << w1 <<  " " << w2 << endl << endl;
     if(params.opts.useSource){
       for(auto& x: effsource){
-	effsource->set_window(R1,w1,1.0,1.5,R2,w2,1.0,1.5);
+	x->set_window(R1,w1,1.0,1.5,R2,w2,1.0,1.5);
       }
     }
   }
-  if(params.opts.use_generic_orbit){
-    cout << "generic orbit set particle" << endl;
-    double rp, drpdt, d2rpdt2;
-    eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
-    
-    if(params.opts.useSource){
-      set_particle(eorb->p,eorb->e,eorb->chi,eorb->phi,lmmodes.ntotal);
-    }
-  }
-  
-  
-  OutputIndices ijoutput;
-  double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
 
-  if(params.metric.schwarschild){
-    //  int ifinite, iSplus, jfinite, jSplus;
-    thegrid.find_extract_radii(rstar_orb, Splus, 
-			       ijoutput, dx);
-    cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
-    cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
-    cout << "Output indices for finite and scri-plus radii" << endl;
-    cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
-	 << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
-  }
-  
-  
-  cout << "defining the differential equation" << endl;
-  //setup the differential equation
-  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal, coords);
 
-  cout << "diff eq established" << endl;
-
-  
   //Declaration of calculation variables and 
   //Initialization to either zero or value read from file
   //Solution to PDE, possibly a vector
@@ -189,6 +156,50 @@ int main()
 						   params.grid.elemorder + 1,
 						   {0.0,0.0}); 
 
+
+
+  OutputIndices ijoutput;
+
+  double dx = thegrid.gridNodeLocations().get(0, 1) - thegrid.gridNodeLocations().get(0, 0);
+
+  if(params.metric.schwarschild){
+    //  int ifinite, iSplus, jfinite, jSplus;
+    thegrid.find_extract_radii(rstar_orb, Splus, 
+			       ijoutput, dx);
+    cout << "Oribital radius and output radius in Schwarzschild coords" << endl;
+    cout << params.schw.p_orb<< " " << params.grid.outputradius << endl << endl;
+    cout << "Output indices for finite and scri-plus radii" << endl;
+    cout << ijoutput.ifinite << " " << ijoutput.jfinite << " " 
+	 << ijoutput.iSplus << " " << ijoutput.jSplus << endl << endl;
+  }
+  
+  
+  if(params.opts.use_generic_orbit){
+    cout << "generic orbit set particle" << endl;
+    double rp, drpdt, d2rpdt2;
+    eorb->orb_of_t(coords, rp, drpdt, d2rpdt2);
+    
+    if(params.opts.useSource){
+      //replace set_particle here! fix me! need different method for eliptical orbits
+      for(auto& x: effsource){
+	double rp = (eorb->p)* params.schw.mass;
+	double phip = eorb->phi;
+	x->set_particle(rp,phip,0.0, eorb->elip_E(),eorb->elip_L(),0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      }   //      set_particle(eorb->p,eorb->e,eorb->chi,eorb->phi,lmmodes.ntotal);
+      
+    }
+  }
+  
+  
+  
+  
+  cout << "defining the differential equation" << endl;
+  //setup the differential equation
+  DiffEq theequation(thegrid, lmmodes, lmmodes.ntotal, coords);
+
+  cout << "diff eq established" << endl;
+
+  
   WorldTube * wt;
 
   
@@ -198,7 +209,7 @@ int main()
   } else if(params.waveeq.isgaussian) {
     initialGaussian(uh, thegrid);
   } else if(params.metric.schwarschild) {
-    initialSchwarzchild(uh, thegrid, theequation);
+    initialSchwarzchild(uh, thegrid, theequation, effsource);
         
     if(params.opts.use_world_tube){
       wt = new WorldTube(thegrid, coords);
@@ -290,8 +301,7 @@ int main()
 	  }
 	}//end for k
     }//end if outputfixed time
-    assert(0);
-
+  
     
     if(params.file.outputradiusfixed){
       for(int k = 0; k < uh.TDVGFdim(); k++) {
@@ -508,7 +518,7 @@ int main()
 }//END MAIN
                          
 
-void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn) {
+void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd, DiffEq& eqn, vector<EffectiveSource*>& effsource) {
   GridFunction<double> rho(uh.GFvecDim(), uh.GFarrDim(), false);
   rho=grd.gridNodeLocations();
   ofstream fs;
@@ -545,7 +555,8 @@ void initialSchwarzchild(TwoDVectorGridFunction<complex<double>>& uh, Grid& grd,
       double * win = &window[0];
       double * dwin = &dwindow[0];
       double * d2win = &d2window[0];
-      calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
+      auto & temp = effsource.at(0);
+      temp->calc_window(params.grid.elemorder+1,r,win, dwin, d2win);
       vector<double> win3(win, win+params.grid.elemorder+1);
       grd.window.set(i,win3);
       vector<double> dwin3(dwin, dwin+params.grid.elemorder+1);

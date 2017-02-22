@@ -1,0 +1,46 @@
+CXX = gcc
+#CXX = icpc
+
+#Spine
+IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
+ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
+LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
+ESRC = /home/sdorsher/scalar1deffectivesourceCurrent/scalar1deffectivesource
+LGSL = `pkg-config --libs gsl`
+
+
+#Both
+LCPP = -lstdc++
+#FLGS = -g -lm -std=c++11 -O3 -p
+
+FLGS = -g -lm -std=c++11 -O3 -fopenmp
+#FLGS = -g -lm -std=c++11 -O3
+
+
+test:  TestCircFunc.o CircularOrbit.o Orbit.o globals.o ConfigParams.o namespaces.o 
+	$(CXX) $(FLGS) $(IGEN) $(LCONF) $(LCPP) TestCircFunc.o CircularOrbit.o Orbit.o globals.o ConfigParams.o namespaces.o -o test
+#	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
+
+
+
+
+TestCircFunc.o: TestCircFunc.cpp Orbit.h CircularOrbit.h globals.h ConfigParams.h 
+	$(CXX) $(FLGS)  $(IGEN) $(LCONF) -c TestCircFunc.cpp
+
+CircularOrbit.o: CircularOrbit.cpp CircularOrbit.h ConfigParams.h
+	$(CXX) $(FLGS) $(IGEN) -c CircularOrbit.cpp
+
+Orbit.o: Orbit.cpp Orbit.h ConfigParams.h globals.h
+	$(CXX) $(FLGS) $(IGEN)  -c Orbit.cpp
+
+globals.o: globals.cpp globals.h
+	$(CXX) $(FLGS)  $(IGEN) -c globals.cpp
+	
+ConfigParams.o: ConfigParams.cpp ConfigParams.h
+	$(CXX) $(FLGS)  $(IGEN)  $(LCONF) -c ConfigParams.cpp
+
+namespaces.o: namespaces.cpp namespaces.h
+	$(CXX) $(FLGS) $(IGEN) $(LCONF) -c namespaces.cpp
+
+clean:
+	rm -f *.o test

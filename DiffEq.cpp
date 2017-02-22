@@ -38,13 +38,13 @@ vector<double> DiffEq::getAtrimmed(int gridindex, int pointsindex)
 // The A matrix must be formatted such that zero rows are at the top
 
 DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coordobj):
-  Amatrices{params.grid.Adim*params.grid.Adim,params.grid.numelems, params.grid.elemorder + 1,0.},
-  Bmatrices{nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
-	    params.grid.elemorder + 1,0.},
-  trimmedAmatrices{params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.},
-  source{nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}},
-  uextL{params.grid.Ddim},uextR{params.grid.Ddim},uintL{params.grid.Ddim},
-  uintR{params.grid.Ddim}
+  Amatrices(params.grid.Adim*params.grid.Adim,params.grid.numelems, params.grid.elemorder + 1,0.),
+  Bmatrices(nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
+	    params.grid.elemorder + 1,0.),
+  trimmedAmatrices(params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.),
+  source(nmodetotal, params.grid.numelems, params.grid.elemorder+1,{0.0,0.0}),
+  uextL(params.grid.Ddim),uextR(params.grid.Ddim),uintL(params.grid.Ddim),
+  uintR(params.grid.Ddim)
   {
     //set up the A and B matrices
 
@@ -534,14 +534,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       if(found){
 
 	double node = thegrid.rschw.get(elemnum, nodenumFound);
-	auto & temp = effsource.at(*modenum);
-	auto temp2 = (*temp).dPhi_dt(*node);
-	*sstim = std::real(temp2);
-	*ssrim = std::imag(temp2);
-	auto temp3 = (*temp).dPhi_dr(*node);
+	auto & temp = effsource.at(modenum);
+	auto temp2 = (*temp).dPhi_dt(node);
+	sstim = std::real(temp2);
+	ssrim = std::imag(temp2);
+	auto temp3 = (*temp).dPhi_dr(node);
 	//std::complex<double> dphidt{temp2};
-	*ssrre = std::real(temp3);
-	*ssrim = std::imag(temp3);
+	ssrre = std::real(temp3);
+	ssrim = std::imag(temp3);
 
 	alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
 	  /thegrid.rschw.get(elemnum,nodenumFound);
@@ -1093,89 +1093,81 @@ void DiffEq::modeRHS(Grid& thegrid,
 }
 
 
-DiffEq::void fill_source_all(Grid& thegrid, double time, int nummodes,
-		       VectorGridFunction<complex<double>>& source,
+void DiffEq::fill_source_all(Grid& thegrid, double time, int nummodes,
+			     VectorGridFunction<complex<double>>& source,
 		       GridFunction<double>& window,
 		       GridFunction<double>& dwindow,
-		       GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes, vector<EffectiveSource*> effsource)
-  {
+			     GridFunction<double>& d2window, Orbit * orb, Modes & lmmodes, vector<EffectiveSource*> effsource)
+{
 
 
-    //using namespace orbit;
+  //using namespace orbit;
 
-      double tfac, dtfac_dt, d2tfac_dt2;
-      if(orb->orbType()==circular){
-	CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
-	corb->phi= corb->phi_of_t(time);
-      }
-
-      for(auto& x: effsource){
-	x->set_particle(orb->p,orb->e,orb->chi,orb->phi,lmmodes.ntotal);
-      }
-	
-      if(params.opts.turn_on_source_smoothly){
-        time_window(time, params.timewindow.tsigma, params.timewindow.torder, 
-                    tfac, dtfac_dt, d2tfac_dt2);
-      }else{
-        tfac = 1.0; dtfac_dt = 0.0; d2tfac_dt2 = 0.0;
-      }
-      //      cout << "tfac = " << tfac << endl;
-      // cout << "dtfac_dt = " << dtfac_dt << endl;
-      //cout << "d2tfac_dt2 = " << d2tfac_dt2 << endl;
+  double tfac, dtfac_dt, d2tfac_dt2;
+  if(orb->orbType()==circular){
+    CircularOrbit* corb = dynamic_cast<CircularOrbit*>(orb);
+    corb->phi= corb->phi_of_t(time);
+    for(auto& x: effsource){
+      //orb->chi
+      double rp = (orb->p)*params.schw.mass;
+      double phip = orb->phi;
+      double Ep = corb->circ_E();
+      double Lp= corb->circ_L();
+      x->set_particle(rp,phip,0.0, Ep,Lp,0.0,0.0, 0.0, 0.0, 0.0, 0.0);
+    }//end for auto
+  }//end if circular	
+  if(params.opts.turn_on_source_smoothly){
+    time_window(time, params.timewindow.tsigma, params.timewindow.torder, 
+		tfac, dtfac_dt, d2tfac_dt2);
+  }else{
+    tfac = 1.0; dtfac_dt = 0.0; d2tfac_dt2 = 0.0;
+  }//end if turn on smoothly
+  
+  for(auto& x: effsource){
+    x->set_time_window(tfac,dtfac_dt, d2tfac_dt2);
+  }//end for auto
+  
+  for(int i=0; i<params.grid.numelems; i++) {
+    vector<double> rschwv = thegrid.rschw.get(i);
+    vector<double> windowv = window.get(i);
+    vector<double> dwindowv = dwindow.get(i);
+    vector<double> d2windowv = d2window.get(i);
       
-
-      for(auto& x: effsource){
-	x->set_time_window(tfac,dtfac_dt, d2tfac_dt2, nummodes);
-      }
+    double *r = &rschwv[0];
+    double * win = &windowv[0];
+    double * dwin = &dwindowv[0];
+    double * d2win = &d2windowv[0];
       
-      //#pragma omp parallel for
-      for(int i=0; i<thegrid.numberElements(); i++) {
-	vector<double> rschwv = thegrid.rschw.get(i);
-	vector<double> windowv = window.get(i);
-	vector<double> dwindowv = dwindow.get(i);
-	vector<double> d2windowv = d2window.get(i);
-	
-        double *r = &rschwv[0];
-        double * win = &windowv[0];
-        double * dwin = &dwindowv[0];
-        double * d2win = &d2windowv[0];
-	//for(int ii=0; ii<17; ii++){
-	  //cout <<r[ii] << " " <<  win[ii] << " " << dwin[ii] << " " << d2win[ii] << endl;
-	//}
-	for(int k=0; k<nummodes; k++) {
-	  vector<complex<double>> temp = source.get(k,i);
-          complex<double> * src = &temp[0];
-	  vector<double> sre{params.grid.elemorder+1};
-	  vector<double> sim{params.grid.elemorder+1};
-	  auto& temp= effsource.at(k);
-	  //(temp*)eval_source_all(k,thegrid.nodeOrder()+1, r, win, dwin, d2win, src);
-	  (temp*)(k,r, win, dwin, d2win, sre, sim);
-	  vector<complex<double>> src2(src, src+params.grid.elemorder+1);
+    for(int k=0; k<nummodes; k++) {
+      vector<complex<double>> temp = source.get(k,i);
+      complex<double> * src = &temp[0];
+      vector<double> sre(params.grid.elemorder+1);
+      vector<double> sim(params.grid.elemorder+1);
+      double * srev = &sre[0];
+      double * simv = &sim[0];
+      auto& sourcek= effsource.at(k);
+      //get effective_source here
+      (*sourcek)(k,r, win, dwin, d2win, srev, simv);
+      for(int j=0; j<=params.grid.elemorder; j++){
 	  
-	  for(int j=0; j<= thegrid.nodeOrder(); j++){
-	      double eps11 = 1.e-200;
-	      //if(abs(win[j]>eps11)){
-	      //cout << win[j] << endl;
-	      //}
-	      if((i==thegrid.numberElements()-1)&&(j==thegrid.nodeOrder())) {
-		source.set(k,i,j,{0.,0.});
-	      }else if((i==0)&&(j==0)){
-		source.set(k,i,j,{0.,0.});
- 	      }else{
-		source.set(k,i,j,src2[j]);
-	      }
-	  }
-	}
-	
-      }
-      
-      //#pragma omp parallel for if(nummodes>omp_get_max_threads())
-      //      for (int k=0; k<nummodes; k++) {
-      //source.set(k,thegrid.numberElements()-1,thegrid.nodeOrder(), 
-      //	   {0.,0.});
-      //}
-      
-  }
+	complex<double> zero{0.0,0.0};
+	complex<double> eye{0.0,1.1};
+	complex<double> src2;
+	src2 = sre.at(j)+eye*sim.at(j); 
+	// double eps11 = 1.e-200;
+	//if(abs(win[j]>eps11)){
+	//cout << win[j] << endl;
+	//}
+	if((i==params.grid.numelems-1)&&(j==params.grid.elemorder)) {
+	  source.set(k,i,j,zero);
+	}else if((i==0)&&(j==0)){
+	  source.set(k,i,j,zero);
+	}else{
+	  source.set(k,i,j,src2);
+	}// end if that selects boundary conditions for source
+      }//end for nodes
+    }// end for modes
+    
+  }// end for numelems
   
-  
-}//end namespace
+}// end function

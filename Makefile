@@ -5,7 +5,7 @@ CXX = gcc
 IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
 ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
 LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
-ESRC = /home/sdorsher/scalar1deffectivesourceCurrent
+ESRC = /home/sdorsher/scalar1deffectivesourceCurrent/scalar1deffectivesource
 LGSL = `pkg-config --libs gsl`
 
 
@@ -29,15 +29,15 @@ FLGS = -g -lm -std=c++11 -O3 -fopenmp
 
 
 
-#dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o HyperboloidalCoords.o  orbit.o $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o namespaces.o numerics.o source_interface.o
+
 
 #GridFunction, VectorGridFunction, and TwoDVectorGridFunction lines are missing
 
-dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource.o $(ESRC)/WignerDMatrix.o numerics.o source_interface.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
+dg1D : main.o ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o numerics.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o
+	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) main.o  ReferenceElement.o Grid.o Evolution.o globals.o ConfigParams.o DiffEq.o CharacteristicFlux.o Modes.o Coordinates.o namespaces.o  $(ESRC)/EffectiveSource-acceleration.o $(ESRC)/WignerDMatrix.o numerics.o WriteFile.o EllipticalOrbit.o CircularOrbit.o WorldTube.o Orbit.o $(LCONF) $(LGSL) $(LCPP) -o dg1D
 	uname | grep -q Linux || install_name_tool -change /usr/local/lib/libconfig++.9.dylib $(HOME)/utils/lib/libconfig++.9.dylib dg1D
 
-main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h Orbit.h source_interface.h numerics.h WriteFile.h vecMatrixTools.h Coordinates.h EllipticalOrbit.h CircularOrbit.h WorldTube.h CharacteristicFlux.h OutputIndices.h
+main.o: main.cpp GridFunction.h GridFunction.tpp ReferenceElement.h VectorGridFunction.h VectorGridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp Evolution.h DiffEq.h TNT2.h ConfigParams.h Modes.h Coordinates.h namespaces.h Orbit.h numerics.h WriteFile.h vecMatrixTools.h Coordinates.h EllipticalOrbit.h CircularOrbit.h WorldTube.h CharacteristicFlux.h OutputIndices.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c main.cpp
 
 
@@ -68,7 +68,7 @@ ReferenceElement.o: ReferenceElement.cpp ReferenceElement.h globals.h TNT2.h
 Grid.o: Grid.cpp Grid.h ReferenceElement.h GridFunction.h GridFunction.tpp TNT2.h DiffEq.h CharacteristicFlux.h TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp  VectorGridFunction.h VectorGridFunction.tpp namespaces.h OutputIndices.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c Grid.cpp
 
-Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h source_interface.h DiffEq.h WorldTube.h Orbit.h CircularOrbit.h EllipticalOrbit.h Coordinates.h Modes.h WriteFile.h
+Evolution.o: Evolution.cpp Evolution.h GridFunction.h GridFunction.tpp TwoDVectorGridFunction.h TwoDVectorGridFunction.tpp ReferenceElement.h TNT2.h ConfigParams.h DiffEq.h WorldTube.h Orbit.h CircularOrbit.h EllipticalOrbit.h Coordinates.h Modes.h WriteFile.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c Evolution.cpp
 
 globals.o: globals.cpp globals.h
@@ -77,7 +77,7 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h $(ESRC)/EffectiveSource-acceleration.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h $(ESRC)/EffectiveSource-acceleration.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h OutputIndices.h numerics.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h
@@ -93,8 +93,6 @@ namespaces.o: namespaces.cpp namespaces.h
 numerics.o: numerics.cpp numerics.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c numerics.cpp
 
-source_interface.o: source_interface.cpp source_interface.h Modes.h numerics.h namespaces.h Grid.h VectorGridFunction.h GridFunction.h $(ESRC)/EffectiveSource-acceleration.h VectorGridFunction.tpp GridFunction.tpp Orbit.h Grid.h EllipticalOrbit.h CircularOrbit.h Coordinates.h namespaces.h
-	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c source_interface.cpp
 
 WriteFile.o: WriteFile.cpp WriteFile.h TwoDVectorGridFunction.h Grid.h DiffEq.h Orbit.h namespaces.h EllipticalOrbit.h CircularOrbit.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) -c WriteFile.cpp

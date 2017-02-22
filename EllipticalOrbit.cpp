@@ -38,3 +38,12 @@ void EllipticalOrbit::orb_of_t(Coordinates & coords, double& rp, double& drpdt, 
 }
 
 
+double EllipticalOrbit::elip_E(){
+  return 0.0;
+  //implement me!
+}
+
+double EllipticalOrbit::elip_L(){
+  return 0.0;
+  //implement me!
+}
