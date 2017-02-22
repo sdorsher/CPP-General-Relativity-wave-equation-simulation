@@ -77,7 +77,7 @@ globals.o: globals.cpp globals.h
 ConfigParams.o: ConfigParams.cpp ConfigParams.h
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c ConfigParams.cpp
 
-DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h $(ESRC)/EffectiveSource-acceleration.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h OutputIndices.h numerics.h
+DiffEq.o: DiffEq.cpp DiffEq.h ConfigParams.h Grid.h CharacteristicFlux.h VectorGridFunction.h VectorGridFunction.tpp Modes.h Coordinates.h vecMatrixTools.h TwoDVectorGridFunction.h $(ESRC)/EffectiveSource-acceleration.h namespaces.h Orbit.h EllipticalOrbit.h CircularOrbit.h WorldTube.h OutputIndices.h numerics.h 
 	$(CXX) $(FLGS) $(ITNT) $(IGEN) -I$(ESRC) $(LCONF) -c DiffEq.cpp
 
 CharacteristicFlux.o: CharacteristicFlux.cpp CharacteristicFlux.h TNT2.h globals.h ConfigParams.h

@@ -1,6 +1,7 @@
 #include "WriteFile.h"
 
 
+
 //write a file at a fixed time step, as a function of computational coordinate
 void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& uh,
 		      TwoDVectorGridFunction<complex<double>>& RHStdvgf,
@@ -42,14 +43,14 @@ void write_fixed_time(int k,double t, TwoDVectorGridFunction<complex<double>>& u
     break;
   case 2: //source
     {
-    for (int i = 0; i < uh.GFvecDim(); i++){
+      /*for (int i = 0; i < uh.GFvecDim(); i++){
       for(int j = 0; j < uh.GFarrDim(); j++){
   	//Print out at select time steps
 	fs << thegrid.gridNodeLocations().get(i, j) << " "
 	    << theequation.source.get(k, i, j).real() << " " 
 	    << theequation.source.get(k, i, j).imag() << endl; 
       }
-    }
+    }*/
     }
     break;
   case 3: //rhs
