@@ -43,10 +43,8 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coord
   Amatrices(params.grid.Adim*params.grid.Adim,params.grid.numelems, params.grid.elemorder + 1,0.),
   Bmatrices(nmodetotal,params.grid.Adim*params.grid.Adim, params.grid.numelems, 
 	    params.grid.elemorder + 1,0.),
-  trimmedAmatrices(params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.),
-  uextL(params.grid.Ddim),uextR(params.grid.Ddim),uintL(params.grid.Ddim),
-  uintR(params.grid.Ddim)
-  {
+  trimmedAmatrices(params.grid.Ddim*params.grid.Ddim,params.grid.numelems, params.grid.elemorder + 1,0.)
+{
     //set up the A and B matrices
 
 
@@ -470,12 +468,20 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
   complex<double> zero{0.0,0.0};
   complex<double> eye{0.0,1.0};
   
-  /*  ofstream fssource;
+  /*     ofstream fssource;
   fssource.precision(16);
   ostringstream osssource;
   osssource << "source" << "." << modenum << ".txt";
   fssource.open(osssource.str(), ios::app);
   */
+  /*      ofstream fssing;
+  fssing.precision(16);
+  ostringstream osssing;
+  osssing << "singular" << "." << modenum << ".txt";
+  fssing.open(osssing.str(), ios::app);
+  */
+ int nodenumFound, elemnumFound;
+  
   
   //We can loop over RHS in an external function independent of mode 
   //because in general the right hand side of the differential equation
@@ -501,8 +507,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.opts.useSource){
       (*sourcek)(params.grid.elemorder+1,r, win, dwin, d2win, srev, simv);
     }
-    /*   
-    if(elemnum==0){
+       
+    /*        if(elemnum==0){
       fssource << endl << endl;
       fssource << " #time = " << t << endl;
     }
@@ -532,7 +538,6 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     
     double sstre, sstim, ssrre, ssrim, alpha;
     
-    int nodenumFound;
     bool bleft,bright,add, sub, found;
     //although subtraction and adding from left and right do not occur at same element number, always want to consider them at current element number to make sure to iterate over all of them
     
@@ -560,9 +565,11 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	//cout << elemnum << " " << (bleft ? 1:0) << " " << (bright ? 1 : 0) << " " << (add ? 1:0) << " "<< (sub ? 1:0) << endl;
       }
       if(bleft){
-	nodenumFound=params.grid.elemorder;
-      }else if(bright){
 	nodenumFound=0;
+	elemnumFound=elemnum;
+      }else if(bright){
+	nodenumFound=params.grid.elemorder;
+	elemnumFound=elemnum;
       }
       
       double ssign;
@@ -577,18 +584,21 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 
       if(found){
 	
-	double node = thegrid.rschw.get(elemnum, nodenumFound);
-	auto & temp = effsource.at(modenum);
-	auto temp2 = (*temp).dPhi_dt(node);
-	sstim = std::real(temp2);
-	ssrim = std::imag(temp2);
-	auto temp3 = (*temp).dPhi_dr(node);
+	double node = thegrid.rschw.get(elemnumFound, nodenumFound);
+       
+	auto dphidtk = (*sourcek).dPhi_dt(node);
+	sstre = std::real(dphidtk);
+	sstim = std::imag(dphidtk);
+	auto dphidrk = (*sourcek).dPhi_dr(node);
 	//std::complex<double> dphidt{temp2};
-	ssrre = std::real(temp3);
-	ssrim = std::imag(temp3);
+	ssrre = std::real(dphidrk);
+	ssrim = std::imag(dphidrk);
 	
-	alpha = (thegrid.rschw.get(elemnum,nodenumFound)-2.*params.schw.mass)
-	  /thegrid.rschw.get(elemnum,nodenumFound);
+
+	    
+	//    fssing << t<< " "<<  node << " " << ssrre << " " << ssrim << " " << sstre << " " << sstim << endl;
+
+	alpha = (node-2.*params.schw.mass)/node;
 	
 	sstre = ssign*sstre;
 	sstim = ssign*sstim;
@@ -597,7 +607,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	
       }
     }
-
+    vector<complex<double>> uintL(params.grid.Ddim);
+    vector<complex<double>> uintR(params.grid.Ddim);
+    vector<complex<double>> uextL(params.grid.Ddim);
+    vector<complex<double>> uextR(params.grid.Ddim);
     uintL = uh.getVectorRange(modenum,elemnum, indL, vminL, vmaxL, 0);
     uintR = uh.getVectorRange(modenum,elemnum, indR, vminR, vmaxR, 0);
     
@@ -625,10 +638,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	if(bleft&&add){//position 
+	if(bleft&&add){//position //FIX ME
 	  uextL.at(0) = uextL.at(0)/coords.dxdxibR0.at(elemnum+1);
 	  uextL.at(1)= uextL.at(1)-coords.dxdxibR1.at(elemnum+1)*uextL.at(0);
-	}else if (bright&&sub){//position 4
+	}else if (bright&&add){//position 4 //FIX ME
 	  
 	  uextR.at(0)=uextR.at(0)/coords.dxdxibL0.at(elemnum-1);
 	  uextR.at(1)=uextR.at(1)-coords.dxdxibL1.at(elemnum-1)*uextR.at(0);
@@ -641,16 +654,18 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       if(params.opts.use_world_tube){
 	if(found){
 	  if(params.opts.useSource){
-	    complex<double> sst(sstre, sstim);
-	    complex<double> ssr(ssrre,ssrim);
+	    //complex<double> sst(sstre, sstim);
+	    //complex<double> ssr(ssrre,ssrim);
 	    if(bright){
-	      uextL.at(1)=uextL.at(1)+sst;
-	      uextL.at(0)=uextL.at(0)+ssr;
+	      uextR.at(1)+=sstre+eye*sstim;
+	      uextR.at(0)+=ssrre+eye*ssrim;
 	    }
 	    if(bleft){
-	      uextR.at(1)=uextR.at(1)+sst;
-	      uextR.at(0)=uextR.at(0)+ssr;
+	      uextL.at(1)+=sstre+eye*sstim;
+	      uextL.at(0)+=ssrre+eye*ssrim;
 	    }
+
+	  
 	  }
 	}
       }
@@ -661,10 +676,10 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     if(params.metric.schwarschild){
       //specializing to schwazschild case
       if(params.opts.use_generic_orbit){
-	if(bleft&&sub){
+	if(bleft&&sub){ //FIX ME
 	  uextL.at(1)=uextL.at(1)+uextL.at(0)*coords.dxdxibR1.at(elemnum);
 	  uextL.at(0)=uextL.at(0)*coords.dxdxibR0.at(elemnum);
-	}else if(bright&&add){
+	}else if(bright&&add){ //FIX ME
 	  uextR.at(1)=uextR.at(1)+uextR.at(0)*coords.dxdxibL1.at(elemnum);
 	  uextR.at(0)=uextR.at(0)*coords.dxdxibR0.at(elemnum);
 	}
@@ -885,6 +900,7 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     }//end vecnum
   }// end for numelems
   //fssource.close();
+  //fssing.close();
 }//end function
 
 
