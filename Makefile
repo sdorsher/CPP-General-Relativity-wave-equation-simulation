@@ -1,19 +1,22 @@
-CXX = gcc
+lCXX = gcc
 #CXX = icpc
 
 #Spine
 IGEN = -I/home/sdorsher -I/home/sdorsher/libconfig-1.5/install/include
-ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama
+ITNT = -I/home/sdorsher/tnt -I/home/sdorsher/jama -I/usr/local/packages/gsl-1.16-intel/lib
 LCONF = -L/home/sdorsher/libconfig-1.5/execinstall/lib/ -lconfig++
 ESRC = /home/sdorsher/scalar1deffectivesourceCurrent/scalar1deffectivesource
-LGSL = `pkg-config --libs gsl`
+#LGSL = `pkg-config --libs gsl`
+LGSL = -L/usr/local/packages/gsl-1.16-intel/include -lm
 
 
 #Both
 LCPP = -lstdc++
 #FLGS = -g -lm -std=c++11 -O3 -p
 
-FLGS = -g -lm -std=c++11 -O3 -fopenmp
+#FLGS = -g -lm -std=c++11 -O3 -fopenmp -ftree-vectorize -ffast-math -fopt-info-vec-optimized-missed -Wall
+FLGS = -g -lm -std=c++11 -O3 -Wall
+ 
 #FLGS = -g -lm -std=c++11 -O3 
 
 
@@ -22,7 +25,7 @@ FLGS = -g -lm -std=c++11 -O3 -fopenmp
 #ITNT = -I/home/sdorsher/tnt -I/Users/sdorsher/Documents/Diener/tnt -I/home/knarf/codes/dorsher/libtnt/libtnt-1.2.6/src/ -I /home/knarf/codes/dorsher/libjama/libjama-1.2.4/src
 #LCONF = -L/Users/sdorsher/utils/lib/ -lconfig++
 #ESRC = /Users/sdorsher/Documents/Diener/Scalar1DEffectiveSource/scalar1deffectivesource
-#LGSL=?
+LGSL=`pkg-config --libs gsl`
 
 
 #LGSL = -L/usr/local/packages/gsl-1.16-intel/lib -lgsl -lgslcblas

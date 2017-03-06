@@ -66,7 +66,7 @@ DiffEq::DiffEq(Grid& thegrid, Modes& lmmodes, int nmodetotal, Coordinates& coord
 
 void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordobj)
 {
-  double Omega, Omegap, H, Hp, eL, eLp, fT, fTp, fTpp,rm2M;
+
   for(int i = 0; i < thegrid.gridNodeLocations().GFvecDim(); i++){
     for(int j = 0; j < thegrid.gridNodeLocations().GFarrDim(); j++){
       //regular wave equation
@@ -103,7 +103,7 @@ void DiffEq::setupABmatrices(Grid& thegrid, Modes& lmmodes, Coordinates& coordob
         else if (thegrid.gridNodeLocations().get(i,j)==Splus) {region=4;}
         
         
-        double Omega, Omegap, eL, eLp, H, Hp, term1, term2;
+        double Omega, Omegap, eL, eLp, H, Hp, term1, term2, fT, fTp, fTpp, rm2M;
         //thegrid.gridNodeLocations() = rho
         //horizon
         switch (region){
@@ -343,7 +343,8 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
 {
   maxspeed = 1.0;
   double ne = params.grid.elemorder;
-  
+
+  int count=0;
   vector<double> rm2m(ne+1), x(ne+1), d2xdt2(ne+1), d2xdxi2(ne+1), d2xdtdxi(ne+1);
 
   for(int elemnum=0; elemnum < params.grid.numelems; elemnum++){
@@ -375,7 +376,6 @@ void DiffEq::set_coefficients(Grid &thegrid, EllipticalOrbit* orb, Coordinates &
       trimmedAmatrices.set(0*params.grid.Ddim+1,elemnum,i,coeff1);
       trimmedAmatrices.set(1*params.grid.Ddim+1,elemnum,i,coeff2);
       
-      int boundary;
       
       if(i==0){
 	AleftBoundaries[elemnum].LambdaV.at(0*params.grid.Ddim+0)=-(1.0+dxdt.at(i))*dxdxiinv;
@@ -457,18 +457,15 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
   Lift = thegrid.refelem.getLift();
 
 
-  vector<double> sre(params.grid.elemorder+1);
-  vector<double> sim(params.grid.elemorder+1);
-  double * srev = &sre[0];
-  double * simv = &sim[0];
+
   EffectiveSource* sourcek;
   if(params.opts.useSource){
-     sourcek= effsource.at(modenum);
+    sourcek= effsource.at(modenum);
   }
   complex<double> zero{0.0,0.0};
   complex<double> eye{0.0,1.0};
   
-  /*     ofstream fssource;
+  /*   ofstream fssource;
   fssource.precision(16);
   ostringstream osssource;
   osssource << "source" << "." << modenum << ".txt";
@@ -498,26 +495,40 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
     vector<double> windowv = thegrid.window.get(elemnum);
     vector<double> dwindowv = thegrid.dwindow.get(elemnum);
     vector<double> d2windowv = thegrid.d2window.get(elemnum);
-
     
+    vector<double> sre(params.grid.elemorder+1,0.0);
+    vector<double> sim(params.grid.elemorder+1,0.0);
+    double * srev = &sre[0];
+    double * simv = &sim[0];
     double *r = &rschwv[0];
     double * win = &windowv[0];
     double * dwin = &dwindowv[0];
     double * d2win = &d2windowv[0];
+    
     if(params.opts.useSource){
-      (*sourcek)(params.grid.elemorder+1,r, win, dwin, d2win, srev, simv);
+      if((elemnum!=0)&&(wt->inWorldTube.at(elemnum-1))){
+	  (*sourcek)(params.grid.elemorder+1,r, win, dwin, d2win, srev, simv);
+	  thegrid.window.set(elemnum,windowv);
+	  thegrid.dwindow.set(elemnum,dwindowv);
+	  thegrid.d2window.set(elemnum,d2windowv);
+	  if(wt->subSingFieldFromRightElemExt.at(elemnum)){
+	    cout << thegrid.gridNodeLocations().get(elemnum,params.grid.elemorder);
+	  }
+      }
     }
-       
-    /*        if(elemnum==0){
-      fssource << endl << endl;
-      fssource << " #time = " << t << endl;
-    }
-    for(int nodenum=0; nodenum <= params.grid.elemorder; nodenum++){
-      fssource << thegrid.gridNodeLocations().get(elemnum,nodenum) << " " << sre.at(nodenum) << " " << sim.at(nodenum) << endl;
-    }
-    */
+    
+    /*      if(output){
+	if(elemnum==0){
+	  fssource << endl << endl;
+	  fssource << " #time = " << t << endl;
+	}
+	for(int nodenum=0; nodenum <= params.grid.elemorder; nodenum++){
+	  fssource << thegrid.gridNodeLocations().get(elemnum,nodenum) << " " << sre.at(nodenum) << " " << sim.at(nodenum) << endl;
+	}
+      }
+    */      
     vector<complex<double>> du; //inner was Array2D
-    du.resize(2*params.grid.Ddim);
+      du.resize(2*params.grid.Ddim);
     int indL = 0; //index of leftmost node of that element
     int indR = uh.GFarrDim()-1; //index of rightmost node of that element
     double nL = -1.0; //normal to the leftmost node

@@ -45,7 +45,7 @@ void rk4lowStorage(Grid thegrid, DiffEq theequation,
 
   
   //step 1
-  theequation.modeRHS(thegrid, uh, RHStdvgf, t,false, orb, wt, coords, max_speed, lmmodes, effsource);//true for debugging output
+  theequation.modeRHS(thegrid, uh, RHStdvgf, t,true, orb, wt, coords, max_speed, lmmodes, effsource);//true for debugging output
   k = deltat * RHStdvgf;
   uh = uh + rk4b[0] * k;
     for(int modenum = 0; modenum< lmmodes.ntotal; modenum++){

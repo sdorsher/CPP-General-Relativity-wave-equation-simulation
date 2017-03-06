@@ -261,7 +261,7 @@ int main()
 
   
   
-  double deltat;
+  double deltat=params.time.dt;
 
   
   if(params.metric.schwarschild){
@@ -309,16 +309,16 @@ int main()
 	  write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes, true,
 			     params.file.fixedradiusfilename,1, eorb);
-	  write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes, true,
-			     "upt",2, eorb);
+	  //write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+	  //		     theequation,lmmodes, true,
+	  //		     "upt",2, eorb);
 	}else{
 	  write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
 			     theequation,lmmodes, true,
 			     params.file.fixedradiusfilename,1, corb);
-	  write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
-			     theequation,lmmodes, true,
-			     "upt",2, corb);
+	  // write_fixed_radius(ijoutput,k,params.time.t0,uh,RHStdvgf,thegrid,
+	  //		     theequation,lmmodes, true,
+	  //		     "upt",2, corb);
 	}
       }//end for k
 
@@ -412,16 +412,16 @@ int main()
 	    write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes, true,
 			       params.file.fixedradiusfilename,1,eorb);
-	     write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes, true,
-				"upt",2,eorb);
+	    // write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
+	    //		       theequation,lmmodes, true,
+	    //			"upt",2,eorb);
 	  }else{
 	     write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
 			       theequation,lmmodes, true,
 				params.file.fixedradiusfilename,1,corb);
-	      write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
-			       theequation,lmmodes, true,
-				 "upt",2,corb);
+	     //  write_fixed_radius(ijoutput,k,t,uh,RHStdvgf,thegrid,
+	     //		       theequation,lmmodes, true,
+	     //			 "upt",2,corb);
 	  }
 	    if(k==params.modes.lmax){
 	    if(params.opts.use_generic_orbit){

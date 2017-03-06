@@ -18,7 +18,7 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
       {
 	coords.timeDepTrans.at(j)=true;
       }
-    if((rho>Wminus)&&(rho<Wplus)){
+    if((rho>=Wminus)&&(rho<Wplus)){
       inWorldTube.at(j)=true;
     }
     if(abs(rho-Wminus)<1.e-10){
@@ -32,15 +32,15 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
     }
   }
   for (int j=0; j<params.grid.numelems-1; j++){
-    if((!coords.timeDepTrans.at(j))&&(coords.timeDepTrans.at(j+1))){
-      coords.timeDepTrans.at(j)=true;
-    }
+  if((!coords.timeDepTrans.at(j))&&(coords.timeDepTrans.at(j+1))){
+     coords.timeDepTrans.at(j)=true;
+   }
   }
+  
 }
 
 void WorldTube::set_world_tube_window(Grid &thegrid, Coordinates &coords){
 
-  double wind, dwind, d2wind;
   for(int j=0; j<params.grid.numelems; j++){
     for(int i=0; i<=params.grid.elemorder; i++){
     
