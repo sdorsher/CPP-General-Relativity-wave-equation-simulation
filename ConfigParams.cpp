@@ -125,6 +125,10 @@ ConfigParams::ConfigParams(const std::string& configFileName)
 
     file.outputradiusfixed = getConfigFromFile<bool>(configFileName, "file",
                                                        "outputradiusfixed");
+    file.outputsource = getConfigFromFile<bool>(configFileName, "file",
+						     "outputsource");
+    file.outputsingfield = getConfigFromFile<bool>(configFileName, "file",
+						     "outputsingfield");
 
     file.fixedradiusfilename = getConfigFromFile<string>(configFileName, "file",
                                                          "fixedradiusfilename");

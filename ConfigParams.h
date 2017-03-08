@@ -106,6 +106,8 @@ struct FileParams
   string initialconditions; //initial conditions as a function of position
   bool outputtimefixed; //output at a fixed time: true or false
   bool outputradiusfixed; //output at a fixed radius: true or false
+  bool outputsource;
+  bool outputsingfield;
   string fixedradiusfilename; //name of file for outputing at a fixed radius
 
 };

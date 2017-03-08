@@ -465,18 +465,20 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
   complex<double> zero{0.0,0.0};
   complex<double> eye{0.0,1.0};
   
-  /*   ofstream fssource;
+  ofstream fssource;
   fssource.precision(16);
   ostringstream osssource;
-  osssource << "source" << "." << modenum << ".txt";
-  fssource.open(osssource.str(), ios::app);
-  */
-  /*      ofstream fssing;
+  if(params.file.outputsource){
+    osssource << "source" << "." << modenum << ".txt";
+    fssource.open(osssource.str(), ios::app);
+  }
+  ofstream fssing;
   fssing.precision(16);
   ostringstream osssing;
-  osssing << "singular" << "." << modenum << ".txt";
-  fssing.open(osssing.str(), ios::app);
-  */
+  if(params.file.outputsingfield){
+    osssing << "singular" << "." << modenum << ".txt";
+    fssing.open(osssing.str(), ios::app);
+  }
  int nodenumFound, elemnumFound;
   
   
@@ -511,13 +513,14 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	  thegrid.window.set(elemnum,windowv);
 	  thegrid.dwindow.set(elemnum,dwindowv);
 	  thegrid.d2window.set(elemnum,d2windowv);
-	  if(wt->subSingFieldFromRightElemExt.at(elemnum)){
-	    cout << thegrid.gridNodeLocations().get(elemnum,params.grid.elemorder);
-	  }
+	  //cout << "Left side: " << elemnum << " " << thegrid.gridNodeLocations().get(elemnum,0) << " " << Wminus  << " " << Rminus << " " << windowv.at(0) << endl;
+	  //cout << "RightSide: " << elemnum << " " << thegrid.gridNodeLocations().get(elemnum,params.grid.elemorder) << " " << Wplus  << " " << Rplus <<  " " << windowv.at(params.grid.elemorder) << endl; 
+	  
       }
     }
-    
-    /*      if(output){
+
+    if(params.file.outputsource){
+      if(output){
 	if(elemnum==0){
 	  fssource << endl << endl;
 	  fssource << " #time = " << t << endl;
@@ -526,7 +529,8 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	  fssource << thegrid.gridNodeLocations().get(elemnum,nodenum) << " " << sre.at(nodenum) << " " << sim.at(nodenum) << endl;
 	}
       }
-    */      
+    }
+          
     vector<complex<double>> du; //inner was Array2D
       du.resize(2*params.grid.Ddim);
     int indL = 0; //index of leftmost node of that element
@@ -582,12 +586,17 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	nodenumFound=params.grid.elemorder;
 	elemnumFound=elemnum;
       }
+
+      //      if(bright&&add) cout << "bright and add: " << elemnum << " "<< thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << Wminus <<  " " << Wplus << endl;
+      //   if(bright&&sub) cout << "bright and sub: " << elemnum << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << Wminus <<  " " << Wplus << endl;
+      // if(bleft&&add) cout << "bleft and add: " << elemnum << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << Wminus <<  " " << Wplus << endl;
+      // if(bleft&&sub) cout << "bleft and sub: " << elemnum << " " << thegrid.gridNodeLocations().get(elemnum,nodenumFound) << " " << Wminus <<  " " << Wplus << endl;
       
       double ssign;
       if(add){
-	ssign=1.;
+	ssign=-1.;//ssign reversed due to rhs - sign convention relative to Fortran file
       }else if(sub){
-	ssign = -1.;
+	ssign = 1.;
       }
       
       
@@ -606,9 +615,11 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
 	ssrim = std::imag(dphidrk);
 	
 
-	    
-	//    fssing << t<< " "<<  node << " " << ssrre << " " << ssrim << " " << sstre << " " << sstim << endl;
-
+	if(params.file.outputsingfield){	
+	  if(output){
+	    fssing << t << " " << node << " " << ssrre << " " << ssrim << " " << sstre << " " << sstim << endl;
+	  }
+	}
 	alpha = (node-2.*params.schw.mass)/node;
 	
 	sstre = ssign*sstre;
@@ -910,8 +921,12 @@ void DiffEq::RHS(int modenum, Grid& thegrid,
       }//end for nodes
     }//end vecnum
   }// end for numelems
-  //fssource.close();
-  //fssing.close();
+  if(params.file.outputsource){
+    fssource.close();
+  }
+  if(params.file.outputsingfield){
+    fssing.close();
+  }
 }//end function
 
 

@@ -23,12 +23,12 @@ void WorldTube::init_world_tube(Grid & thegrid, Coordinates &coords)
     }
     if(abs(rho-Wminus)<1.e-10){
       cout << "Wminus " << j << endl;
-      addSingFieldToLeftElemExt.at(j+1)=true;
-      subSingFieldFromRightElemExt.at(j)=true;
+      addSingFieldToLeftElemExt.at(j+1)=true;//position 2, in world tube at left
+      subSingFieldFromRightElemExt.at(j)=true;//position 1, out of world tube at left
     }else if(abs(rho-Wplus)<1.e-10){
       cout << "Wplus " << j << endl;
-      addSingFieldToRightElemExt.at(j)=true;
-      subSingFieldFromLeftElemExt.at(j+1)=true;
+      addSingFieldToRightElemExt.at(j)=true;//position 4, out of world tube at right
+      subSingFieldFromLeftElemExt.at(j+1)=true;//position 3, in world tube at right
     }
   }
   for (int j=0; j<params.grid.numelems-1; j++){

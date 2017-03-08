@@ -63,9 +63,13 @@ int main()
     - round(0.175 * params.grid.numelems) * deltar;
   Rplus = rstar_orb 
     + round(0.125 * params.grid.numelems) * deltar;
-  Wminus = Rminus + params.window.noffset * deltar;
-  Wplus = Rplus - params.window.noffset * deltar;
-  
+  if(params.opts.use_world_tube){
+    Wminus=Rminus;
+    Wplus=Rplus;
+  }else{
+    Wminus = Rminus + params.window.noffset * deltar;
+    Wplus = Rplus - params.window.noffset * deltar;
+  }
   cout << "R_star orbit" << endl;
   cout << rstar_orb << endl << endl;
   

@@ -15,7 +15,7 @@ LCPP = -lstdc++
 #FLGS = -g -lm -std=c++11 -O3 -p
 
 #FLGS = -g -lm -std=c++11 -O3 -fopenmp -ftree-vectorize -ffast-math -fopt-info-vec-optimized-missed -Wall
-FLGS = -g -lm -std=c++11 -O3 -Wall
+FLGS = -g -lm -std=c++11 -O3
  
 #FLGS = -g -lm -std=c++11 -O3 
 
