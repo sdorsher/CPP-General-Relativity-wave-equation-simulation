@@ -77,7 +77,7 @@ void Modes::sum_m_modes(TwoDVectorGridFunction<complex<double>> uh,double time,i
     psitl.at(ll.at(i))=psitl.at(ll.at(i))
       +(m_fold_factor*y_lm* phase* uh.get(i,2,index1,index2)).real();
     psiphil.at(ll.at(i)) = psiphil.at(ll.at(i))
-      +(m_fold_factor * y_lm* phifactor.imag()*phase*uh.get(i,0,index1,index2)).real();
+      +(m_fold_factor * y_lm* phifactor*phase*uh.get(i,0,index1,index2)).real();
     psirl.at(ll.at(i)) = psirl.at(ll.at(i))
       +(m_fold_factor * y_lm *phase*uh.get(i, 1, index1, index2)).real();
   }
