@@ -1,5 +1,13 @@
 # DG1D-CPP-development
-Development of the discontinuous Galerkin C++ code based on Peter Diener's Fortran code found in the DG1D-Fortran-test repository.
+Frozen state of the discontinuous Galerkin C++ code based on the Fortran code found in the DG1D-Fortran-test repository.
+I am not positive whether this is a working state or a non working state because I no longer have access to all the associated software needed to run the code. 
+This was the primary component of my masters research at LSU from 2014-2017. The results of this research can be found on academia.edu.
+
+At the time this software was frozen in Spring 2017, I had implemented a generalized object for solving wave equations and tested it with a wave equation in a vaccuum in flat spacetime with gaussian and sinusoidal initial conditions. 
+
+Then I implemented a Schwarzschild metric from general relativity-- that's a spherically symmetric non rotating black hole with no charge. I used a scalar approximation to general relativity. In the absence of an orbiting black hole, I tested a perturbation to the "gravitational field" or scalar field at the location of the black hole. It produced the correct quasinormal mode ringdown that would be seen post merger in the merger of a smaller black hole into a supermassive black hole. 
+
+Then I implemted the effective source model of the self-force. For a stellar mass black hole orbiting a supermassive black hole (an extreme mass ratio inspiral or EMRI), the central black hole curves spacetime, and the smaller black hole's mass interacts with it, curving its path away from a geodesic that a massless particle would follow and causing it to lose energy through gravitational waves and inspiral toward the supermassive black hole. I evolved and plotted the self force as a function of time for a stellar mass black hole held artifically fixed on a circular orbit in the scalar Schwarzchild model with an effective source. In other words, in nature the stellar mass black hole would have spiraled inward, but I computed the force the stellar mass "would have experienced" over one orbit if it had been on a circular orbit instead. 
 
 To run this code, it is necessary to install the TNT and JAMA matrix
 libraries, found at http://math.nist.gov/tnt/overview.html.
@@ -59,8 +67,7 @@ for a reference element, which can then be scaled to a physical
 element based simply on the size of the physical element.
 
 source_interface is legacy code. It is a wrapper to interfacing with
-Barry Wardell's effective source package, slightly modified from code
-written by Peter Diener.
+the effective source package, slightly modified before given to me.
 
 TNT2, tnt_array1D_extn, and tnt_array2D_extn extend the TNT matrix
 manipulation library.
@@ -72,5 +79,5 @@ WriteFile outputs files in specific formats.
 
 To run this code it is necessary to install LibConfig (for reading in
 parameters), the Template Numerical Toolkit (TNT), and JAMA, which is
-associated with it. You will also need libgsl and read access to Barry
-Wardell's scalar1deffective source repository on BitBucket.
+associated with it. You will also need libgsl and read access to the 
+scalar1deffective source repository on BitBucket.
