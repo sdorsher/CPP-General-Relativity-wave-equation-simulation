@@ -1,3 +1,8 @@
+Author: Steven Dorsher (all of it)
+
+Thanks to Peter Diener for guidance
+Thanks to Peter Diener, Steven R Brandt, and Frank Loeffler for help with technical questions
+
 # DG1D-CPP-development
 Frozen state of the discontinuous Galerkin C++ code based on the Fortran code found in the DG1D-Fortran-test repository, which is a code sample given to me by Peter Diener to port to C++ at his request. 
 I am not positive whether this is a working state or a non working state because I no longer have access to all the associated software needed to run the code. 
