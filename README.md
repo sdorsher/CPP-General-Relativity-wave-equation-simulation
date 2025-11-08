@@ -1,5 +1,5 @@
 # DG1D-CPP-development
-Frozen state of the discontinuous Galerkin C++ code based on the Fortran code found in the DG1D-Fortran-test repository.
+Frozen state of the discontinuous Galerkin C++ code based on the Fortran code found in the DG1D-Fortran-test repository, which is a code sample given to me by Peter Diener to port to C++ at his request. 
 I am not positive whether this is a working state or a non working state because I no longer have access to all the associated software needed to run the code. 
 This was the primary component of my masters research at LSU from 2014-2017. The results of this research can be found on academia.edu.
 
